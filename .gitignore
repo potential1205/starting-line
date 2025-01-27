@@ -36,7 +36,9 @@
 
 /src/main/generated
 
-application.properties
+secrets.properties
+
+.idea/
 
   
 
