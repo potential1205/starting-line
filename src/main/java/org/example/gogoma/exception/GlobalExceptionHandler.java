@@ -2,6 +2,10 @@ package org.example.gogoma.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.common.dto.ExcpetionResponse;
+import org.example.gogoma.exception.type.BusinessException;
+import org.example.gogoma.exception.type.DbException;
+import org.example.gogoma.exception.type.ExternalApiException;
+import org.example.gogoma.exception.type.ValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

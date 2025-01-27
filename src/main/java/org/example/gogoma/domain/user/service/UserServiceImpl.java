@@ -2,12 +2,12 @@ package org.example.gogoma.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.gogoma.controller.dto.UserListResponse;
-import org.example.gogoma.controller.dto.UserResponse;
+import org.example.gogoma.controller.response.UserListResponse;
+import org.example.gogoma.controller.response.UserResponse;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.UserCustomRepository;
 import org.example.gogoma.domain.user.repository.UserRepository;
-import org.example.gogoma.exception.DbException;
+import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.exception.ExceptionCode;
 import org.springframework.stereotype.Service;
 

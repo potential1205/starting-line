@@ -1,6 +1,7 @@
-package org.example.gogoma.exception;
+package org.example.gogoma.exception.type;
 
 import lombok.Getter;
+import org.example.gogoma.exception.ExceptionCode;
 
 @Getter
 public class ExternalApiException extends RuntimeException {
