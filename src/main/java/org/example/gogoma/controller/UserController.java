@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.SignUpRequest;
+import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
@@ -48,7 +48,7 @@ public class UserController {
     /**
      * refreshToken으로 AccessToken 갱신
      * @header Authorization ( refresh_token )
-     * @return access_Token, refresh_Token
+     * @return access_Token
      */
     @PostMapping("/kakao/refresh")
     @Operation(summary = "AccessToken 재발급", description = "RefreshToken을 사용하여 AccessToken을 재발급받습니다.")
@@ -89,7 +89,7 @@ public class UserController {
      */
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "SignUpRequest를 받아 DB에 사용자 정보를 저장합니다.")
-    public ResponseEntity<BooleanResponse> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<BooleanResponse> signUp(@RequestBody CreateUserRequest signUpRequest) {
         userService.createUser(signUpRequest);
         return ResponseEntity.ok(BooleanResponse.success());
     }
