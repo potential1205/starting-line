@@ -11,15 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = BrandColor1,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = BrandColor1,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    background = NeutralWhite,
+    surface = NeutralWhite,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -51,6 +53,20 @@ fun GogomaTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
+}
+
+private val SplashColorScheme = lightColorScheme(
+    surface = BrandColor1,
+    onBackground = NeutralWhite,
+)
+
+@Composable
+fun SplashTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = SplashColorScheme,
         typography = Typography,
         content = content
     )
