@@ -12,10 +12,8 @@ import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserById(int id) {
 
-        User user = userCustomRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
         return UserResponse.of(user.getEmail(), user.getName());

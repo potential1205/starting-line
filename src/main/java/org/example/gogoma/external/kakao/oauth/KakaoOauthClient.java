@@ -3,12 +3,8 @@ package org.example.gogoma.external.kakao.oauth;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
