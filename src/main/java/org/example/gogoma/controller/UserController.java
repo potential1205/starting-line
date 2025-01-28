@@ -34,7 +34,7 @@ public class UserController {
 
     /**
      * 카카오 콜백함수
-     * @param 인가코드
+     * @param code ( 인가코드 )
      * @return access_Token, refresh_Token, status ( login, signup )
      */
     @GetMapping("/kakao/callback")
@@ -45,18 +45,18 @@ public class UserController {
 
     /**
      * refreshToken으로 AccessToken 갱신
-     * @param refresh_Token
+     * @header Authorization ( refresh_token )
      * @return access_Token, refresh_Token
      */
     @PostMapping("/kakao/refresh")
-    public ResponseEntity<KakaoClientOauthTokenResponse> handleKaKaoRefresh(@RequestParam("refreshToken") String refreshToken) {
+    public ResponseEntity<KakaoClientOauthTokenResponse> handleKaKaoRefresh(@RequestHeader("Authorization") String refreshToken) {
         KakaoClientOauthTokenResponse kakaoClientOauthTokenResponse = kakaoOauthClient.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(kakaoClientOauthTokenResponse);
     }
 
     /**
      * ID로 User 조회
-     * @Header Authorization ( access_Token )
+     * @header Authorization ( access_token )
      * @return Kakao User 정보
      */
     @GetMapping("/kakao/userinfo")
@@ -67,7 +67,7 @@ public class UserController {
 
     /**
      * 꼬마 서비스 로그인
-     * @Header Authorization ( access_Token )
+     * @header Authorization ( access_token )
      * @return 로그인 성공 여부
      */
     @PostMapping("/login")
@@ -79,7 +79,7 @@ public class UserController {
 
     /**
      * 꼬마 서비스 회원가입
-     * @Header SignUpRequest
+     * @header SignUpRequest
      * @return 회원가입 성공 여부
      */
     @PostMapping("/signup")
