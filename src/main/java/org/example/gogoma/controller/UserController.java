@@ -5,7 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.dto.SignUpRequest;
 import org.example.gogoma.domain.user.service.UserService;
+import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
+import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
+import org.example.gogoma.external.kakao.oauth.KakaoUrlBuilder;
+import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +19,74 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    private final KakaoOauthClient kakaoOauthClient;
     private final UserService userService;
+    private final KakaoUrlBuilder kakaoUrlBuilder;
+
+    /**
+     * 카카오 인가코드 받아오기
+     * @return callback link
+     */
+    @GetMapping("/kakao/login")
+    public ResponseEntity<String> redirectToKaKaoLogin() {
+        return ResponseEntity.ok(kakaoUrlBuilder.buildKakaoAuthUrl());
+    }
+
+    /**
+     * 카카오 콜백함수
+     * @param 인가코드
+     * @return access_Token, refresh_Token, status ( login, signup )
+     */
+    @GetMapping("/kakao/callback")
+    public ResponseEntity<KakaoClientOauthTokenResponse> handleKaKaoCallback(@RequestParam("code") String code) {
+        KakaoClientOauthTokenResponse kakaoClientOauthTokenResponse = kakaoOauthClient.determineLoginOrSignup(code);
+        return ResponseEntity.ok(kakaoClientOauthTokenResponse);
+    }
+
+    /**
+     * refreshToken으로 AccessToken 갱신
+     * @param refresh_Token
+     * @return access_Token, refresh_Token
+     */
+    @PostMapping("/kakao/refresh")
+    public ResponseEntity<KakaoClientOauthTokenResponse> handleKaKaoRefresh(@RequestParam("refreshToken") String refreshToken) {
+        KakaoClientOauthTokenResponse kakaoClientOauthTokenResponse = kakaoOauthClient.refreshAccessToken(refreshToken);
+        return ResponseEntity.ok(kakaoClientOauthTokenResponse);
+    }
+
+    /**
+     * ID로 User 조회
+     * @Header Authorization ( access_Token )
+     * @return Kakao User 정보
+     */
+    @GetMapping("/kakao/userinfo")
+    public ResponseEntity<KakaoUserInfo> getKaKaoUserInfo(@RequestHeader("Authorization") String accessToken) {
+        KakaoUserInfo userInfo = kakaoOauthClient.getUserInfo(accessToken);
+        return ResponseEntity.ok(userInfo);
+    }
+
+    /**
+     * 꼬마 서비스 로그인
+     * @Header Authorization ( access_Token )
+     * @return 로그인 성공 여부
+     */
+    @PostMapping("/login")
+    public ResponseEntity<BooleanResponse> login(@RequestHeader("Authorization") String accessToken) {
+        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
+        userService.updateUser(kakaoUserInfo);
+        return ResponseEntity.ok(BooleanResponse.success());
+    }
+
+    /**
+     * 꼬마 서비스 회원가입
+     * @Header SignUpRequest
+     * @return 회원가입 성공 여부
+     */
+    @PostMapping("/signup")
+    public ResponseEntity<BooleanResponse> signUp(@RequestBody SignUpRequest signUpRequest) {
+        userService.createUser(signUpRequest);
+        return ResponseEntity.ok(BooleanResponse.success());
+    }
 
     /**
      * ID로 User 조회
