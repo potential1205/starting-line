@@ -17,4 +17,14 @@ public class KakaoClientOauthTokenResponse {
 
     @JsonProperty("refresh_token")
     private String refreshToken;
+
+    private String status;
+
+    public static KakaoClientOauthTokenResponse of(String accessToken, String refreshToken, String status) {
+        return KakaoClientOauthTokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .status(status)
+                .build();
+    }
 }
