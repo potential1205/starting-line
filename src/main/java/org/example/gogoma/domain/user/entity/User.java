@@ -2,9 +2,11 @@ package org.example.gogoma.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.gogoma.domain.user.dto.SignUpRequest;
+import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.domain.user.enums.Gender;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="users")
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
@@ -44,30 +47,30 @@ public class User {
 
     private int totalDistance;
 
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public static User of(SignUpRequest request) {
+    public static User of(CreateUserRequest createUserRequest) {
         return User.builder()
-                .name(request.getName())
-                .profileImage(request.getProfileImage())
-                .email(request.getEmail())
-                .name(request.getName())
-                .gender(request.getGender())
-                .birthDate(request.getBirthDate())
-                .birthYear(request.getBirthYear())
-                .phoneNumber(request.getPhoneNumber())
-                .address(request.getAddress())
-                .clothingSize(request.getClothingSize())
+                .name(createUserRequest.getName())
+                .profileImage(createUserRequest.getProfileImage())
+                .email(createUserRequest.getEmail())
+                .gender(createUserRequest.getGender())
+                .birthDate(createUserRequest.getBirthDate())
+                .birthYear(createUserRequest.getBirthYear())
+                .phoneNumber(createUserRequest.getPhoneNumber())
+                .address(createUserRequest.getAddress())
+                .clothingSize(createUserRequest.getClothingSize())
                 .totalDistance(0)
                 .build();
     }
 
     public static User updateWhenLogin(User existingUser, KakaoUserInfo kakaoUserInfo) {
         return User.builder()
-                .name(kakaoUserInfo.getNickname() != null ? kakaoUserInfo.getNickname() : existingUser.getName())
+                .name(kakaoUserInfo.getName() != null ? kakaoUserInfo.getName() : existingUser.getName())
                 .profileImage(kakaoUserInfo.getProfileImage() != null ? kakaoUserInfo.getProfileImage() : existingUser.getProfileImage())
                 .email(kakaoUserInfo.getEmail() != null ? kakaoUserInfo.getEmail() : existingUser.getEmail())
-                .name(kakaoUserInfo.getName() != null ? kakaoUserInfo.getName() : existingUser.getName())
                 .gender(kakaoUserInfo.getGender() != null ? kakaoUserInfo.getGender() : existingUser.getGender())
                 .birthDate(kakaoUserInfo.getBirthDate() != null ? kakaoUserInfo.getBirthDate() : existingUser.getBirthDate())
                 .birthYear(kakaoUserInfo.getBirthYear() != null ? kakaoUserInfo.getBirthYear() : existingUser.getBirthYear())

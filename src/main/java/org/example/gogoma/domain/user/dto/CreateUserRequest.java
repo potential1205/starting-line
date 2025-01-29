@@ -4,11 +4,10 @@ import lombok.Data;
 import org.example.gogoma.domain.user.enums.Gender;
 
 @Data
-public class SignUpRequest {
-    private String nickname;
+public class CreateUserRequest {
+    private String name;
     private String profileImage;
     private String email;
-    private String name;
     private Gender gender;
     private String birthDate;
     private String birthYear;

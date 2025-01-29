@@ -28,7 +28,7 @@ public class KakaoOauthClient {
         String refreshToken = tokens.getRefreshToken();
 
         KakaoUserInfo userInfo = getUserInfo(accessToken);
-        boolean isUserExists = userRepository.findByPhoneNumber(userInfo.getPhoneNumber()).isPresent();
+        boolean isUserExists = userRepository.findByEmail(userInfo.getEmail()).isPresent();
 
         String status = isUserExists ? "login" : "signup";
         return KakaoClientOauthTokenResponse.of(accessToken, refreshToken, status);
@@ -57,6 +57,8 @@ public class KakaoOauthClient {
                 .bodyToMono(KakaoUserInfo.class)
                 .block();
     }
+
+
 
     public KakaoClientOauthTokenResponse refreshAccessToken(String refreshToken) {
         String body = String.format(
