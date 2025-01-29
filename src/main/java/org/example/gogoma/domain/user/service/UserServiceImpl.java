@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.SignUpRequest;
+import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.UserCustomRepository;
 import org.example.gogoma.domain.user.repository.UserRepository;
@@ -24,13 +24,13 @@ public class UserServiceImpl implements UserService {
     private final UserCustomRepository userCustomRepository;
 
     @Override
-    public void createUser(SignUpRequest signUpRequest) {
-        userRepository.save(User.of(signUpRequest));
+    public void createUser(CreateUserRequest createUserRequest) {
+        userRepository.save(User.of(createUserRequest));
     }
 
     @Override
     public void updateUser(KakaoUserInfo kakaoUserInfo) {
-        User existingUser = userRepository.findByPhoneNumber(kakaoUserInfo.getPhoneNumber())
+        User existingUser = userRepository.findByEmail(kakaoUserInfo.getEmail())
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
         User updatedUser = User.updateWhenLogin(existingUser, kakaoUserInfo);
