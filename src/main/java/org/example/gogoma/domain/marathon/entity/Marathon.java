@@ -1,12 +1,11 @@
 package org.example.gogoma.domain.marathon.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.example.gogoma.domain.marathon.enums.MarathonStatus;
-import org.example.gogoma.domain.marathon.enums.MarathonType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,46 +21,38 @@ public class Marathon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
-    @Column(nullable = false)
     private String title;
 
     private LocalDateTime registrationStartDateTime;
 
     private LocalDateTime registrationEndDateTime;
 
-    @NotNull
-    @Column(nullable = false)
     private LocalDateTime raceStartTime;
 
-    @NotNull
-    @Column(nullable = false)
+    private String accountBank;
+
     private String accountNumber;
 
-    @NotNull
-    @Column(nullable = false)
     private String accountName;
 
-    @NotNull
-    @Column(nullable = false)
     private String location;
 
     @ElementCollection
-    private List<String> hostList;
+    @Builder.Default
+    private List<String> hostList = new ArrayList<>();
 
     @ElementCollection
-    private List<String> organizerList;
+    @Builder.Default
+    private List<String> organizerList = new ArrayList<>();
 
     @ElementCollection
-    private List<String> sponsorList;
+    @Builder.Default
+    private List<String> sponsorList = new ArrayList<>();
 
     private String qualifications;
 
     @Enumerated(EnumType.STRING)
     private MarathonStatus marathonStatus;
-
-    @ElementCollection
-    private List<MarathonType> marathonTypeList;
 
     private int viewCount;
 
@@ -71,5 +62,8 @@ public class Marathon {
 
     private String courseImage;
 
-    private String description;
+    private int formType;
+
+    private String formUrl;
+
 }
