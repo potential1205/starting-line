@@ -89,8 +89,8 @@ public class UserController {
      */
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "SignUpRequest를 받아 DB에 사용자 정보를 저장합니다.")
-    public ResponseEntity<BooleanResponse> signUp(@RequestBody CreateUserRequest signUpRequest) {
-        userService.createUser(signUpRequest);
+    public ResponseEntity<BooleanResponse> signUp(@RequestBody CreateUserRequest createUserRequest) {
+        userService.createUser(createUserRequest);
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
