@@ -8,6 +8,8 @@ import org.example.gogoma.common.util.GoogleDocumentAiUtil;
 import org.example.gogoma.common.util.GoogleVisionApiUtil;
 import org.example.gogoma.common.util.S3ImageUtil;
 import org.example.gogoma.controller.request.CreateMarathonRequest;
+import org.example.gogoma.controller.request.MarathonDetailRequest;
+import org.example.gogoma.controller.response.MarathonDetailResponse;
 import org.example.gogoma.domain.marathon.dto.CustomMultipartFile;
 import org.example.gogoma.domain.marathon.dto.MarathonDataDto;
 import org.example.gogoma.domain.marathon.entity.Marathon;
@@ -17,6 +19,7 @@ import org.example.gogoma.domain.marathon.repository.MarathonRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonTypeRepository;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.exception.type.BusinessException;
+import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.external.openai.ChatGptClient;
 import org.example.gogoma.external.openai.Prompt;
 import org.springframework.stereotype.Service;
@@ -65,9 +68,9 @@ public class MarathonServiceImpl implements MarathonService {
             // 썸네일 이미지 저장
             if (createMarathonRequest.getThumbnailUrl() != null && !createMarathonRequest.getThumbnailUrl().isBlank()) {
                 multipartFile = convertUrlToMultipartFile(createMarathonRequest.getThumbnailUrl());
-                thumbnailImageUrl = s3ImageUtil.uploadImage(multipartFile, "gogoma/marathon/thumbnail");
+                thumbnailImageUrl = s3ImageUtil.uploadImage(multipartFile, "marathon/thumbnail");
             } else if (thumbnailFile.getSize() > 0) {
-                thumbnailImageUrl = s3ImageUtil.uploadImage(thumbnailFile, "gogoma/marathon/thumbnail");
+                thumbnailImageUrl = s3ImageUtil.uploadImage(thumbnailFile, "marathon/thumbnail");
             }
 
             // 코스 이미지 저장
@@ -165,5 +168,72 @@ public class MarathonServiceImpl implements MarathonService {
                 .filter(date -> !date.isBlank())
                 .map(LocalDateTime::parse)
                 .orElse(null);
+    }
+
+    @Override
+    public MarathonDetailResponse getMarathonById(int id) {
+        Marathon marathon = marathonRepository.findById(id)
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        List<MarathonType> marathonTypeList = marathonTypeRepository.findAllByMarathonId(id);
+
+        return MarathonDetailResponse.of(marathon, marathonTypeList);
+    }
+
+    @Override
+    @Transactional
+    public void updateMarathon(MarathonDetailRequest marathonDetailRequest) {
+        Marathon marathon = marathonRepository.findById(marathonDetailRequest.getMarathon().getId())
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        marathon.update(
+                marathonDetailRequest.getMarathon().getTitle(),
+                marathonDetailRequest.getMarathon().getRegistrationStartDateTime(),
+                marathonDetailRequest.getMarathon().getRegistrationEndDateTime(),
+                marathonDetailRequest.getMarathon().getRaceStartTime(),
+                marathonDetailRequest.getMarathon().getAccountBank(),
+                marathonDetailRequest.getMarathon().getAccountNumber(),
+                marathonDetailRequest.getMarathon().getAccountName(),
+                marathonDetailRequest.getMarathon().getLocation(),
+                marathonDetailRequest.getMarathon().getQualifications(),
+                marathonDetailRequest.getMarathon().getMarathonStatus()
+        );
+
+        marathonTypeRepository.deleteAllByMarathonId(marathon.getId());
+
+        List<MarathonType> marathonTypeList = marathonDetailRequest.getMarathonTypeList().stream()
+                .map(type -> MarathonType.builder()
+                        .marathonId(marathon.getId())
+                        .courseType(type.getCourseType())
+                        .price(type.getPrice())
+                        .etc(type.getEtc())
+                        .build())
+                .toList();
+
+
+        marathonTypeRepository.saveAll(marathonTypeList);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMarathon(int id) {
+        Marathon marathon = marathonRepository.findById(id)
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        if (marathon.getThumbnailImage() != null && !marathon.getThumbnailImage().isBlank()) {
+            s3ImageUtil.deleteImageByUrl(marathon.getThumbnailImage());
+        }
+
+        if (marathon.getInfoImage() != null && !marathon.getInfoImage().isBlank()) {
+            s3ImageUtil.deleteImageByUrl(marathon.getInfoImage());
+        }
+
+        if (marathon.getCourseImage() != null && !marathon.getCourseImage().isBlank()) {
+            s3ImageUtil.deleteImageByUrl(marathon.getCourseImage());
+        }
+
+        marathonRepository.deleteById(marathon.getId());
+
+        marathonTypeRepository.deleteAllByMarathonId(marathon.getId());
     }
 }

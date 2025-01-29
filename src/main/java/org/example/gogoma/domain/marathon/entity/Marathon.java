@@ -66,4 +66,19 @@ public class Marathon {
 
     private String formUrl;
 
+    public void update(String title, LocalDateTime registrationStartDateTime, LocalDateTime registrationEndDateTime,
+                       LocalDateTime raceStartTime, String accountBank, String accountNumber, String accountName,
+                       String location, String qualifications, MarathonStatus marathonStatus) {
+
+        this.title = title;
+        this.registrationStartDateTime = registrationStartDateTime;
+        this.registrationEndDateTime = registrationEndDateTime;
+        this.raceStartTime = raceStartTime;
+        this.accountBank = accountBank;
+        this.accountNumber = accountNumber;
+        this.accountName = accountName;
+        this.location = location;
+        this.qualifications = qualifications;
+        this.marathonStatus = marathonStatus;
+    }
 }
