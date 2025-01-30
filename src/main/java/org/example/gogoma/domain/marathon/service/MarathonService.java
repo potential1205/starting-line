@@ -2,7 +2,9 @@ package org.example.gogoma.domain.marathon.service;
 
 import org.example.gogoma.controller.request.CreateMarathonRequest;
 import org.example.gogoma.controller.request.MarathonDetailRequest;
+import org.example.gogoma.controller.request.MarathonSearchRequest;
 import org.example.gogoma.controller.response.MarathonDetailResponse;
+import org.example.gogoma.controller.response.MarathonSearchResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface MarathonService {
@@ -16,4 +18,6 @@ public interface MarathonService {
     void updateMarathon(MarathonDetailRequest marathonDetailRequest);
 
     void deleteMarathon(int id);
+
+    MarathonSearchResponse searchMarathonList(MarathonSearchRequest marathonSearchRequest);
 }

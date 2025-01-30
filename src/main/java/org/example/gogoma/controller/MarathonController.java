@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.request.CreateMarathonRequest;
 import org.example.gogoma.controller.request.MarathonDetailRequest;
+import org.example.gogoma.controller.request.MarathonSearchRequest;
 import org.example.gogoma.controller.response.MarathonDetailResponse;
+import org.example.gogoma.controller.response.MarathonSearchResponse;
 import org.example.gogoma.domain.marathon.service.MarathonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +84,23 @@ public class MarathonController {
         marathonService.deleteMarathon(id);
 
         return ResponseEntity.ok(BooleanResponse.success());
+    }
+
+    /**
+     * 마라톤 목록 조회 API
+     *
+     * @param marathonSearchRequest 검색 조건을 담은 요청 객체
+     * @return 필터링된 마라톤 목록
+     */
+    @GetMapping
+    @Operation(summary = "마라톤 목록 조회", description = "마라톤의 상태, 지역, 연도, 월, 종목 등의 조건을 활용하여 마라톤 목록을 필터링하여 조회합니다.")
+    public ResponseEntity<MarathonSearchResponse> searchMarathonList(
+            @RequestBody @Valid MarathonSearchRequest marathonSearchRequest) {
+
+        MarathonSearchResponse marathonSearchResponse =
+                marathonService.searchMarathonList(marathonSearchRequest);
+
+        return ResponseEntity.ok(marathonSearchResponse);
     }
 
 }
