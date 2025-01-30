@@ -4,20 +4,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.ui.components.*
-import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.viewmodel.PaymentViewModel
 
 @Composable
-fun PaymentScreen(navController: NavController) {
-    var selectedDistance by remember { mutableStateOf("5km") }
-    var selectedPayment by remember { mutableStateOf("카카오페이") }
-    var isAgreementChecked by remember { mutableStateOf(false) }
-    var totalAmount by remember { mutableStateOf(50000) } // 결제 금액
+fun PaymentScreen(
+    navController: NavController,
+    viewModel: PaymentViewModel // ViewModel을 추가하여 모든 상태를 ViewModel에서 관리
+) {
+    val selectedDistance by viewModel.selectedDistance.collectAsState()
+    val selectedPayment by viewModel.selectedPayment.collectAsState()
+    val isAgreementChecked by viewModel.isAgreementChecked.collectAsState()
+    val selectedSize by viewModel.selectedSize.collectAsState()
+    val selectedAddress by viewModel.selectedAddress.collectAsState()
+
+    var showSizeDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { TopBarArrow(title = "결제하기", onBackClick = { navController.popBackStack() }) }
@@ -28,17 +32,21 @@ fun PaymentScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            // 주소 및 사이즈 선택
-            AddressSizeSelection()
+            // 배송지 및 사이즈 선택
+            AddressSizeSelection(
+                selectedAddress = selectedAddress,
+                viewModel = viewModel, // ✅ ViewModel 전달
+                onAddressClick = { navController.navigate("addressSelection") }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 참가 종목 선택 (라디오 버튼)
+            // 참가 종목 선택
             SectionWithRadioButtons(
                 title = "참가 종목",
                 options = listOf("5km", "10km", "하프", "풀"),
                 selectedOption = selectedDistance,
-                onOptionSelected = { selectedDistance = it }
+                onOptionSelected = { viewModel.updateSelectedDistance(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -47,8 +55,8 @@ fun PaymentScreen(navController: NavController) {
             AgreementItem(
                 text = "개인정보 수집 및 이용 안내",
                 isChecked = isAgreementChecked,
-                onCheckedChange = { isAgreementChecked = it }, // 상태 업데이트
-                onViewClicked = { /* TODO: 약관 보기 페이지 연결 */ }
+                onCheckedChange = { viewModel.updateAgreementChecked(it) },
+                onViewClicked = { /* 약관 보기 */ }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -58,32 +66,36 @@ fun PaymentScreen(navController: NavController) {
                 title = "결제 수단",
                 options = listOf("카카오페이", "토스", "무통장 입금"),
                 selectedOption = selectedPayment,
-                onOptionSelected = { selectedPayment = it }
+                onOptionSelected = { viewModel.updateSelectedPayment(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // 결제 금액 표시
-            PaymentAmount(amount = totalAmount)
+            PaymentAmount(amount = 50000)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 결제하기 버튼 (약관 동의 여부에 따라 활성/비활성)
+            // 결제하기 버튼
             BottomBarButton(
                 text = "결제하기",
-                backgroundColor = if (isAgreementChecked) BrandColor1 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), // 동의 X 시 회색 처리
+                backgroundColor = if (isAgreementChecked) BrandColor1 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 textColor = if (isAgreementChecked) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                onClick = { if (isAgreementChecked) { /* TODO: 결제 진행 로직 추가 */ } }, // 동의 X 시 클릭 불가
-                enabled = isAgreementChecked // 비활성화 적용
+                onClick = {
+                    if (isAgreementChecked) {
+                        // 결제 로직 추가
+                    }
+                },
+                enabled = isAgreementChecked
             )
         }
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun PaymentScreenPreview() {
-    GogomaTheme {
-        PaymentScreen(navController = rememberNavController())
+    // 사이즈 선택 모달
+    if (showSizeDialog) {
+        SizeSelectionDialog(
+            viewModel = viewModel,
+            onDismiss = { showSizeDialog = false }
+        )
     }
 }
