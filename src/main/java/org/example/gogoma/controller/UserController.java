@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.dto.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
@@ -95,6 +96,30 @@ public class UserController {
     }
 
     /**
+     * ID로 User 삭제
+     * @param id 조회할 User의 ID
+     * @return User 삭제 성공 여부
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "회원탈퇴", description = "사용자의 ID를 받아 DB에서 해당 사용자 정보를 삭제합니다.")
+    public ResponseEntity<BooleanResponse> deleteUserByID(@PathVariable int id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.ok(BooleanResponse.success());
+    }
+
+    /**
+     * 신청 시 필요한 정보
+     * @Path id
+     * @return applyResponse
+     */
+    @GetMapping("/apply/{id}")
+    @Operation(summary = "신청 시 필요한 정보", description = "회원 id를 통해 신청 시 필요한 정보를 받아옵니다.")
+    public ResponseEntity<ApplyResponse> getApplyInfoById(@PathVariable("id") int id) {
+        ApplyResponse applyResponse = userService.getApplyInfoById(id);
+        return ResponseEntity.ok(applyResponse);
+    }
+
+    /**
      * ID로 User 조회
      * @param id 조회할 User의 ID
      * @return User 정보
@@ -121,19 +146,4 @@ public class UserController {
         return ResponseEntity.ok(userListResponse);
     }
 
-    /**
-     * ID로 User 삭제
-     * @param id 조회할 User의 ID
-     * @return User 삭제 성공 여부
-     */
-    @DeleteMapping("/{id}")
-    @Operation(summary = "ID로 사용자 삭제", description = "고유 ID를 사용하여 사용자를 삭제합니다. 삭제 성공 여부를 반환합니다.")
-    public ResponseEntity<BooleanResponse> deleteUserById(@PathVariable int id) {
-
-        userService.deleteUserById(id);
-
-        return ResponseEntity.ok(
-                BooleanResponse.success()
-        );
-    }
 }

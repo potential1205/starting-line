@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.dto.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.UserCustomRepository;
@@ -59,4 +60,11 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(int id) {
         userRepository.deleteById(id);
     }
+
+    @Override
+    public ApplyResponse getApplyInfoById(int id) {
+        return userCustomRepository.getApplyInfoById(id)
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+    }
+
 }
