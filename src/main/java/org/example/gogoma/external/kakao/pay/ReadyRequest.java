@@ -9,6 +9,8 @@ import lombok.ToString;
 @ToString
 public class ReadyRequest {
 
+    private String userId;
+    private String orderId;
     private String itemName;
     private String totalAmount;
 }
