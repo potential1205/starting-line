@@ -9,6 +9,8 @@ import lombok.ToString;
 @ToString
 public class ApproveRequest {
 
+    private String userId;
+    private String orderId;
     private String tid;
     private String pgToken;
 }
