@@ -17,6 +17,7 @@ public enum ExceptionCode {
     // Repository에서 데이터베이스 조작시 발생할 수 있는 예외 작성
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 조작 과정에서 예외가 발생했습니다.", 3001),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 사용자가 존재하지 않습니다.", 3002),
+    MARATHON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 마라톤이 존재하지 않습니다.", 3003),
 
     // 외부 API 사용시 발생할 수 있는 예외 작성
     EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "외부 API를 호출하는 과정에서 예외가 발생했습니다.", 4001);

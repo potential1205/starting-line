@@ -3,7 +3,6 @@ package org.example.gogoma.domain.usermarathon.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.example.gogoma.domain.marathon.enums.MarathonType;
 import org.example.gogoma.domain.usermarathon.enums.PaymentType;
 
 import java.time.LocalTime;
@@ -27,9 +26,6 @@ public class UserMarathon {
     @NotNull
     @Column(nullable = false)
     private int marathonId;
-
-    @Enumerated(EnumType.STRING)
-    private MarathonType marathonType;
 
     private String address;
 
