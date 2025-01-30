@@ -32,7 +32,9 @@ public class User {
 
     private String profileImage;
 
-    private String address;
+    private String roadAddress;
+
+    private String detailAddress;
 
     private String birthYear;
 
@@ -60,7 +62,8 @@ public class User {
                 .birthDate(createUserRequest.getBirthDate())
                 .birthYear(createUserRequest.getBirthYear())
                 .phoneNumber(createUserRequest.getPhoneNumber())
-                .address(createUserRequest.getAddress())
+                .roadAddress(createUserRequest.getRoadAddress())
+                .detailAddress(createUserRequest.getDetailAddress())
                 .clothingSize(createUserRequest.getClothingSize())
                 .totalDistance(0)
                 .build();
@@ -75,7 +78,8 @@ public class User {
                 .birthDate(kakaoUserInfo.getBirthDate() != null ? kakaoUserInfo.getBirthDate() : existingUser.getBirthDate())
                 .birthYear(kakaoUserInfo.getBirthYear() != null ? kakaoUserInfo.getBirthYear() : existingUser.getBirthYear())
                 .phoneNumber(kakaoUserInfo.getPhoneNumber() != null ? kakaoUserInfo.getPhoneNumber() : existingUser.getPhoneNumber())
-                .address(existingUser.getAddress())
+                .roadAddress(existingUser.getRoadAddress())
+                .detailAddress(existingUser.getDetailAddress())
                 .clothingSize(existingUser.getClothingSize())
                 .build();
     }

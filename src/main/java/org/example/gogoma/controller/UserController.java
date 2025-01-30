@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.dto.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
@@ -92,6 +93,12 @@ public class UserController {
     public ResponseEntity<BooleanResponse> signUp(@RequestBody CreateUserRequest createUserRequest) {
         userService.createUser(createUserRequest);
         return ResponseEntity.ok(BooleanResponse.success());
+    }
+
+    @GetMapping("/apply/{id}")
+    public ResponseEntity<ApplyResponse> getApplyInfoById(@PathVariable("id") int id) {
+        ApplyResponse applyResponse = userService.getApplyInfoById(id);
+        return ResponseEntity.ok(applyResponse);
     }
 
     /**
