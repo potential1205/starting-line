@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -19,6 +20,7 @@ import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.TopBarArrow
 import com.example.gogoma.ui.screens.MypageScreen
 import com.example.gogoma.ui.screens.RegistListScreen
+import com.example.gogoma.viewmodel.BottomSheetViewModel
 
 @Composable
 fun AppNavigationMing() {
@@ -27,6 +29,8 @@ fun AppNavigationMing() {
     val currentRoute = currentBackStackEntry?.destination?.route
 
     val currentRouteState = rememberUpdatedState(currentRoute)
+
+    val bottomSheetViewModel : BottomSheetViewModel = viewModel()
 
     LaunchedEffect (currentRoute) {
         println("Current Route: $currentRoute")
@@ -59,7 +63,15 @@ fun AppNavigationMing() {
                 SplashScreen(navController = navController)
             }
             composable("main") {
-                MainScreen(navController)
+                MainScreen(
+                    navController,
+                    modifier = Modifier
+                        .padding(paddingValues),
+                    onFilterClick = { filter ->
+                        bottomSheetViewModel.selectFilter(filter)
+                        bottomSheetViewModel.showBottomSheet() //Bottom Sheet 보이기
+                    }
+                )
             }
             composable("mypage") {
                 MypageScreen(navController)
