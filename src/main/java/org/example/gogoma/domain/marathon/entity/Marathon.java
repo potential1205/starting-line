@@ -37,6 +37,16 @@ public class Marathon {
 
     private String location;
 
+    private String city;
+
+    private String year;
+
+    private String month;
+
+    private String region;
+
+    private String district;
+
     @ElementCollection
     @Builder.Default
     private List<String> hostList = new ArrayList<>();
@@ -66,9 +76,10 @@ public class Marathon {
 
     private String formUrl;
 
-    public void update(String title, LocalDateTime registrationStartDateTime, LocalDateTime registrationEndDateTime,
-                       LocalDateTime raceStartTime, String accountBank, String accountNumber, String accountName,
-                       String location, String qualifications, MarathonStatus marathonStatus) {
+    public void update(String title, LocalDateTime registrationStartDateTime, LocalDateTime registrationEndDateTime, LocalDateTime raceStartTime,
+                       String accountBank, String accountNumber, String accountName, String location, String qualifications,
+                       String year, String month, String city, String region, String district, int formType, String formUrl,
+                       List<String> hostList, List<String> organizerList, List<String> sponsorList, MarathonStatus marathonStatus) {
 
         this.title = title;
         this.registrationStartDateTime = registrationStartDateTime;
@@ -79,6 +90,17 @@ public class Marathon {
         this.accountName = accountName;
         this.location = location;
         this.qualifications = qualifications;
+        this.year = year;
+        this.month = month;
+        this.city = city;
+        this.region = region;
+        this.district = district;
+        this.formType = formType;
+        this.formUrl = formUrl;
+        this.hostList = hostList;
+        this.organizerList = organizerList;
+        this.sponsorList = sponsorList;
         this.marathonStatus = marathonStatus;
+
     }
 }

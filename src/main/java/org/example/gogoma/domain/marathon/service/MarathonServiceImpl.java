@@ -9,17 +9,25 @@ import org.example.gogoma.common.util.GoogleVisionApiUtil;
 import org.example.gogoma.common.util.S3ImageUtil;
 import org.example.gogoma.controller.request.CreateMarathonRequest;
 import org.example.gogoma.controller.request.MarathonDetailRequest;
+import org.example.gogoma.controller.request.MarathonSearchRequest;
 import org.example.gogoma.controller.response.MarathonDetailResponse;
+import org.example.gogoma.controller.response.MarathonSearchResponse;
 import org.example.gogoma.domain.marathon.dto.CustomMultipartFile;
 import org.example.gogoma.domain.marathon.dto.MarathonDataDto;
+import org.example.gogoma.domain.marathon.dto.MarathonPreviewDto;
 import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.marathon.entity.MarathonType;
 import org.example.gogoma.domain.marathon.enums.MarathonStatus;
+import org.example.gogoma.domain.marathon.repository.MarathonCustomRepository;
+import org.example.gogoma.domain.marathon.repository.MarathonCustomRepositoryImpl;
 import org.example.gogoma.domain.marathon.repository.MarathonRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonTypeRepository;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.exception.type.BusinessException;
 import org.example.gogoma.exception.type.DbException;
+import org.example.gogoma.external.kakao.local.KakaoAddressResponse;
+import org.example.gogoma.external.kakao.local.KakaoLocalClient;
+import org.example.gogoma.external.kakao.local.KakaoRegionResponse;
 import org.example.gogoma.external.openai.ChatGptClient;
 import org.example.gogoma.external.openai.Prompt;
 import org.springframework.stereotype.Service;
@@ -31,9 +39,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +59,8 @@ public class MarathonServiceImpl implements MarathonService {
     private final GoogleVisionApiUtil googleVisionApiUtil;
     private final MarathonRepository marathonRepository;
     private final MarathonTypeRepository marathonTypeRepository;
+    private final MarathonCustomRepository marathonCustomRepository;
+    private final KakaoLocalClient kakaoLocalClient;
     private static final Gson gson = new Gson();
 
     @Override
@@ -93,13 +108,27 @@ public class MarathonServiceImpl implements MarathonService {
 
             prompt += createMarathonRequest.getTextInfo();
 
+            log.info(prompt + "\n");
+
             information = chatGptClient.chat(prompt);
 
             MarathonDataDto data = gson.fromJson(information, MarathonDataDto.class);
 
+            log.info(gson.toJson(data) + "\n");
+
             LocalDateTime registrationStartDateTime = parseTime(data.getMarathonInfo().getRegistrationStartDateTime());
             LocalDateTime registrationEndDateTime = parseTime(data.getMarathonInfo().getRegistrationEndDateTime());
             LocalDateTime raceStartTime = parseTime(data.getMarathonInfo().getRaceStartTime());
+
+            KakaoAddressResponse kakaoAddressResponse = kakaoLocalClient.getCoordinates(data.getMarathonInfo().getLocation());
+
+            KakaoRegionResponse kakaoRegionResponse = kakaoLocalClient.getRegionFromCoordinates(
+                   Double.valueOf(kakaoAddressResponse.getDocuments().get(0).getX()),
+                    Double.valueOf(kakaoAddressResponse.getDocuments().get(0).getY()));
+
+            String city = kakaoRegionResponse.getDocuments().get(0).getRegion1DepthName();
+            String region = kakaoRegionResponse.getDocuments().get(0).getRegion2DepthName();
+            String district = kakaoRegionResponse.getDocuments().get(0).getRegion3DepthName();
 
             Marathon marathon = Marathon.builder()
                     .title(data.getMarathonInfo().getTitle())
@@ -115,6 +144,12 @@ public class MarathonServiceImpl implements MarathonService {
                     .sponsorList(data.getMarathonInfo().getSponsorList())
                     .qualifications(data.getMarathonInfo().getQualifications())
                     .viewCount(0)
+                    .year(raceStartTime != null ? String.valueOf(raceStartTime.getYear()) : null)
+                    .month(raceStartTime != null ? String.valueOf(raceStartTime.getMonthValue()) : null)
+                    .location(data.getMarathonInfo().getLocation())
+                    .city(city)
+                    .region(region)
+                    .district(district)
                     .marathonStatus(MarathonStatus.OPEN)
                     .thumbnailImage(thumbnailImageUrl)
                     .courseImage(courseImageUrl)
@@ -163,10 +198,12 @@ public class MarathonServiceImpl implements MarathonService {
     /**
      * 문자열을 LocalDateTime으로 변환
      */
-    private LocalDateTime parseTime(String dateTime) {
+    public static LocalDateTime parseTime(String dateTime) {
+        DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
         return Optional.ofNullable(dateTime)
                 .filter(date -> !date.isBlank())
-                .map(LocalDateTime::parse)
+                .map(dt -> LocalDateTime.parse(dt, FORMATTER))
                 .orElse(null);
     }
 
@@ -196,6 +233,16 @@ public class MarathonServiceImpl implements MarathonService {
                 marathonDetailRequest.getMarathon().getAccountName(),
                 marathonDetailRequest.getMarathon().getLocation(),
                 marathonDetailRequest.getMarathon().getQualifications(),
+                marathonDetailRequest.getMarathon().getYear(),
+                marathonDetailRequest.getMarathon().getMonth(),
+                marathonDetailRequest.getMarathon().getCity(),
+                marathonDetailRequest.getMarathon().getRegion(),
+                marathonDetailRequest.getMarathon().getDistrict(),
+                marathonDetailRequest.getMarathon().getFormType(),
+                marathonDetailRequest.getMarathon().getFormUrl(),
+                marathonDetailRequest.getMarathon().getHostList(),
+                marathonDetailRequest.getMarathon().getOrganizerList(),
+                marathonDetailRequest.getMarathon().getSponsorList(),
                 marathonDetailRequest.getMarathon().getMarathonStatus()
         );
 
@@ -235,5 +282,59 @@ public class MarathonServiceImpl implements MarathonService {
         marathonRepository.deleteById(marathon.getId());
 
         marathonTypeRepository.deleteAllByMarathonId(marathon.getId());
+    }
+
+    @Override
+    public MarathonSearchResponse searchMarathonList(MarathonSearchRequest marathonSearchRequest) {
+        List<Marathon> marathonList = marathonCustomRepository.searchMarathonByConitions(
+                marathonSearchRequest.getMarathonStatus(),
+                marathonSearchRequest.getCity(),
+                marathonSearchRequest.getYear(),
+                marathonSearchRequest.getMonth(),
+                marathonSearchRequest.getKeyword(),
+                marathonSearchRequest.getCourseTypeList()
+        );
+
+        List<MarathonPreviewDto> marathonPreviewDtoList = marathonList.stream()
+                .map(marathon -> {
+                    List<MarathonType> marathonTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId());
+
+                    List<String> courseTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId())
+                            .stream()
+                            .map(MarathonType::getCourseType)
+                            .collect(Collectors.toSet())
+                            .stream()
+                            .sorted()
+                            .toList();
+
+                    return MarathonPreviewDto.builder()
+                            .id(marathon.getId())
+                            .title(marathon.getTitle())
+                            .registrationStartDateTime(marathon.getRegistrationStartDateTime())
+                            .registrationEndDateTime(marathon.getRegistrationEndDateTime())
+                            .raceStartTime(marathon.getRaceStartTime())
+                            .courseTypeList(courseTypeList)
+                            .location(marathon.getLocation())
+                            .city(marathon.getCity())
+                            .region(marathon.getRegion())
+                            .district(marathon.getDistrict())
+                            .marathonStatus(marathon.getMarathonStatus())
+                            .thumbnailImage(marathon.getThumbnailImage())
+                            .dDay(calculateDDay(marathon.getRaceStartTime()))
+                            .marathonTypeList(marathonTypeList)
+                            .build();
+                })
+                .sorted(Comparator.comparing(MarathonPreviewDto::getRaceStartTime))
+                .toList();
+
+        return MarathonSearchResponse.of(marathonPreviewDtoList);
+    }
+
+    private String calculateDDay(LocalDateTime raceStartTime) {
+        if (raceStartTime == null) {
+            return "D-?";
+        }
+        long daysBetween = ChronoUnit.DAYS.between(LocalDate.now(), raceStartTime.toLocalDate());
+        return daysBetween >= 0 ? "D-" + daysBetween : "D+" + Math.abs(daysBetween);
     }
 }
