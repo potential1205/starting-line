@@ -100,7 +100,7 @@ public class UserController {
      * @param id 조회할 User의 ID
      * @return User 삭제 성공 여부
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "회원탈퇴", description = "사용자의 ID를 받아 DB에서 해당 사용자 정보를 삭제합니다.")
     public ResponseEntity<BooleanResponse> deleteUserByID(@PathVariable int id) {
         userService.deleteUserById(id);
