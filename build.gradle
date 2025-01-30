@@ -58,8 +58,14 @@ dependencies {
 	// AWS Cloud
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+
+	// Selenium, GoogleChromeDriver
+	implementation 'io.github.bonigarcia:webdrivermanager:5.5.3'
+	implementation 'org.seleniumhq.selenium:selenium-java:4.23.0'
+
 	// gson
 	implementation 'com.google.code.gson:gson:2.10.1'
+
 }
 
 tasks.named('test') {

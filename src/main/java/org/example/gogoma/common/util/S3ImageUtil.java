@@ -4,6 +4,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.config.S3Config;
+import org.example.gogoma.exception.ExceptionCode;
+import org.example.gogoma.exception.type.ExternalApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +27,7 @@ public class S3ImageUtil {
         // 파일 이름에서 확장자 추출
         String originalFileName = file.getOriginalFilename();
         if (originalFileName == null || !originalFileName.contains(".")) {
-            throw new IllegalArgumentException("유효하지 않은 파일 형식입니다.");
+            throw new ExternalApiException(ExceptionCode.S3_UPLOAD_ERROR);
         }
         String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
 
@@ -52,10 +54,9 @@ public class S3ImageUtil {
     public void deleteImageByUrl(String imageUrl) {
         try {
             String s3ImageKey = extracts3ImageKeyFromUrl(imageUrl);
-
             s3Config.amazonS3Client().deleteObject(bucket, s3ImageKey);
         } catch (Exception e) {
-            throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.", e);
+            throw new ExternalApiException(ExceptionCode.S3_DELETE_ERROR);
         }
     }
 
