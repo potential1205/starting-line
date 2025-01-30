@@ -20,36 +20,33 @@ import java.util.Set;
 @Service
 @Slf4j
 public class MarathonApplyServiceImpl implements MarathonApplyService {
-    /** 데이터 예시
+    /**
+     * 데이터 예시
      *
-     * @param userApplyMarathonDto
-     *          UserApplyMarathonDto userApplyMarathonDto = new UserApplyMarathonDto(
-     *                 "10km",        // 종목: km
-     *                 "100",              // 기념품: 옷사이즈
-     *                 "김지수",            // 성명
-     *                 "삼선교로 3길 4",     // 도로명 주소
-     *                 "301호",             // 상세주소
-     *                 "2000", "3", "5",  // 생년월일
-     *                 "1",                // 성별: 남자
-     *                 "01066834380",      // 전화번호
-     *                 "email123@naver.com",  // 이메일
-     *                 "김지수",            // 입금자명
-     *                 "123456"               // 비밀번호(4~16자리)
-     *         );
-     * @param marathonApplyUrl
-     *      String marathonApplyUrl = "http://www.najurun.kr/run/1210.asp?T=3&wgu=1&fAgree="; //나주 영산강
-     *
-     * @param formNumber
-     *    int formNumber1 = 1;
+     * @param userApplyMarathonDto UserApplyMarathonDto userApplyMarathonDto = new UserApplyMarathonDto(
+     *                             "10km",        // 종목: km
+     *                             "100",              // 기념품: 옷사이즈
+     *                             "김지수",            // 성명
+     *                             "삼선교로 3길 4",     // 도로명 주소
+     *                             "301호",             // 상세주소
+     *                             "2000", "03", "05",  // 생년월일
+     *                             "1",                // 성별: 남자
+     *                             "01066834380",      // 전화번호
+     *                             "email123@naver.com",  // 이메일
+     *                             "김지수",            // 입금자명
+     *                             "123456"               // 비밀번호(4~16자리)
+     *                             );
+     * @param marathonApplyUrl     String marathonApplyUrl = "http://www.najurun.kr/run/1210.asp?T=3&wgu=1&fAgree="; //나주 영산강
+     * @param formNumber           int formNumber1 = 1;
      */
 
     @Override
     public void applyMarathon(UserApplyMarathonDto userApplyMarathonDto, String marathonApplyUrl, int formNumber) {
         // ChromeOptions 설정
         ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--headless"); // 브라우저 창 없이 실행
-//        options.addArguments("--disable-gpu"); // GPU 사용 비활성화 (리소스 절약)
-//        options.addArguments("--no-sandbox"); // 샌드박스 모드 비활성화 (속도 개선)
+        //        options.addArguments("--headless"); // 브라우저 창 없이 실행
+        //        options.addArguments("--disable-gpu"); // GPU 사용 비활성화 (리소스 절약)
+        //        options.addArguments("--no-sandbox"); // 샌드박스 모드 비활성화 (속도 개선)
         options.addArguments("--blink-settings=imagesEnabled=false"); // 이미지 로드 비활성화
         options.addArguments("--disable-extensions"); // 확장 프로그램 비활성화
         WebDriver driver = new ChromeDriver(options);
@@ -59,9 +56,9 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
 
             // 페이지 로딩 대기
             Thread.sleep(100);
-            if(formNumber == 1) { //트레일런 폼 작동
+            if (formNumber == 1) { //트레일런 폼 작동
                 TrailrunMarathonForm(driver, userApplyMarathonDto);
-            } else if(formNumber == 2) { //전마협 폼 작동
+            } else if (formNumber == 2) { //전마협 폼 작동
                 AllGroupMarathonForm(driver, userApplyMarathonDto);
             }
         } catch (InterruptedException e) {
@@ -70,7 +67,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
         } catch (Exception e) {
             throw new ExternalApiException(ExceptionCode.MARATHON_FORM_SUBMISSION_ERROR);
         } finally {
-            driver.quit();
+            //            driver.quit();
         }
     }
 
@@ -84,7 +81,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
         eventMapping.put("풀", "004");
 
         // 마라톤 종류 선택
-        String selectedEvent = userApplyMarathonDto.getEvent();
+        String selectedEvent = userApplyMarathonDto.getMarathonType();
         try {
             List<WebElement> eventOptions = driver.findElements(By.cssSelector("input[name='wjong']"));
             WebElement eventOption = null;
@@ -110,7 +107,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
         }
 
         try {
-            String selectedSouvenir = userApplyMarathonDto.getSouvenir();
+            String selectedSouvenir = userApplyMarathonDto.getClothingSize();
             WebElement souvenirOption;
 
             try {
@@ -134,19 +131,20 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
         WebElement birthYearSelect = driver.findElement(By.name("syy"));
         birthYearSelect.sendKeys(userApplyMarathonDto.getBirthYear());
         WebElement birthMonthSelect = driver.findElement(By.name("smm"));
-        birthMonthSelect.sendKeys(userApplyMarathonDto.getBirthMonth());
+        birthMonthSelect.sendKeys(userApplyMarathonDto.getBirthMonthAsNumber());
         WebElement birthDaySelect = driver.findElement(By.name("sdd"));
-        birthDaySelect.sendKeys(userApplyMarathonDto.getBirthDay());
+        birthDaySelect.sendKeys(userApplyMarathonDto.getBirthDayAsNumber());
 
         // 성별 선택
-        WebElement genderOption = driver.findElement(By.cssSelector("input[name='wsex'][value='" + userApplyMarathonDto.getGender() + "']"));
+        WebElement genderOption = driver.findElement(By.cssSelector("input[name='wsex'][value='" + userApplyMarathonDto.getGenderAsString() + "']"));
         genderOption.click();
 
         // 전화번호 입력
         WebElement phoneInput = driver.findElement(By.name("wtel"));
-        phoneInput.sendKeys(userApplyMarathonDto.getPhoneNumber());
+        phoneInput.sendKeys(userApplyMarathonDto.getPhoneNumber().replace("-", ""));
+
         WebElement phoneInput2 = driver.findElement(By.name("whp"));
-        phoneInput2.sendKeys(userApplyMarathonDto.getPhoneNumber());
+        phoneInput2.sendKeys(userApplyMarathonDto.getPhoneNumber().replace("-", ""));
 
         // 주소 입력
         WebElement addressButton = driver.findElement(By.cssSelector("input[type='button'][value='우편번호 찾기']"));
@@ -181,7 +179,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
         driver.switchTo().window(mainWindow);
         // 상세주소 입력
         WebElement detailAddressInput = driver.findElement(By.name("address2"));
-        detailAddressInput.sendKeys(userApplyMarathonDto.getAddressDetail());
+        detailAddressInput.sendKeys(userApplyMarathonDto.getDetailAddress());
 
         // 이메일 입력
         WebElement emailInput = driver.findElement(By.name("wmail"));
@@ -189,15 +187,16 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
 
         // 입금자명 입력
         WebElement depositorInput = driver.findElement(By.name("wibname"));
-        depositorInput.sendKeys(userApplyMarathonDto.getDepositor());
+        depositorInput.sendKeys(userApplyMarathonDto.getName());
 
         // 비밀번호 입력
+        Thread.sleep(100);
         WebElement passwordInput = driver.findElement(By.name("wpass"));
         passwordInput.sendKeys(userApplyMarathonDto.getPassword());
 
         WebElement saveButton = driver.findElement(By.cssSelector("input[type='image'][name='write']"));
         log.info("form submit complete");
-//        saveButton.click();
+        //        saveButton.click();
     }
 
     private static void AllGroupMarathonForm(WebDriver driver, UserApplyMarathonDto userApplyMarathonDto) throws InterruptedException {
@@ -217,7 +216,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
             birthInput.sendKeys(juminFront);
 
             // 3. 성별 선택
-            String genderValue = userApplyMarathonDto.getGender().equals("1") ? "1" : "0";
+            String genderValue = userApplyMarathonDto.getGenderAsString().equals("1") ? "1" : "0";
             WebElement genderRadio = driver.findElement(By.cssSelector("input[name='f_sex'][value='" + genderValue + "']"));
             genderRadio.click();
 
@@ -250,18 +249,18 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
             driver.switchTo().window(mainWindow);
 
             // 5. 상세주소 입력
-            WebElement addressDetailField = driver.findElement(By.name("address2"));
-            addressDetailField.sendKeys(userApplyMarathonDto.getAddressDetail());
+            WebElement detailAddressField = driver.findElement(By.name("address2"));
+            detailAddressField.sendKeys(userApplyMarathonDto.getDetailAddress());
 
             // 6. 전화번호 입력
             WebElement phoneField1 = driver.findElement(By.name("tel2"));
             WebElement phoneField2 = driver.findElement(By.name("tel3"));
             WebElement phoneField3 = driver.findElement(By.name("hp2"));
             WebElement phoneField4 = driver.findElement(By.name("hp3"));
-            phoneField1.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(3, 7));
-            phoneField2.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(7));
-            phoneField3.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(3, 7));
-            phoneField4.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(7));
+            phoneField1.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(4, 8));
+            phoneField2.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(9));
+            phoneField3.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(4, 8));
+            phoneField4.sendKeys(userApplyMarathonDto.getPhoneNumber().substring(9));
 
             // 7. 이메일 입력
             String[] emailParts = userApplyMarathonDto.getEmail().split("@");
@@ -279,7 +278,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
             eventMapping.put("하프", "Half");
             eventMapping.put("풀", "Full");
 
-            String mappedValue = eventMapping.getOrDefault(userApplyMarathonDto.getEvent(), userApplyMarathonDto.getEvent());
+            String mappedValue = eventMapping.getOrDefault(userApplyMarathonDto.getMarathonType(), userApplyMarathonDto.getMarathonType());
             for (WebElement eventOption : eventOptions) {
                 if (eventOption.getText().trim().equals(mappedValue)) {
                     eventOption.click();
@@ -293,7 +292,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
             List<WebElement> souvenirOptions = souvenirSelect.findElements(By.tagName("option"));
 
             for (WebElement souvenirOption : souvenirOptions) {
-                if (souvenirOption.getText().contains(userApplyMarathonDto.getSouvenir())) {
+                if (souvenirOption.getText().contains(userApplyMarathonDto.getClothingSize())) {
                     souvenirOption.click();
                     break;
                 }
@@ -313,7 +312,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
             // 12. 참가 신청 버튼 클릭
             WebElement submitButton = driver.findElement(By.xpath("//a[contains(@onclick, 'check_form')]"));
             log.info("form submit complete");
-//            submitButton.click();
+            //            submitButton.click();
 
         } catch (Exception e) {
             throw new ExternalApiException(ExceptionCode.MARATHON_FORM_SUBMISSION_ERROR);

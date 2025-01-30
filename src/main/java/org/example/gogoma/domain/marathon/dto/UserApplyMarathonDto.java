@@ -1,25 +1,39 @@
 package org.example.gogoma.domain.marathon.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.example.gogoma.domain.user.enums.Gender;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserApplyMarathonDto {
-    private String event;       // 종목
-    private String souvenir;    // 기념품, 또는 옷사이즈
-    private String name;        // 성명
-    private String roadAddress; // 도로명 주소
-    private String addressDetail;     // 상세 주소
-    private String birthYear;   // 생년월일 - 년도
-    private String birthMonth;  // 생년월일 - 월
-    private String birthDay;    // 생년월일 - 일
-    private String gender;      // 성별 (남자 -> "1", 여자 -> "2")
-    private String phoneNumber;  // 전화번호
-    private String email;       // 이메일
-    private String depositor;   // 입금자명
-    private String password;    // 비밀번호
+    private String marathonType;    // 종목
+    private String name;
+    private String email;
+    private Gender gender;
+    private String birthYear;
+    private String birthMonth;
+    private String birthDay;
+    private String roadAddress;
+    private String detailAddress;
+    private String phoneNumber;
+    private String clothingSize;
+    private String giftOption;
+    @Builder.Default
+    private String password = "ggm123";
+
+    public String getGenderAsString() {
+        return this.gender == Gender.FEMALE ? "2" : "1";
+    }
+
+    public String getBirthMonthAsNumber() {
+        return String.valueOf(Integer.parseInt(this.birthMonth));
+    }
+
+    public String getBirthDayAsNumber() {
+        return String.valueOf(Integer.parseInt(this.birthDay));
+    }
 }
 
