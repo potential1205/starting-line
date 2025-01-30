@@ -2,6 +2,8 @@ package org.example.gogoma.domain.marathon.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.domain.marathon.dto.UserApplyMarathonDto;
+import org.example.gogoma.exception.ExceptionCode;
+import org.example.gogoma.exception.type.ExternalApiException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -43,14 +45,12 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
 
     @Override
     public void applyMarathon(UserApplyMarathonDto userApplyMarathonDto, String marathonApplyUrl, int formNumber) {
-
-
         // ChromeOptions 설정
         ChromeOptions options = new ChromeOptions();
 //        options.addArguments("--headless"); // 브라우저 창 없이 실행
 //        options.addArguments("--disable-gpu"); // GPU 사용 비활성화 (리소스 절약)
 //        options.addArguments("--no-sandbox"); // 샌드박스 모드 비활성화 (속도 개선)
-//        options.addArguments("--blink-settings=imagesEnabled=false"); // 이미지 로드 비활성화
+        options.addArguments("--blink-settings=imagesEnabled=false"); // 이미지 로드 비활성화
         options.addArguments("--disable-extensions"); // 확장 프로그램 비활성화
         WebDriver driver = new ChromeDriver(options);
 
@@ -64,10 +64,13 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
             } else if(formNumber == 2) { //전마협 폼 작동
                 AllGroupMarathonForm(driver, userApplyMarathonDto);
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // 인터럽트 상태 복원
+            throw new ExternalApiException(ExceptionCode.MARATHON_PAGE_ACCESS_ERROR);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new ExternalApiException(ExceptionCode.MARATHON_FORM_SUBMISSION_ERROR);
         } finally {
-//            driver.quit();
+            driver.quit();
         }
     }
 
@@ -103,7 +106,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
 
             eventOption.click();
         } catch (Exception e) {
-            log.info("log error: 라디오 버튼 선택 중 오류 발생");
+            throw new ExternalApiException(ExceptionCode.MARATHON_FORM_SUBMISSION_ERROR);
         }
 
         try {
@@ -313,7 +316,7 @@ public class MarathonApplyServiceImpl implements MarathonApplyService {
 //            submitButton.click();
 
         } catch (Exception e) {
-            log.error("폼 자동 입력 중 오류 발생");
+            throw new ExternalApiException(ExceptionCode.MARATHON_FORM_SUBMISSION_ERROR);
         }
     }
 }
