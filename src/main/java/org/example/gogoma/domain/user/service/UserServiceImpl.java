@@ -2,7 +2,6 @@ package org.example.gogoma.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
@@ -18,7 +17,6 @@ import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,14 +50,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
         return UserResponse.of(user);
-    }
-
-    @Override
-    public UserListResponse getAllUsers() {
-
-        List<User> userList = userRepository.findAll();
-
-        return UserListResponse.of(userList);
     }
 
     @Override
