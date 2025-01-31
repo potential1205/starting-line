@@ -6,6 +6,7 @@ import org.example.gogoma.domain.user.enums.Gender;
 @Data
 public class CreateUserRequest {
 
+    private Long kakaoId;
     private String name;
     private String profileImage;
     private String email;

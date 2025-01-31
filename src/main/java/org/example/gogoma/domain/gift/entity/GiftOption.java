@@ -21,5 +21,5 @@ public class GiftOption {
     @Column(nullable = false)
     private int giftId;
 
-    private String option;
+    private String selectedOption;
 }

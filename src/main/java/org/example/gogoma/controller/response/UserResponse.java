@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Builder
 public class UserResponse {
 
+    private int kakaoId;
+
     private String name;
 
     private String email;
