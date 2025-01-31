@@ -122,13 +122,20 @@ public class MarathonServiceImpl implements MarathonService {
 
             KakaoAddressResponse kakaoAddressResponse = kakaoLocalClient.getCoordinates(data.getMarathonInfo().getLocation());
 
-            KakaoRegionResponse kakaoRegionResponse = kakaoLocalClient.getRegionFromCoordinates(
-                   Double.valueOf(kakaoAddressResponse.getDocuments().get(0).getX()),
-                    Double.valueOf(kakaoAddressResponse.getDocuments().get(0).getY()));
+            KakaoRegionResponse kakaoRegionResponse;
+            String city = "";
+            String region = "";
+            String district = "";
 
-            String city = kakaoRegionResponse.getDocuments().get(0).getRegion1DepthName();
-            String region = kakaoRegionResponse.getDocuments().get(0).getRegion2DepthName();
-            String district = kakaoRegionResponse.getDocuments().get(0).getRegion3DepthName();
+            if (!kakaoAddressResponse.getDocuments().isEmpty()) {
+                kakaoRegionResponse = kakaoLocalClient.getRegionFromCoordinates(
+                        Double.valueOf(kakaoAddressResponse.getDocuments().get(0).getX()),
+                        Double.valueOf(kakaoAddressResponse.getDocuments().get(0).getY()));
+
+                city = kakaoRegionResponse.getDocuments().get(0).getRegion1DepthName();
+                region = kakaoRegionResponse.getDocuments().get(0).getRegion2DepthName();
+                district = kakaoRegionResponse.getDocuments().get(0).getRegion3DepthName();
+            }
 
             Marathon marathon = Marathon.builder()
                     .title(data.getMarathonInfo().getTitle())
