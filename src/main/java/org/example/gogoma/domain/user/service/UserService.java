@@ -1,6 +1,5 @@
 package org.example.gogoma.domain.user.service;
 
-import org.example.gogoma.controller.response.UserListResponse;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
@@ -15,8 +14,6 @@ public interface UserService {
     void updateUser(KakaoUserInfo kaKaoUserInfo);
 
     UserResponse getUserById(String email);
-
-    UserListResponse getAllUsers();
 
     void deleteUserById(String email);
 
