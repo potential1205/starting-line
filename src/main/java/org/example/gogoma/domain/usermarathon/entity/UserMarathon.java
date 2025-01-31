@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.example.gogoma.domain.usermarathon.enums.PaymentType;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -35,4 +36,8 @@ public class UserMarathon {
     private String paymentAmount;
 
     private LocalTime raceTime;
+
+    private LocalDateTime paymentDateTime;
+
+    private int marathonTypeId;
 }
