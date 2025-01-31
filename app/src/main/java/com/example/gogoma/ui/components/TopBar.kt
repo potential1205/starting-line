@@ -35,7 +35,7 @@ fun TopBar(){
     Row (
         modifier = Modifier
             .fillMaxWidth()
-            .height(65.dp + topInset)
+            .height(65.dp)
             .background(MaterialTheme.colorScheme.background)
             .padding(start = 5.dp, end = 5.dp, top = topInset),
         horizontalArrangement = Arrangement.SpaceBetween,

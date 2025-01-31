@@ -39,7 +39,7 @@ fun BottomBar(navController : NavController){
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton (onClick = { /* 클릭 시 동작 */ }){
+        IconButton (onClick = { navController.navigate("registList") }){
             Icon(
                 painter = painterResource(id = R.drawable.icon_list),
                 contentDescription = "icon of marathon application list",
