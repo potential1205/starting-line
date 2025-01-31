@@ -3,9 +3,9 @@ package org.example.gogoma.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.controller.response.UserListResponse;
-import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.ApplyResponse;
+import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
+import org.example.gogoma.controller.response.UserResponse;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.UserCustomRepository;
 import org.example.gogoma.domain.user.repository.UserRepository;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
-        return UserResponse.of(user.getEmail(), user.getName());
+        return UserResponse.of(user);
     }
 
     @Override

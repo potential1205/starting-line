@@ -1,4 +1,4 @@
-package org.example.gogoma.domain.user.dto;
+package org.example.gogoma.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -2,7 +2,6 @@ package org.example.gogoma.controller.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.example.gogoma.domain.user.dto.UserDto;
 import org.example.gogoma.domain.user.entity.User;
 
 import java.util.List;
@@ -11,16 +10,16 @@ import java.util.List;
 @Builder
 public class UserListResponse {
 
-    private List<UserDto> userDtoList;
+    private List<UserResponse> userList;
 
     public static UserListResponse of(List<User> users) {
 
-        List<UserDto> userResponses = users.stream()
-                .map(user -> UserDto.of(user.getEmail(), user.getName()))
+        List<UserResponse> userResponses = users.stream()
+                .map(UserResponse::of)
                 .toList();
 
         return UserListResponse.builder()
-                .userDtoList(userResponses)
+                .userList(userResponses)
                 .build();
     }
 }
