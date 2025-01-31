@@ -22,8 +22,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GogomaApp(){
     GogomaTheme {
-        // AppNavigation()
-        PaymentNavigation() // 결제 로직 테스트용
+        AppNavigation()
+//        PaymentNavigation() // 결제 로직 테스트용
     }
 }
 

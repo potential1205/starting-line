@@ -25,7 +25,11 @@ import com.example.gogoma.ui.components.MarathonListItem
 import com.example.gogoma.ui.components.SearchBar
 
 @Composable
-fun MainScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun MainScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onFilterClick: (String) -> Unit,
+) {
     val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val bottomInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
@@ -104,20 +108,14 @@ fun MainScreen(navController: NavController, modifier: Modifier = Modifier) {
                 SearchBar()
             }
             item {
-                Filter()
+                Filter(
+                    onFilterClick = onFilterClick
+                )
             }
             //마라톤 리스트
             items(marathonList){marathon ->
                 MarathonListItem(marathon = marathon)
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    GogomaTheme {
-        MainScreen(navController= rememberNavController())
     }
 }
