@@ -1,7 +1,6 @@
 package com.example.gogoma.ui.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,13 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gogoma.R
 
 @Composable
-fun Filter(){
+fun Filter(onFilterClick : (String) -> Unit){
     val scrollState = rememberScrollState()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,27 +39,39 @@ fun Filter(){
                 backgroundColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onTertiary,
                 icon = R.drawable.icon_tune,
-                onCLick = { /* 클릭 시 동작 */ },
+                onCLick = {
+                    onFilterClick("기본 필터")
+                },
             )
             FilterChip(
                 text = "지역",
-                onCLick = { /* 클릭 시 동작 */ }
+                onCLick = {
+                    onFilterClick("지역 필터")
+                }
             )
             FilterChip(
                 text = "접수 상태",
-                onCLick = { /* 클릭 시 동작 */ }
+                onCLick = {
+                    onFilterClick("접수 상태 필터")
+                }
             )
             FilterChip(
                 text = "종목",
-                onCLick = { /* 클릭 시 동작 */ }
+                onCLick = {
+                    onFilterClick("종목 필터")
+                }
             )
             FilterChip(
                 text = "년도",
-                onCLick = { /* 클릭 시 동작 */ }
+                onCLick = {
+                    onFilterClick("년도 필터")
+                }
             )
             FilterChip(
                 text = "월",
-                onCLick = { /* 클릭 시 동작 */ }
+                onCLick = {
+                    onFilterClick("월 필터")
+                }
             )
         }
 
@@ -80,10 +91,4 @@ fun Filter(){
         }
     }
 
-}
-
-@Preview
-@Composable
-fun FilterPreview(){
-    Filter()
 }
