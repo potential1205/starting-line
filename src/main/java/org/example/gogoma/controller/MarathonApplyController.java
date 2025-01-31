@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/usermarathon")
+@RequestMapping("/api/v1/usermarathons")
 @RequiredArgsConstructor
 public class MarathonApplyController {
 
