@@ -27,12 +27,8 @@ import com.example.gogoma.ui.components.SearchBar
 @Composable
 fun MainScreen(
     navController: NavController,
-    modifier: Modifier = Modifier,
     onFilterClick: (String) -> Unit,
 ) {
-    val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val bottomInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-
     // 더미 데이터 생성
     val marathonList : List<Marathon> = listOf(
         Marathon(
@@ -94,7 +90,6 @@ fun MainScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 65.dp+topInset, bottom = 65.dp+bottomInset),
     ){
         //스크롤 영역
         LazyColumn(
@@ -104,9 +99,9 @@ fun MainScreen(
             verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            item {
-                SearchBar()
-            }
+//            item {
+//                SearchBar()
+//            }
             item {
                 Filter(
                     onFilterClick = onFilterClick

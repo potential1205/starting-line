@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,7 +63,7 @@ fun RegistListItem(regist: Regist) {
         modifier = Modifier
             .width(412.dp)
             .height(103.dp)
-            .background(color = Color(0xFFFFFFFF))
+            .background(MaterialTheme.colorScheme.background)
             .padding(start = 19.dp, top = 13.dp, end = 19.dp, bottom = 13.dp)
             .clickable { /* 이동 추가 */ }
     ) {
