@@ -8,6 +8,7 @@ import java.util.Map;
 
 @Data
 public class KakaoUserInfo {
+    private Long kakaoId; // 카카오 고유 ID 추가
     private String profileImage;
     private String email;
     private String name;
@@ -15,6 +16,11 @@ public class KakaoUserInfo {
     private String birthDate;
     private String birthYear;
     private String phoneNumber;
+
+    @JsonSetter("id")
+    public void setKakaoId(Long id) {
+        this.kakaoId = id;
+    }
 
     @JsonSetter("properties")
     public void setProperties(Map<String, Object> properties) {

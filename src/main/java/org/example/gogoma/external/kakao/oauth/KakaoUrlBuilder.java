@@ -13,6 +13,9 @@ public class KakaoUrlBuilder {
     private String redirectUri;
 
     public String buildKakaoAuthUrl() {
-        return String.format("https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code", clientId, redirectUri);
+        return String.format(
+                "https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=friends",
+                clientId, redirectUri
+        );
     }
 }

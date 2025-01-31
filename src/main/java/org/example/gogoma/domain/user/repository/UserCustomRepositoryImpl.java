@@ -3,7 +3,7 @@ package org.example.gogoma.domain.user.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.example.gogoma.domain.user.dto.ApplyResponse;
+import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.entity.QUser;
 import org.springframework.stereotype.Repository;
 

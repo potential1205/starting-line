@@ -28,4 +28,11 @@ public class Friend {
     @NotNull
     @Column(nullable = false)
     private int friendId;
+
+    public static Friend of(int userId, int friendId) {
+        return Friend.builder()
+                .userId(userId)
+                .friendId(friendId)
+                .build();
+    }
 }

@@ -3,10 +3,10 @@ package org.example.gogoma.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
-import org.example.gogoma.controller.response.UserListResponse;
-import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.ApplyResponse;
+import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
+import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.dto.FriendListResponse;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
@@ -71,15 +71,29 @@ public class UserController {
     }
 
     /**
+     * 친구 목록 불러오기
+     * @header Authorization ( access_token )
+     * @return 친구 목록
+     */
+    @GetMapping("/kakao/friendInfo")
+    @Operation(summary = "카카오 친구 목록 조회", description = "AccessToken을 통해 카카오 친구 목록을 조회합니다.")
+    public ResponseEntity<FriendListResponse> test(@RequestHeader("Authorization") String accessToken) {
+        FriendListResponse friendListResponse = kakaoOauthClient.getFriendList(accessToken);
+        return ResponseEntity.ok(friendListResponse);
+    }
+    
+    /**
      * 꼬마 서비스 로그인
      * @header Authorization ( access_token )
      * @return 로그인 성공 여부
      */
     @PostMapping("/login")
-    @Operation(summary = "서비스 로그인", description = "AccessToken을 통해 DB 사용자 정보를 갱신하고 서비스를 로그인합니다.")
+    @Operation(summary = "서비스 로그인", description = "AccessToken을 통해 DB 사용자 정보와 친구 목록을 갱신하고 서비스를 로그인합니다.")
     public ResponseEntity<BooleanResponse> login(@RequestHeader("Authorization") String accessToken) {
         KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
         userService.updateUser(kakaoUserInfo);
+        FriendListResponse friendListResponse = kakaoOauthClient.getFriendList(accessToken);
+        userService.updateFriend(userService.getIdByEmail(kakaoUserInfo.getEmail()),friendListResponse);
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
@@ -97,53 +111,38 @@ public class UserController {
 
     /**
      * ID로 User 삭제
-     * @param id 조회할 User의 ID
+     * @param accessToken
      * @return User 삭제 성공 여부
      */
-    @DeleteMapping("/{id}")
-    @Operation(summary = "회원탈퇴", description = "사용자의 ID를 받아 DB에서 해당 사용자 정보를 삭제합니다.")
-    public ResponseEntity<BooleanResponse> deleteUserByID(@PathVariable int id) {
-        userService.deleteUserById(id);
+    @DeleteMapping("/delete")
+    @Operation(summary = "회원탈퇴", description = "accessToken을 받아 DB에서 해당 사용자 정보를 삭제합니다.")
+    public ResponseEntity<BooleanResponse> deleteUserByID(@RequestHeader("Authorization") String accessToken) {
+        userService.deleteUserById(kakaoOauthClient.getUserInfo(accessToken).getEmail());
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
     /**
      * 신청 시 필요한 정보
-     * @Path id
+     * @Path accessToken
      * @return applyResponse
      */
-    @GetMapping("/apply/{id}")
-    @Operation(summary = "신청 시 필요한 정보", description = "회원 id를 통해 신청 시 필요한 정보를 받아옵니다.")
-    public ResponseEntity<ApplyResponse> getApplyInfoById(@PathVariable("id") int id) {
-        ApplyResponse applyResponse = userService.getApplyInfoById(id);
+    @GetMapping("/apply")
+    @Operation(summary = "신청 시 필요한 정보", description = "accessToken을 통해 신청 시 필요한 정보를 받아옵니다.")
+    public ResponseEntity<ApplyResponse> getApplyInfoById(@RequestHeader("Authorization") String accessToken) {
+        ApplyResponse applyResponse = userService.getApplyInfoById(kakaoOauthClient.getUserInfo(accessToken).getEmail());
         return ResponseEntity.ok(applyResponse);
     }
 
     /**
      * ID로 User 조회
-     * @param id 조회할 User의 ID
+     * @param accessToken
      * @return User 정보
      */
-    @GetMapping("/{id}")
-    @Operation(summary = "ID로 사용자 조회", description = "고유 ID를 사용하여 사용자의 상세 정보를 조회합니다.")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
-
-        UserResponse userResponse = userService.getUserById(id);
-
+    @GetMapping("/userinfo")
+    @Operation(summary = "ID로 사용자 조회", description = "accessToken을 사용하여 사용자의 상세 정보를 조회합니다.")
+    public ResponseEntity<UserResponse> getUserById(@RequestHeader("Authorization") String accessToken) {
+        UserResponse userResponse = userService.getUserById(kakaoOauthClient.getUserInfo(accessToken).getEmail());
         return ResponseEntity.ok(userResponse);
-    }
-
-    /**
-     * 전체 User 조회
-     * @return 유저 목록
-     */
-    @GetMapping("")
-    @Operation(summary = "모든 사용자 조회", description = "시스템에 등록된 모든 사용자의 목록을 조회합니다. 별도의 매개변수 없이 호출할 수 있습니다.")
-    public ResponseEntity<UserListResponse> getAllUsers() {
-
-        UserListResponse userListResponse = userService.getAllUsers();
-
-        return ResponseEntity.ok(userListResponse);
     }
 
 }

@@ -1,6 +1,7 @@
 package org.example.gogoma.external.kakao.oauth;
 
 import lombok.RequiredArgsConstructor;
+import org.example.gogoma.domain.user.dto.FriendListResponse;
 import org.example.gogoma.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class KakaoOauthClient {
 
     private static final String TOKEN_REQUEST_URL = "https://kauth.kakao.com/oauth/token";
     private static final String USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
+    private static final String FRIEND_INFO_URL = "https://kapi.kakao.com/v1/api/talk/friends";
 
     public KakaoClientOauthTokenResponse determineLoginOrSignup(String code) {
         KakaoClientOauthTokenResponse tokens = getToken(code);
@@ -58,7 +60,14 @@ public class KakaoOauthClient {
                 .block();
     }
 
-
+    public FriendListResponse getFriendList(String accessToken) {
+        return webClient.get()
+                .uri(FRIEND_INFO_URL)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(FriendListResponse.class)
+                .block();
+    }
 
     public KakaoClientOauthTokenResponse refreshAccessToken(String refreshToken) {
         String body = String.format(

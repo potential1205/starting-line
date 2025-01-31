@@ -1,6 +1,6 @@
 package org.example.gogoma.domain.user.repository;
 
-import org.example.gogoma.domain.user.dto.ApplyResponse;
+import org.example.gogoma.controller.response.ApplyResponse;
 
 import java.util.Optional;
 

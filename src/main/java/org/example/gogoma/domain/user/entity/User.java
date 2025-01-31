@@ -25,6 +25,9 @@ public class User {
     private int id;
 
     @Column(nullable = false)
+    private Long kakaoId;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, unique = true)
@@ -55,6 +58,7 @@ public class User {
 
     public static User of(CreateUserRequest createUserRequest) {
         return User.builder()
+                .kakaoId(createUserRequest.getKakaoId())
                 .name(createUserRequest.getName())
                 .profileImage(createUserRequest.getProfileImage())
                 .email(createUserRequest.getEmail())
