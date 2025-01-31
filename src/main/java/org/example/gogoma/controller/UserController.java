@@ -4,9 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.UserListResponse;
-import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.ApplyResponse;
+import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
+import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.dto.FriendListResponse;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
@@ -71,15 +72,29 @@ public class UserController {
     }
 
     /**
+     * 친구 목록 불러오기
+     * @header Authorization ( access_token )
+     * @return 친구 목록
+     */
+    @GetMapping("/kakao/friendInfo")
+    @Operation(summary = "카카오 친구 목록 조회", description = "AccessToken을 통해 카카오 친구 목록을 조회합니다.")
+    public ResponseEntity<FriendListResponse> test(@RequestHeader("Authorization") String accessToken) {
+        FriendListResponse friendListResponse = kakaoOauthClient.getFriendList(accessToken);
+        return ResponseEntity.ok(friendListResponse);
+    }
+    
+    /**
      * 꼬마 서비스 로그인
      * @header Authorization ( access_token )
      * @return 로그인 성공 여부
      */
     @PostMapping("/login")
-    @Operation(summary = "서비스 로그인", description = "AccessToken을 통해 DB 사용자 정보를 갱신하고 서비스를 로그인합니다.")
+    @Operation(summary = "서비스 로그인", description = "AccessToken을 통해 DB 사용자 정보와 친구 목록을 갱신하고 서비스를 로그인합니다.")
     public ResponseEntity<BooleanResponse> login(@RequestHeader("Authorization") String accessToken) {
         KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
         userService.updateUser(kakaoUserInfo);
+        FriendListResponse friendListResponse = kakaoOauthClient.getFriendList(accessToken);
+        userService.updateFriend(userService.getIdByEmail(kakaoUserInfo.getEmail()),friendListResponse);
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
