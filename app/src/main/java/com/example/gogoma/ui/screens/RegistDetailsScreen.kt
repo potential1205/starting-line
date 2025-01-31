@@ -13,8 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.gogoma.data.model.PaymentDetail
 import com.example.gogoma.ui.components.BottomBar
-import com.example.gogoma.ui.components.PaymentDetail
 import com.example.gogoma.ui.components.PaymentDetails
 import com.example.gogoma.ui.components.TopBarArrow
 
@@ -22,11 +22,11 @@ import com.example.gogoma.ui.components.TopBarArrow
 fun RegistDetailsScreen(navController: NavController) {
     val paymentDetails = PaymentDetail(
         paymentDate = "2025-01-29",
-        paymentMethod = "신용카드",
+        paymentType = "신용카드",
         paymentAmount = "50,000원",
         address = "서울특별시 강남구 테헤란로 123",
         raceCategory = "5km",
-        gift = "반팔(M)"
+        gift = "반팔(95)"
     )
 
     Scaffold(
