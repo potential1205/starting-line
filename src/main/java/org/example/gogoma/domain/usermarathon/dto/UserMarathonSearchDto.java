@@ -15,18 +15,18 @@ public class UserMarathonSearchDto {
     private int userMarathonId;
     private String marathonTitle;
     private String marathonType;
-    private String dday;
+    private String dDay;
     private LocalDateTime raceStartDateTime;
     private LocalDateTime paymentDateTime;
 
     public static UserMarathonSearchDto of(int userMarathonId,
-            String marathonTitle, String marathonType, String dday,
+                                           String marathonTitle, String marathonType, String dDay,
             LocalDateTime raceStartDateTime, LocalDateTime paymentDateTime) {
 
         return UserMarathonSearchDto.builder()
                 .marathonTitle(marathonTitle)
                 .marathonType(marathonType)
-                .dday(dday)
+                .dDay(dDay)
                 .raceStartDateTime(raceStartDateTime)
                 .paymentDateTime(paymentDateTime)
                 .build();
