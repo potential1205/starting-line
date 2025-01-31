@@ -33,6 +33,9 @@ public class NHBankClient {
     @Value("${nhbank.fin-acno}")
     private String finAcno; // 계좌번호 (고정)
 
+    @Value("${nhbank.acno}")
+    private String myAcno; // 계좌번호 (고정)
+
     public Mono<ReceivedTransferResponse> requestReceivedTransfer(ReceivedTransferRequest receivedTransferRequest) {
         String url = baseUrl + "/ReceivedTransferAccountNumber.nh";
 
@@ -88,13 +91,13 @@ public class NHBankClient {
                 "AccessToken", accessToken
         ));
         request.put("Bncd", "011");
-        request.put("Acno", finAcno);
+        request.put("Acno", myAcno);
         request.put("Insymd", firstDayOfMonth);
         request.put("Ineymd", today);
         request.put("TrnsDsnc", "A");
         request.put("Lnsq", "ASC");
         request.put("PageNo", "1");
-        request.put("Dmcnt", "1");
+        request.put("Dmcnt", "5");
 
         return webClient.post()
                 .uri(url)

@@ -11,29 +11,29 @@ import lombok.NoArgsConstructor;
 public class Header {
 
     @JsonProperty("Trtm")
-    private String trtm;
+    private String transactionTime; // 거래 시간
 
     @JsonProperty("Rsms")
-    private String rsms;
+    private String responseMessage; // 응답 메시지
 
     @JsonProperty("ApiNm")
-    private String apiNm;
+    private String apiName; // API 이름
 
     @JsonProperty("IsTuno")
-    private String isTuno;
+    private String transactionUniqueNumber; // 거래 고유번호
 
     @JsonProperty("Tsymd")
-    private String tsymd;
+    private String transactionDate; // 거래 날짜
 
     @JsonProperty("FintechApsno")
-    private String fintechApsno;
+    private String fintechAppSerialNumber; // 핀테크 앱 일련번호
 
     @JsonProperty("Iscd")
-    private String iscd;
+    private String institutionCode; // 기관 코드
 
     @JsonProperty("Rpcd")
-    private String rpcd;
+    private String responseCode; // 응답 코드
 
     @JsonProperty("ApiSvcCd")
-    private String apiSvcCd;
+    private String apiServiceCode; // API 서비스 코드
 }

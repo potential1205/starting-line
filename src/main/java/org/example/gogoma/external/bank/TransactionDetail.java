@@ -1,5 +1,6 @@
 package org.example.gogoma.external.bank;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,16 +9,40 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionDetail {
-    private String Trdd;     // 거래일자
-    private String Txtm;     // 거래시간
-    private String MnrcDrotDsnc; // 입출금 구분 (3: 입금, 4: 출금 등)
-    private String Tram;     // 거래금액
-    private String AftrBlnc; // 거래 후 잔액
-    private String TrnsAfAcntBlncSmblCd; // 잔액 기호 (+, -)
-    private String Smr;      // 적요 (설명)
-    private String HnisCd;   // 행내코드
-    private String HnbrCd;   // 행내 점포코드
-    private String Ccyn;     // 통화코드
-    private String Tuno;     // 거래번호
-    private String BnprCntn; // 은행 제공 내용
+
+    @JsonProperty("Trdd")
+    private String transactionDate; // 거래일자
+
+    @JsonProperty("Txtm")
+    private String transactionTime; // 거래시간
+
+    @JsonProperty("MnrcDrotDsnc")
+    private String transactionType; // 입출금 구분 (3: 입금, 4: 출금 등)
+
+    @JsonProperty("Tram")
+    private String transactionAmount; // 거래금액
+
+    @JsonProperty("AftrBlnc")
+    private String afterBalance; // 거래 후 잔액
+
+    @JsonProperty("TrnsAfAcntBlncSmblCd")
+    private String balanceSign; // 잔액 기호 (+, -)
+
+    @JsonProperty("Smr")
+    private String summary; // 적요 (설명)
+
+    @JsonProperty("HnisCd")
+    private String internalBankCode; // 행내 코드
+
+    @JsonProperty("HnbrCd")
+    private String branchCode; // 행내 점포코드
+
+    @JsonProperty("Ccyn")
+    private String currencyCode; // 통화코드
+
+    @JsonProperty("Tuno")
+    private String transactionNumber; // 거래번호
+
+    @JsonProperty("BnprCntn")
+    private String bankProvidedContent; // 은행 제공 내용
 }
