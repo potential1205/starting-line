@@ -14,13 +14,13 @@ public interface UserService {
 
     void updateUser(KakaoUserInfo kaKaoUserInfo);
 
-    UserResponse getUserById(int id);
+    UserResponse getUserById(String email);
 
     UserListResponse getAllUsers();
 
-    void deleteUserById(int id);
+    void deleteUserById(String email);
 
-    ApplyResponse getApplyInfoById(int id);
+    ApplyResponse getApplyInfoById(String email);
 
     void updateFriend(int userId, FriendListResponse friendListResponse);
 

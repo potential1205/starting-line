@@ -46,9 +46,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserById(int id) {
+    public UserResponse getUserById(String email) {
 
-        User user = userRepository.findById(id)
+        User user = userRepository.findById(getIdByEmail(email))
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
         return UserResponse.of(user);
@@ -63,13 +63,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUserById(int id) {
-        userRepository.deleteById(id);
+    public void deleteUserById(String email) {
+        userRepository.deleteById(getIdByEmail(email));
     }
 
     @Override
-    public ApplyResponse getApplyInfoById(int id) {
-        return userCustomRepository.getApplyInfoById(id)
+    public ApplyResponse getApplyInfoById(String email) {
+        return userCustomRepository.getApplyInfoById(getIdByEmail(email))
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
     }
 
