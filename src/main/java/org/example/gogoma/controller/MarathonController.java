@@ -10,6 +10,7 @@ import org.example.gogoma.controller.request.MarathonSearchRequest;
 import org.example.gogoma.controller.response.MarathonDetailResponse;
 import org.example.gogoma.controller.response.MarathonSearchResponse;
 import org.example.gogoma.domain.marathon.service.MarathonService;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -95,7 +96,7 @@ public class MarathonController {
     @GetMapping
     @Operation(summary = "마라톤 목록 조회", description = "마라톤의 상태, 지역, 연도, 월, 종목 등의 조건을 활용하여 마라톤 목록을 필터링하여 조회합니다.")
     public ResponseEntity<MarathonSearchResponse> searchMarathonList(
-            @RequestBody @Valid MarathonSearchRequest marathonSearchRequest) {
+            @ModelAttribute @ParameterObject @Valid MarathonSearchRequest marathonSearchRequest) {
 
         MarathonSearchResponse marathonSearchResponse =
                 marathonService.searchMarathonList(marathonSearchRequest);
