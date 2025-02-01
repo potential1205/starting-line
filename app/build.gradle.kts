@@ -51,11 +51,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -73,5 +71,7 @@ dependencies {
     implementation(libs.coroutines)
     // Security (EncryptedSharedPreferences)
     implementation(libs.security.crypto)
+
+    implementation(libs.coil.compose)
 
 }

@@ -9,7 +9,7 @@ val NeutralWhite = Color(0xFFFEFEFE)
 val NeutralBlack = Color(0xFF010101)
 val NeutralLight = Color(0xFFC1C1C1)
 val NeutralDark = Color(0xFF686868)
-
+val CustomRed = Color(0xFFF76B6D)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)

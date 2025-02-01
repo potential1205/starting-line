@@ -2,7 +2,7 @@ package com.example.gogoma.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,8 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -27,8 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -37,35 +35,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.example.gogoma.R
+import com.example.gogoma.data.model.MarathonPreviewDto
+import com.example.gogoma.data.model.MarathonType
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Locale
 
-//데이터 클래스
-data class Marathon(
-    val title: String,
-    val registrationStatus: String,
-    val remainingDays: Int,
-    val registrationPeriod: String,
-    val location: String,
-    val distance: String,
-    val eventDate: String
-)
-
 @Composable
-fun MarathonListItem (marathon: Marathon) {
-
-    //날짜 변환 함수
-    fun formatDate(dateString: String):String{
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
-        val date = inputFormat.parse(dateString) ?: return ""
-
-        val outputFormat = SimpleDateFormat("yyyy년 M월 d일 (E)", Locale.KOREAN)
-        return outputFormat.format(date)
-    }
+fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Unit) {
 
     Row(
         modifier = Modifier
+            .clickable(onClick = onClick)
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.background)
             .padding(start = 11.dp, end = 11.dp)
@@ -85,7 +71,7 @@ fun MarathonListItem (marathon: Marathon) {
         horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
         verticalAlignment = Alignment.Top,
     ) {
-        ImageOrPlaceholder(imageBitmap = null)
+        ImageOrPlaceholder(imageUrl = marathonPreviewDto.thumbnailImage)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,8 +87,29 @@ fun MarathonListItem (marathon: Marathon) {
                 horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                StatusTag("접수중", true)
-                StatusTag("D-1", true)
+                val marathonStatus = marathonPreviewDto.marathonStatus
+                val marathonStatusText = when (marathonStatus) {
+                    "OPEN" -> "접수중"
+                    "CLOSED" -> "접수 종료"
+                    "FINISHED" -> "접수 마감"
+                    else -> marathonStatus
+                }
+
+                val marathonStatusBackgroundColor = when (marathonStatus) {
+                    "OPEN" -> MaterialTheme.colorScheme.secondary
+                    "CLOSED" -> MaterialTheme.colorScheme.error
+                    "FINISHED" -> Color.Gray
+                    else -> MaterialTheme.colorScheme.secondary
+                }
+
+                TextBoxSmall(
+                    text = marathonStatusText,
+                    backgroundColor = marathonStatusBackgroundColor
+                )
+                TextBoxSmall(
+                    text = marathonPreviewDto.dday,
+                    backgroundColor = marathonStatusBackgroundColor
+                )
             }
 
             //Middle
@@ -112,9 +119,13 @@ fun MarathonListItem (marathon: Marathon) {
                 verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
                 horizontalAlignment = Alignment.Start,
             ) {
-                Text(marathon.title)
+                Text(marathonPreviewDto.title)
                 Text(
-                    text = "접수 ${marathon.registrationPeriod}",
+                    text = if (marathonPreviewDto.registrationStartDateTime == null && marathonPreviewDto.registrationEndDateTime == null) {
+                        "접수 선착순"
+                    } else {
+                        "접수 ${marathonPreviewDto.registrationStartDateTime ?: ""}~${marathonPreviewDto.registrationEndDateTime ?: ""}"
+                    },
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.nanum_square_round_l)),
@@ -133,14 +144,14 @@ fun MarathonListItem (marathon: Marathon) {
                         modifier = Modifier.size(9.dp)
                     )
                     Text(
-                        text = marathon.location,
+                        text = marathonPreviewDto.location,
                         style = TextStyle(
                             fontSize = 10.sp,
                             color = Color(0xFF606060)
                         )
                     )
                     Text(
-                        text = "#${marathon.distance}",
+                        text = marathonPreviewDto.courseTypeList.joinToString(" ") { "#${it}" },
                         style = TextStyle(
                             fontSize = 10.sp,
                             color = Color(0xFF606060)
@@ -158,8 +169,9 @@ fun MarathonListItem (marathon: Marathon) {
                 verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
                 horizontalAlignment = Alignment.Start,
             ) {
+                val formattedRaceStartTime = FormattedDate(marathonPreviewDto.raceStartTime)
                 Text(
-                    text = "대회일시 ${formatDate(marathon.eventDate)}",
+                    text = "대회일시 ${(formattedRaceStartTime)}",
                     style = TextStyle(
                         fontSize = 13.8.sp,
                         fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
@@ -175,67 +187,54 @@ fun MarathonListItem (marathon: Marathon) {
 @Composable
 fun MarathonListItemPreview(){
     MarathonListItem(
-        marathon = Marathon(
+        MarathonPreviewDto(
+            id = 1,
             title = "서울 마라톤",
-            registrationStatus = "접수중",
-            remainingDays = 10,
-            registrationPeriod = "2025-01-01 ~ 2025-02-10",
+            registrationStartDateTime = "2025-01-01T00:00:00",
+            registrationEndDateTime = "2025-02-10T23:59:59",
+            raceStartTime = "2025-03-01T09:00:00",
             location = "서울 한강",
-            distance = "42.195km",
-            eventDate = "2025-03-01"
-        )
+            city = "서울",
+            region = "서울",
+            district = "한강공원",
+            marathonStatus = "OPEN",  // 모집중
+            thumbnailImage = "https://example.com/seoul_thumbnail.jpg",
+            courseTypeList = listOf("풀코스", "하프코스"),
+            marathonTypeList = listOf(
+                MarathonType(id = 1, marathonId = 1, courseType = "풀코스", price = "50000", etc = "마라톤 풀코스"),
+                MarathonType(id = 2, marathonId = 1, courseType = "하프코스", price = "30000", etc = "하프마라톤")
+            ),
+            dday = "30"
+        ),
+        onClick = {
+            println("Marathon item clicked!")
+        }
     )
 }
 
 @Composable
-fun ImageOrPlaceholder(imageBitmap: ImageBitmap?) {
+fun ImageOrPlaceholder(imageUrl: String?) {
     Box(
         modifier = Modifier
-            .size(104.dp) // 원하는 크기 설정
+            .width(125.dp)
+            .height(105.dp)
             .background(MaterialTheme.colorScheme.tertiary)
     ) {
-        if (imageBitmap != null) {
-            Image(
-                painter = BitmapPainter(imageBitmap),
-                contentDescription = "Image",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+        val painter =
+            rememberAsyncImagePainter(ImageRequest.Builder
+                (LocalContext.current).data(data = imageUrl).apply(block = fun ImageRequest.Builder.() {
+                crossfade(true)  // 이미지 로딩 시 부드러운 전환 효과
+                placeholder(R.drawable.icon_running) // 로딩 중에 보여줄 이미지
+                error(R.drawable.icon_close) // 에러 발생 시 보여줄 이미지
+            }).build()
             )
-        } else {
-            // 이미지가 없을 때 단색 배경을 채우기
-            Box(
-                modifier = Modifier.fillMaxSize().background(Color.LightGray)
-            )
-        }
-    }
-}
-
-@Composable
-fun StatusTag(text: String, isAccepting: Boolean){
-    val backgroundColor = if(isAccepting){
-        MaterialTheme.colorScheme.secondary
-    } else {
-        Color(0xFFF76B6D)
-    }
-
-    val commonModifier = Modifier
-        .background(color = backgroundColor)
-        .padding(10.dp, 2.dp)
-        .fillMaxHeight()
-
-    val commonTextStyle = TextStyle(
-        color = MaterialTheme.colorScheme.onSecondary,
-        fontSize = 12.sp,
-    )
-    Box(
-        modifier = commonModifier
-    ){
-        Text(
-            text = text,
-            style = commonTextStyle
+        Image(
+            painter = painter,
+            contentDescription = "Image",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
     }
-
 }
 
 

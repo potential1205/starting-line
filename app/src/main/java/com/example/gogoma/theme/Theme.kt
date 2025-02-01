@@ -21,12 +21,12 @@ private val LightColorScheme = lightColorScheme(
     secondary = BrandColor2,
     tertiary = BrandColor3,
     onPrimary = NeutralWhite,
-    onSecondary = NeutralWhite,
+    onSecondary = NeutralDark,
     onTertiary = NeutralDark,
     background = NeutralWhite,
     onBackground = NeutralDark,
     surface = NeutralWhite,
-
+    error = CustomRed
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
