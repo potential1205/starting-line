@@ -44,9 +44,20 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
     val marathonDetailViewModel: MarathonDetailViewModel = viewModel()
     val marathonDetail = marathonDetailViewModel.marathonDetail
 
+    // 네비게이션 상태 저장 핸들
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
     // 상세 정보 로드
     LaunchedEffect (marathonId) {
         marathonDetailViewModel.loadMarathonDetail(marathonId)
+    }
+
+    // 데이터가 로드되면 savedStateHandle에 저장
+    LaunchedEffect(marathonDetail) {
+        marathonDetail?.let {
+            println("상세 페이지에서 데이터 저장: $it")
+            savedStateHandle?.set("marathonDetail_$marathonId", it)
+        }
     }
 
     // 로딩 중 처리

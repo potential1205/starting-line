@@ -106,7 +106,7 @@ fun AppNavigation(){
         ) { backStackEntry ->
             val marathonId = backStackEntry.arguments?.getInt("id")
             marathonId?.let {
-                PaymentScreen(navController = navController, viewModel = paymentViewModel)
+                PaymentScreen(navController = navController, marathonId = it, viewModel = paymentViewModel)
             }
         }
 
