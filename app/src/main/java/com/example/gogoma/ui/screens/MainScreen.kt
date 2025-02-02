@@ -2,95 +2,57 @@ package com.example.gogoma.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.ui.components.Filter
-import com.example.gogoma.ui.components.Marathon
 import com.example.gogoma.ui.components.MarathonListItem
-import com.example.gogoma.ui.components.SearchBar
+import com.example.gogoma.viewmodel.MarathonListViewModel
 
 @Composable
 fun MainScreen(
     navController: NavController,
     onFilterClick: (String) -> Unit,
+    onMarathonClick: (Int) -> Unit,
 ) {
-    // 더미 데이터 생성
-    val marathonList : List<Marathon> = listOf(
-        Marathon(
-            title = "서울 마라톤",
-            registrationStatus = "접수중",
-            remainingDays = 10,
-            registrationPeriod = "2025-01-01 ~ 2025-02-10",
-            location = "서울 한강",
-            distance = "42.195km",
-            eventDate = "2025-03-01"
-        ),
-        Marathon(
-            title = "부산 마라톤",
-            registrationStatus = "마감",
-            remainingDays = 0,
-            registrationPeriod = "2025-02-01 ~ 2025-03-10",
-            location = "부산 해운대",
-            distance = "21.097km",
-            eventDate = "2025-04-01"
-        ),
-        Marathon(
-            title = "대전 마라톤",
-            registrationStatus = "접수중",
-            remainingDays = 20,
-            registrationPeriod = "2025-01-10 ~ 2025-02-20",
-            location = "대전 한밭수목원",
-            distance = "10km",
-            eventDate = "2025-05-01"
-        ),
-        Marathon(
-            title = "서울 마라톤",
-            registrationStatus = "접수중",
-            remainingDays = 10,
-            registrationPeriod = "2025-01-01 ~ 2025-02-10",
-            location = "서울 한강",
-            distance = "42.195km",
-            eventDate = "2025-03-01"
-        ),
-        Marathon(
-            title = "부산 마라톤",
-            registrationStatus = "마감",
-            remainingDays = 0,
-            registrationPeriod = "2025-02-01 ~ 2025-03-10",
-            location = "부산 해운대",
-            distance = "21.097km",
-            eventDate = "2025-04-01"
-        ),
-        Marathon(
-            title = "대전 마라톤",
-            registrationStatus = "접수중",
-            remainingDays = 20,
-            registrationPeriod = "2025-01-10 ~ 2025-02-20",
-            location = "대전 한밭수목원",
-            distance = "10km",
-            eventDate = "2025-05-01"
-        )
-    )
+    val marathonListViewModel: MarathonListViewModel = viewModel()
+    val marathonList = marathonListViewModel.marathonSearchResponseList
+    val isLoading = marathonListViewModel.isLoading
+    val errorMessage = marathonListViewModel.errorMessage
 
     Box(
         modifier = Modifier
             .fillMaxSize()
     ){
+
+        // 개발용, 추후 삭제 : 오류 메시지가 있을 경우 표시
+        errorMessage?.let {
+            // 오류 메시지 UI
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Error: $it",
+                    color = Color.Red,  // 빨간색으로 오류 메시지 표시
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+
         //스크롤 영역
         LazyColumn(
             modifier = Modifier
@@ -107,9 +69,23 @@ fun MainScreen(
                     onFilterClick = onFilterClick
                 )
             }
-            //마라톤 리스트
-            items(marathonList){marathon ->
-                MarathonListItem(marathon = marathon)
+            // 마라톤 리스트
+            if (isLoading) {
+                // 로딩 중일 때 표시
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        color = Color.Blue
+                    )
+                }
+            } else {
+                items(marathonList) { marathon ->
+                    MarathonListItem(marathonPreviewDto = marathon, onClick = {
+                        navController.navigate("marathonDetail/${marathon.id}")
+                    })
+                }
             }
         }
     }
