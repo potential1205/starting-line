@@ -19,7 +19,7 @@ import com.example.gogoma.ui.components.PaymentDetails
 import com.example.gogoma.ui.components.TopBarArrow
 
 @Composable
-fun RegistDetailsScreen(navController: NavController) {
+fun RegistDetailsScreen(registId: Int, navController: NavController) {
     val paymentDetails = PaymentDetail(
         paymentDate = "2025-01-29",
         paymentType = "신용카드",
@@ -53,5 +53,5 @@ fun RegistDetailsScreen(navController: NavController) {
 @Composable
 fun RegistDetailsScreenPreview() {
     val navController = rememberNavController()
-    RegistDetailsScreen(navController)
+    RegistDetailsScreen(1, navController)
 }

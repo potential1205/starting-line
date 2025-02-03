@@ -33,6 +33,8 @@ import com.example.gogoma.ui.components.TopBarArrow
 import com.example.gogoma.ui.screens.AddressSelectionScreen
 import com.example.gogoma.ui.screens.MarathonDetailScreen
 import com.example.gogoma.ui.screens.PaymentScreen
+import com.example.gogoma.ui.screens.PaymentStatusScreen
+import com.example.gogoma.ui.screens.RegistDetailsScreen
 import com.example.gogoma.ui.screens.RegistListScreen
 import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.PaymentViewModel
@@ -84,9 +86,24 @@ fun AppNavigation(){
                 bottomBar = { BottomBar(navController = navController) }
             ){ paddingValues ->
                 Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
-                    RegistListScreen(navController)
+                    RegistListScreen(
+                        navController,
+                        onRegistClick = { registId ->
+                            navController.navigate("registDetail/$registId")
+                        }
+                    )
                 }
 
+            }
+        }
+
+        composable(
+            route = "registDetail/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val registId = backStackEntry.arguments?.getInt("id")
+            registId?.let {
+                RegistDetailsScreen(registId = it, navController = navController)
             }
         }
 
@@ -129,6 +146,26 @@ fun AppNavigation(){
                 }
 
             }
+        }
+
+        // 결제 성공 화면
+        composable(
+            "paymentSuccess/{registJson}",
+            arguments = listOf(navArgument("registJson") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val registJson = backStackEntry.arguments?.getString("registJson")
+            PaymentStatusScreen(isSuccess = true, registJson = registJson, onConfirm = { navController.navigate("main") })
+        }
+
+
+        // 결제 실패 화면
+        composable("paymentFailure") {
+            PaymentStatusScreen(
+                isSuccess = false,
+                registJson = null,  // 🔥 실패 시에는 registJson을 넘기지 않음
+                onConfirm = { navController.popBackStack() },
+                onNavigateToMain = { navController.navigate("main") }
+            )
         }
     }
 

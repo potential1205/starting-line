@@ -42,7 +42,7 @@ data class Regist (
 )
 
 @Composable
-fun RegistListItem(regist: Regist) {
+fun RegistListItem(regist: Regist, onClick: () -> Unit) {
     var statusText by remember { mutableStateOf("") }
 
     // 오늘 날짜와 마라톤 날짜 비교해서 D-day 갱신
@@ -61,11 +61,11 @@ fun RegistListItem(regist: Regist) {
 
     Row (
         modifier = Modifier
+            .clickable(onClick = onClick)
             .width(412.dp)
             .height(103.dp)
             .background(MaterialTheme.colorScheme.background)
             .padding(start = 19.dp, top = 13.dp, end = 19.dp, bottom = 13.dp)
-            .clickable { /* 이동 추가 */ }
     ) {
         Column (
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
@@ -171,7 +171,7 @@ fun RegistListItem(regist: Regist) {
 @Composable
 fun RegistPreview() {
     GogomaTheme {
-        RegistListItem(sampleRegist)
+        RegistListItem(sampleRegist, onClick = {})
     }
 }
 
