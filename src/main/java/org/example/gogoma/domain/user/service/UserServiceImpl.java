@@ -29,14 +29,14 @@ public class UserServiceImpl implements UserService {
     private final UserCustomRepository userCustomRepository;
     private final FriendRepository friendRepository;
 
-    @Transactional
     @Override
+    @Transactional
     public void createUser(CreateUserRequest createUserRequest) {
         userRepository.save(User.of(createUserRequest));
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void updateUser(KakaoUserInfo kakaoUserInfo) {
         User existingUser = userRepository.findByEmail(kakaoUserInfo.getEmail())
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
         return UserResponse.of(user);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteUserById(String email) {
         userRepository.deleteById(getIdByEmail(email));
     }
@@ -73,8 +73,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void updateFriend(int userId, FriendListResponse friendListResponse) {
         for (FriendResponse friendResponse: friendListResponse.getFriends()){
             Optional<User> friendOptional = userRepository.findByKakaoId(friendResponse.getId());
