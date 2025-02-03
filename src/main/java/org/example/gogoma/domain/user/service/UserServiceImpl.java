@@ -16,6 +16,7 @@ import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,11 +29,13 @@ public class UserServiceImpl implements UserService {
     private final UserCustomRepository userCustomRepository;
     private final FriendRepository friendRepository;
 
+    @Transactional
     @Override
     public void createUser(CreateUserRequest createUserRequest) {
         userRepository.save(User.of(createUserRequest));
     }
 
+    @Transactional
     @Override
     public void updateUser(KakaoUserInfo kakaoUserInfo) {
         User existingUser = userRepository.findByEmail(kakaoUserInfo.getEmail())
@@ -52,6 +55,7 @@ public class UserServiceImpl implements UserService {
         return UserResponse.of(user);
     }
 
+    @Transactional
     @Override
     public void deleteUserById(String email) {
         userRepository.deleteById(getIdByEmail(email));
@@ -69,6 +73,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
     }
 
+    @Transactional
     @Override
     public void updateFriend(int userId, FriendListResponse friendListResponse) {
         for (FriendResponse friendResponse: friendListResponse.getFriends()){
