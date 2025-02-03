@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface UserCustomRepository {
 
     Optional<ApplyResponse> getApplyInfoById(int id);
+
+    Optional<Integer> findIdByEmail(String email);
 }

@@ -30,7 +30,7 @@ public class UserController {
      */
     @GetMapping("/kakao/login")
     @Operation(summary = "카카오 로그인 접근", description = "카카오 인가코드를 받아올 수 있는 URL을 반환합니다.")
-    public ResponseEntity<String> redirectToKaKaoLogin() {
+    public ResponseEntity<String> redirectToKakaoLogin() {
         return ResponseEntity.ok(kakaoUrlBuilder.buildKakaoAuthUrl());
     }
 
@@ -41,7 +41,7 @@ public class UserController {
      */
     @GetMapping("/kakao/callback")
     @Operation(summary = "callback 후 가입 여부 확인", description = "인가코드를 통해 정보를 받아와 회원가입 여부를 판단하고 토큰을 반환합니다.")
-    public ResponseEntity<KakaoClientOauthTokenResponse> handleKaKaoCallback(@RequestParam("code") String code) {
+    public ResponseEntity<KakaoClientOauthTokenResponse> handleKakaoCallback(@RequestParam("code") String code) {
         KakaoClientOauthTokenResponse kakaoClientOauthTokenResponse = kakaoOauthClient.determineLoginOrSignup(code);
         return ResponseEntity.ok(kakaoClientOauthTokenResponse);
     }
@@ -53,7 +53,7 @@ public class UserController {
      */
     @PostMapping("/kakao/refresh")
     @Operation(summary = "AccessToken 재발급", description = "RefreshToken을 사용하여 AccessToken을 재발급받습니다.")
-    public ResponseEntity<KakaoClientOauthTokenResponse> handleKaKaoRefresh(@RequestHeader("Authorization") String refreshToken) {
+    public ResponseEntity<KakaoClientOauthTokenResponse> handleKakaoRefresh(@RequestHeader("Authorization") String refreshToken) {
         KakaoClientOauthTokenResponse kakaoClientOauthTokenResponse = kakaoOauthClient.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(kakaoClientOauthTokenResponse);
     }
@@ -65,7 +65,7 @@ public class UserController {
      */
     @GetMapping("/kakao/userinfo")
     @Operation(summary = "AccessToken으로 사용자 정보 조회", description = "AccessToken을 사용하여 사용자의 상세 정보를 조회합니다.")
-    public ResponseEntity<KakaoUserInfo> getKaKaoUserInfo(@RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<KakaoUserInfo> getKakaoUserInfo(@RequestHeader("Authorization") String accessToken) {
         KakaoUserInfo userInfo = kakaoOauthClient.getUserInfo(accessToken);
         return ResponseEntity.ok(userInfo);
     }
@@ -77,7 +77,7 @@ public class UserController {
      */
     @GetMapping("/kakao/friendInfo")
     @Operation(summary = "카카오 친구 목록 조회", description = "AccessToken을 통해 카카오 친구 목록을 조회합니다.")
-    public ResponseEntity<FriendListResponse> test(@RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<FriendListResponse> getKakaoFriendList(@RequestHeader("Authorization") String accessToken) {
         FriendListResponse friendListResponse = kakaoOauthClient.getFriendList(accessToken);
         return ResponseEntity.ok(friendListResponse);
     }

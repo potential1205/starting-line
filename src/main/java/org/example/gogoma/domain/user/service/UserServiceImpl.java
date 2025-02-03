@@ -16,6 +16,7 @@ import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -29,18 +30,20 @@ public class UserServiceImpl implements UserService {
     private final FriendRepository friendRepository;
 
     @Override
+    @Transactional
     public void createUser(CreateUserRequest createUserRequest) {
         userRepository.save(User.of(createUserRequest));
     }
 
     @Override
+    @Transactional
     public void updateUser(KakaoUserInfo kakaoUserInfo) {
         User existingUser = userRepository.findByEmail(kakaoUserInfo.getEmail())
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
-        User updatedUser = User.updateWhenLogin(existingUser, kakaoUserInfo);
+        User.updateWhenLogin(existingUser, kakaoUserInfo);
 
-        userRepository.save(updatedUser);
+        userRepository.save(existingUser);
     }
 
     @Override
@@ -53,6 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUserById(String email) {
         userRepository.deleteById(getIdByEmail(email));
     }
@@ -65,11 +69,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int getIdByEmail(String email){
-        return userRepository.findIdByEmail(email)
+        return userCustomRepository.findIdByEmail(email)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
     }
 
     @Override
+    @Transactional
     public void updateFriend(int userId, FriendListResponse friendListResponse) {
         for (FriendResponse friendResponse: friendListResponse.getFriends()){
             Optional<User> friendOptional = userRepository.findByKakaoId(friendResponse.getId());
