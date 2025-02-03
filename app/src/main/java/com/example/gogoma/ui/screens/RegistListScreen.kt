@@ -19,7 +19,7 @@ import com.example.gogoma.ui.components.RegistListItem
 import com.example.gogoma.ui.components.RegistMarathonCountSection
 
 @Composable
-fun RegistListScreen(navController: NavController) {
+fun RegistListScreen(navController: NavController, onRegistClick: (Int) -> Unit) {
     val registList = listOf(
         Regist("24.06.18", "2025 서울마라톤", "2025.03.16", "10km"),
         Regist("24.06.10", "2025 부산마라톤", "2025.04.10", "15km"),
@@ -48,7 +48,7 @@ fun RegistListScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(registList) { regist ->
-                RegistListItem(regist)
+                RegistListItem(regist, onClick = {onRegistClick(1)})
             }
         }
     }
@@ -58,5 +58,5 @@ fun RegistListScreen(navController: NavController) {
 @Composable
 fun RegistListScreenPreivew() {
     val navController = rememberNavController()
-    RegistListScreen(navController)
+    RegistListScreen(navController, onRegistClick = {})
 }

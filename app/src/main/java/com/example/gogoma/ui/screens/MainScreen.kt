@@ -83,7 +83,7 @@ fun MainScreen(
             } else {
                 items(marathonList) { marathon ->
                     MarathonListItem(marathonPreviewDto = marathon, onClick = {
-                        navController.navigate("marathonDetail/${marathon.id}")
+                        onMarathonClick(marathon.id)
                     })
                 }
             }

@@ -102,7 +102,8 @@ fun SuccessContent(onConfirm: () -> Unit, registInfo: Regist?) {
                     title = it.title,
                     date = it.date,
                     distance = it.distance
-                )
+                ),
+                onClick = {}
             )
             Spacer(modifier = Modifier.height(16.dp))
         } ?: run {
