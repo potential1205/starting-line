@@ -27,6 +27,7 @@ okhttp = "4.9.3"
 coroutines = "1.7.3"
 securityCrypto = "1.1.0-alpha06"
 coil = "2.5.0"
+gson = "2.8.9"
 
 
 [libraries]
@@ -68,6 +69,7 @@ coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", vers
 # Security (EncryptedSharedPreferences)
 security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

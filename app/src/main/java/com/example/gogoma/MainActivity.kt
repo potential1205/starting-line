@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.ui.navigation.AppNavigation
-import com.example.gogoma.ui.navigation.PaymentNavigation
+import com.example.gogoma.ui.navigation.AppNavigationJuho
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,8 +22,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GogomaApp(){
     GogomaTheme {
-        AppNavigation()
-//        PaymentNavigation() // 결제 로직 테스트용
+//        AppNavigation()
+        AppNavigationJuho()
     }
 }
 
