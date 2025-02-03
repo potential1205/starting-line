@@ -1,6 +1,6 @@
 package com.example.gogoma.ui.navigation
 
-import PaymentStatusScreen
+import com.example.gogoma.ui.screens.PaymentStatusScreen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +34,7 @@ import com.example.gogoma.ui.components.TopBarArrow
 import com.example.gogoma.ui.screens.AddressSelectionScreen
 import com.example.gogoma.ui.screens.MarathonDetailScreen
 import com.example.gogoma.ui.screens.PaymentScreen
+import com.example.gogoma.ui.screens.PaymentStatusScreen
 import com.example.gogoma.ui.screens.RegistListScreen
 import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.PaymentViewModel
@@ -133,13 +134,23 @@ fun AppNavigationJuho(){
         }
 
         // 결제 성공 화면
-        composable("paymentSuccess") {
-            PaymentStatusScreen(isSuccess = true, onConfirm = { navController.navigate("main") })
+        composable(
+            "paymentSuccess/{registJson}",
+            arguments = listOf(navArgument("registJson") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val registJson = backStackEntry.arguments?.getString("registJson")
+            PaymentStatusScreen(isSuccess = true, registJson = registJson, onConfirm = { navController.navigate("main") })
         }
+
 
         // 결제 실패 화면
         composable("paymentFailure") {
-            PaymentStatusScreen(isSuccess = false, onConfirm = { navController.popBackStack("payment/{id}", inclusive = false) })
+            PaymentStatusScreen(
+                isSuccess = false,
+                registJson = null,  // 🔥 실패 시에는 registJson을 넘기지 않음
+                onConfirm = { navController.popBackStack() },
+                onNavigateToMain = { navController.navigate("main") }
+            )
         }
     }
 

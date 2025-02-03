@@ -1,10 +1,15 @@
 package com.example.gogoma.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.data.model.Address
+import com.example.gogoma.ui.components.Regist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PaymentViewModel : ViewModel() {
@@ -31,6 +36,9 @@ class PaymentViewModel : ViewModel() {
     // 약관 동의 상태
     private val _isAgreementChecked = MutableStateFlow(false)
     val isAgreementChecked: StateFlow<Boolean> = _isAgreementChecked
+
+    private val _registInfo = MutableStateFlow<Regist?>(null)
+    val registInfo: StateFlow<Regist?> = _registInfo.asStateFlow()
 
     // 배송지 선택 업데이트
     fun selectAddress(address: Address) {
@@ -66,6 +74,28 @@ class PaymentViewModel : ViewModel() {
             _isAgreementChecked.value = isChecked
         }
     }
+
+    fun saveRegistInfo(regist: Regist) {
+        _registInfo.value = regist
+    }
+
+    class PaymentViewModel : ViewModel() {
+        // 기존 상태 변수들 유지...
+
+        var isBottomSheetVisible by mutableStateOf(false)
+            private set // private으로 설정
+
+        fun showBottomSheet(){
+            isBottomSheetVisible = true
+        }
+
+        fun hideBottomSheet(){
+            isBottomSheetVisible = false
+        }
+    }
+
+
+
 
     // 기본 주소 및 데이터 불러오기 함수
     companion object {

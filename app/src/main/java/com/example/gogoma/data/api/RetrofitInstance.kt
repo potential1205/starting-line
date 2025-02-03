@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://54.180.135.126/"
+    private const val BASE_URL = "https://i12a808.p.ssafy.io/"
 
     // Retrofit 인스턴스를 생성해서 반환
     val apiService: MarathonApiService by lazy {
