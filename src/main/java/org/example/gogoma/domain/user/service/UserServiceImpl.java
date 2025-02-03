@@ -38,9 +38,9 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findByEmail(kakaoUserInfo.getEmail())
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
-        User updatedUser = User.updateWhenLogin(existingUser, kakaoUserInfo);
+        User.updateWhenLogin(existingUser, kakaoUserInfo);
 
-        userRepository.save(updatedUser);
+        userRepository.save(existingUser);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int getIdByEmail(String email){
-        return userRepository.findIdByEmail(email)
+        return userCustomRepository.findIdByEmail(email)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
     }
 

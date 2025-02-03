@@ -40,4 +40,17 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Optional<Integer> findIdByEmail(String email) {
+        QUser user = QUser.user;
+
+        Integer userId = queryFactory
+                .select(user.id)
+                .from(user)
+                .where(user.email.eq(email))
+                .fetchOne();
+
+        return Optional.ofNullable(userId);
+    }
 }

@@ -73,18 +73,15 @@ public class User {
                 .build();
     }
 
-    public static User updateWhenLogin(User existingUser, KakaoUserInfo kakaoUserInfo) {
-        return User.builder()
-                .name(kakaoUserInfo.getName() != null ? kakaoUserInfo.getName() : existingUser.getName())
-                .profileImage(kakaoUserInfo.getProfileImage() != null ? kakaoUserInfo.getProfileImage() : existingUser.getProfileImage())
-                .email(kakaoUserInfo.getEmail() != null ? kakaoUserInfo.getEmail() : existingUser.getEmail())
-                .gender(kakaoUserInfo.getGender() != null ? kakaoUserInfo.getGender() : existingUser.getGender())
-                .birthDate(kakaoUserInfo.getBirthDate() != null ? kakaoUserInfo.getBirthDate() : existingUser.getBirthDate())
-                .birthYear(kakaoUserInfo.getBirthYear() != null ? kakaoUserInfo.getBirthYear() : existingUser.getBirthYear())
-                .phoneNumber(kakaoUserInfo.getPhoneNumber() != null ? kakaoUserInfo.getPhoneNumber() : existingUser.getPhoneNumber())
-                .roadAddress(existingUser.getRoadAddress())
-                .detailAddress(existingUser.getDetailAddress())
-                .clothingSize(existingUser.getClothingSize())
-                .build();
+    public static void updateWhenLogin(User existingUser, KakaoUserInfo kakaoUserInfo) {
+        if (kakaoUserInfo.getKakaoId() != null) existingUser.setKakaoId(kakaoUserInfo.getKakaoId());
+        if (kakaoUserInfo.getName() != null) existingUser.setName(kakaoUserInfo.getName());
+        if (kakaoUserInfo.getProfileImage() != null) existingUser.setProfileImage(kakaoUserInfo.getProfileImage());
+        if (kakaoUserInfo.getEmail() != null) existingUser.setEmail(kakaoUserInfo.getEmail());
+        if (kakaoUserInfo.getGender() != null) existingUser.setGender(kakaoUserInfo.getGender());
+        if (kakaoUserInfo.getBirthDate() != null) existingUser.setBirthDate(kakaoUserInfo.getBirthDate());
+        if (kakaoUserInfo.getBirthYear() != null) existingUser.setBirthYear(kakaoUserInfo.getBirthYear());
+        if (kakaoUserInfo.getPhoneNumber() != null) existingUser.setPhoneNumber(kakaoUserInfo.getPhoneNumber());
     }
+
 }
