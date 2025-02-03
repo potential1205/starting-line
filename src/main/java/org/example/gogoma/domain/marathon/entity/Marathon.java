@@ -76,10 +76,13 @@ public class Marathon {
 
     private String formUrl;
 
+    private String homeUrl;
+
     public void update(String title, LocalDateTime registrationStartDateTime, LocalDateTime registrationEndDateTime, LocalDateTime raceStartTime,
                        String accountBank, String accountNumber, String accountName, String location, String qualifications,
                        String year, String month, String city, String region, String district, int formType, String formUrl,
-                       List<String> hostList, List<String> organizerList, List<String> sponsorList, MarathonStatus marathonStatus) {
+                       List<String> hostList, List<String> organizerList, List<String> sponsorList, MarathonStatus marathonStatus, String homeUrl,
+                       String thumbnailImageUrl, String infoImageUrl, String courseImageUrl) {
 
         this.title = title;
         this.registrationStartDateTime = registrationStartDateTime;
@@ -101,6 +104,9 @@ public class Marathon {
         this.organizerList = organizerList;
         this.sponsorList = sponsorList;
         this.marathonStatus = marathonStatus;
-
+        this.homeUrl = homeUrl;
+        this.thumbnailImage = thumbnailImageUrl;
+        this.infoImage = infoImageUrl;
+        this.courseImage = courseImageUrl;
     }
 }

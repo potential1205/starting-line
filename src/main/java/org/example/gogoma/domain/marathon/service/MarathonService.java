@@ -15,9 +15,12 @@ public interface MarathonService {
 
     MarathonDetailResponse getMarathonById(int id);
 
-    void updateMarathon(MarathonDetailRequest marathonDetailRequest);
-
     void deleteMarathon(int id);
 
     MarathonSearchResponse searchMarathonList(MarathonSearchRequest marathonSearchRequest);
+
+    void updateMarathon(MarathonDetailRequest marathonDetailRequest,
+                        MultipartFile thumbnailFile,
+                        MultipartFile infoImageFile,
+                        MultipartFile courseImageFile);
 }
