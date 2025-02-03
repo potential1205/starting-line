@@ -43,9 +43,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -206,11 +204,11 @@ public class MarathonServiceImpl implements MarathonService {
      * 문자열을 LocalDateTime으로 변환
      */
     public static LocalDateTime parseTime(String dateTime) {
-        DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         return Optional.ofNullable(dateTime)
                 .filter(date -> !date.isBlank())
-                .map(dt -> LocalDateTime.parse(dt, FORMATTER))
+                .map(dt -> LocalDateTime.parse(dt, formatter))
                 .orElse(null);
     }
 
@@ -344,6 +342,14 @@ public class MarathonServiceImpl implements MarathonService {
                 marathonSearchRequest.getCourseTypeList()
         );
 
+        List<String> cityList = new ArrayList<>(Arrays.asList(
+                "서울특별시",
+                "세종특별자치시",
+                "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시",
+                "경기도", "강원특별자치도", "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도",
+                "제주특별자치도"
+        ));
+
         List<MarathonPreviewDto> marathonPreviewDtoList = marathonList.stream()
                 .map(marathon -> {
                     List<MarathonType> marathonTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId());
@@ -376,7 +382,7 @@ public class MarathonServiceImpl implements MarathonService {
                 .sorted(Comparator.comparing(MarathonPreviewDto::getRaceStartTime))
                 .toList();
 
-        return MarathonSearchResponse.of(marathonPreviewDtoList);
+        return MarathonSearchResponse.of(marathonPreviewDtoList, cityList);
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {

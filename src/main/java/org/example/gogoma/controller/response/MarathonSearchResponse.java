@@ -11,10 +11,14 @@ import java.util.List;
 public class MarathonSearchResponse {
 
     private List<MarathonPreviewDto> marathonPreviewDtoList;
+    private List<String> cityList;
 
-    public static MarathonSearchResponse of(List<MarathonPreviewDto> marathonPreviewDtoList) {
+    public static MarathonSearchResponse of(
+            List<MarathonPreviewDto> marathonPreviewDtoList, List<String> cityList) {
+
         return MarathonSearchResponse.builder()
                 .marathonPreviewDtoList(marathonPreviewDtoList)
+                .cityList(cityList)
                 .build();
     }
 }
