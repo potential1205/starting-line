@@ -26,19 +26,17 @@ fun MainScreen(
     onFilterClick: (String) -> Unit,
     onMarathonClick: (Int) -> Unit,
 ) {
+    // ViewModel에서 상태를 직접 읽습니다.
     val marathonListViewModel: MarathonListViewModel = viewModel()
     val marathonList = marathonListViewModel.marathonSearchResponseList
     val isLoading = marathonListViewModel.isLoading
     val errorMessage = marathonListViewModel.errorMessage
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ){
-
-        // 개발용, 추후 삭제 : 오류 메시지가 있을 경우 표시
-        errorMessage?.let {
-            // 오류 메시지 UI
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // 오류 메시지가 있을 경우 표시
+        errorMessage?.let { msg ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -46,32 +44,27 @@ fun MainScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Error: $it",
-                    color = Color.Red,  // 빨간색으로 오류 메시지 표시
+                    text = "Error: $msg",
+                    color = Color.Red,
                     modifier = Modifier.padding(16.dp)
                 )
             }
         }
 
-        //스크롤 영역
+        // 리스트 영역 (스크롤)
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, end = 10.dp),
+                .padding(horizontal = 10.dp),
             verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            item {
-//                SearchBar()
-//            }
+            // 필터 컴포넌트
             item {
-                Filter(
-                    onFilterClick = onFilterClick
-                )
+                Filter(onFilterClick = onFilterClick)
             }
-            // 마라톤 리스트
+            // 로딩 중일 때
             if (isLoading) {
-                // 로딩 중일 때 표시
                 item {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -81,10 +74,12 @@ fun MainScreen(
                     )
                 }
             } else {
+                // 받아온 리스트 데이터 렌더링
                 items(marathonList) { marathon ->
-                    MarathonListItem(marathonPreviewDto = marathon, onClick = {
-                        onMarathonClick(marathon.id)
-                    })
+                    MarathonListItem(
+                        marathonPreviewDto = marathon,
+                        onClick = { onMarathonClick(marathon.id) }
+                    )
                 }
             }
         }

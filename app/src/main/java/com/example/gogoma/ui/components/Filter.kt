@@ -40,37 +40,37 @@ fun Filter(onFilterClick : (String) -> Unit){
                 contentColor = MaterialTheme.colorScheme.onTertiary,
                 icon = R.drawable.icon_tune,
                 onCLick = {
-                    onFilterClick("기본 필터")
+                    onFilterClick("기본")
                 },
             )
             FilterChip(
                 text = "지역",
                 onCLick = {
-                    onFilterClick("지역 필터")
+                    onFilterClick("지역")
                 }
             )
             FilterChip(
                 text = "접수 상태",
                 onCLick = {
-                    onFilterClick("접수 상태 필터")
+                    onFilterClick("접수 상태")
                 }
             )
             FilterChip(
                 text = "종목",
                 onCLick = {
-                    onFilterClick("종목 필터")
+                    onFilterClick("종목")
                 }
             )
             FilterChip(
                 text = "년도",
                 onCLick = {
-                    onFilterClick("년도 필터")
+                    onFilterClick("년도")
                 }
             )
             FilterChip(
                 text = "월",
                 onCLick = {
-                    onFilterClick("월 필터")
+                    onFilterClick("월")
                 }
             )
         }
