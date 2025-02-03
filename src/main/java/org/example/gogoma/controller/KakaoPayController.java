@@ -40,4 +40,16 @@ public class KakaoPayController {
         ApproveResponse approveResponse = kakaoPayClient.approvePayment(approveRequest);
         return ResponseEntity.ok(approveResponse);
     }
+
+    @GetMapping("/redirect")
+    @Operation(summary = "결제 승인 후 앱으로 리디렉트", description = "카카오페이에서 결제 완료 후 PG Token을 받아 최종 승인 처리 후 앱으로 이동합니다.")
+    public ResponseEntity<Void> redirectToApp(
+            @RequestParam("pg_token") String pgToken,
+            @RequestParam(value = "redirect", required = false) String redirect) {
+
+        return ResponseEntity.status(302)
+                .header("Location", redirect + "?pg_token=" + pgToken)
+                .build();
+    }
+
 }
