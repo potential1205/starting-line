@@ -221,7 +221,9 @@ public class MarathonServiceImpl implements MarathonService {
 
         List<MarathonType> marathonTypeList = marathonTypeRepository.findAllByMarathonId(id);
 
-        return MarathonDetailResponse.of(marathon, marathonTypeList);
+        String dDay = calculateDDay(marathon.getRaceStartTime());
+
+        return MarathonDetailResponse.of(marathon, marathonTypeList, dDay);
     }
 
     @Override
