@@ -114,7 +114,7 @@ public class UserController {
      * @param accessToken
      * @return User 삭제 성공 여부
      */
-    @DeleteMapping("/delete")
+    @DeleteMapping
     @Operation(summary = "회원탈퇴", description = "accessToken을 받아 DB에서 해당 사용자 정보를 삭제합니다.")
     public ResponseEntity<BooleanResponse> deleteUserByID(@RequestHeader("Authorization") String accessToken) {
         userService.deleteUserById(kakaoOauthClient.getUserInfo(accessToken).getEmail());

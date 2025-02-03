@@ -33,7 +33,7 @@ public class BankController {
      * 거래 내역 조회 API
      * @return transactionHistoryResponse
      */
-    @PostMapping("/retrieve")
+    @GetMapping
     @Operation(summary = "거래내역조회", description = "계좌거래내역을 확인합니다.")
     public ResponseEntity<Mono<TransactionHistoryResponse>> getTransactionHistory() {
         Mono<TransactionHistoryResponse> transactionHistoryResponse = nhBankClient.getTransactionHistory();
