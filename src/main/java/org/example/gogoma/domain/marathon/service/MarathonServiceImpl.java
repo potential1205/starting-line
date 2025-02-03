@@ -226,9 +226,46 @@ public class MarathonServiceImpl implements MarathonService {
 
     @Override
     @Transactional
-    public void updateMarathon(MarathonDetailRequest marathonDetailRequest) {
+    public void updateMarathon(MarathonDetailRequest marathonDetailRequest,
+                               MultipartFile thumbnailFile,
+                               MultipartFile infoImageFile,
+                               MultipartFile courseImageFile) {
+
         Marathon marathon = marathonRepository.findById(marathonDetailRequest.getMarathon().getId())
                 .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        String newThumbnailImageUrl = marathonDetailRequest.getMarathon().getThumbnailImage();
+        String newInfoImageUrl = marathonDetailRequest.getMarathon().getInfoImage();
+        String newCourseImageUrl = marathonDetailRequest.getMarathon().getCourseImage();
+
+        try {
+            if (marathon.getThumbnailImage() != null && !marathon.getThumbnailImage().isBlank()) {
+                s3ImageUtil.deleteImageByUrl(marathon.getThumbnailImage());
+            }
+
+            if (marathon.getInfoImage() != null && !marathon.getInfoImage().isBlank()) {
+                s3ImageUtil.deleteImageByUrl(marathon.getInfoImage());
+            }
+
+            if (marathon.getCourseImage() != null && !marathon.getCourseImage().isBlank()) {
+                s3ImageUtil.deleteImageByUrl(marathon.getCourseImage());
+            }
+
+            if (thumbnailFile.getSize() > 0) {
+                newThumbnailImageUrl = s3ImageUtil.uploadImage(thumbnailFile, "marathon/thumbnail");
+            }
+
+            if (infoImageFile.getSize() > 0) {
+                newInfoImageUrl = s3ImageUtil.uploadImage(infoImageFile, "marathon/info");
+            }
+
+            if (courseImageFile.getSize() > 0) {
+                newCourseImageUrl = s3ImageUtil.uploadImage(courseImageFile, "marathon/course");
+            }
+
+        } catch (IOException e) {
+            throw new BusinessException(ExceptionCode.BUSINESS_ERROR);
+        }
 
         marathon.update(
                 marathonDetailRequest.getMarathon().getTitle(),
@@ -250,7 +287,11 @@ public class MarathonServiceImpl implements MarathonService {
                 marathonDetailRequest.getMarathon().getHostList(),
                 marathonDetailRequest.getMarathon().getOrganizerList(),
                 marathonDetailRequest.getMarathon().getSponsorList(),
-                marathonDetailRequest.getMarathon().getMarathonStatus()
+                marathonDetailRequest.getMarathon().getMarathonStatus(),
+                marathonDetailRequest.getMarathon().getHomeUrl(),
+                newThumbnailImageUrl,
+                newInfoImageUrl,
+                newCourseImageUrl
         );
 
         marathonTypeRepository.deleteAllByMarathonId(marathon.getId());
@@ -263,7 +304,6 @@ public class MarathonServiceImpl implements MarathonService {
                         .etc(type.getEtc())
                         .build())
                 .toList();
-
 
         marathonTypeRepository.saveAll(marathonTypeList);
     }

@@ -66,9 +66,13 @@ public class MarathonController {
      */
     @PutMapping
     @Operation(summary = "마라톤 정보 수정", description = "마라톤 ID를 기준으로 기존 정보를 업데이트합니다.")
-    public ResponseEntity<BooleanResponse> updateMarathon(@RequestBody MarathonDetailRequest marathonDetailRequest) {
+    public ResponseEntity<BooleanResponse> updateMarathon(
+            @RequestPart @Valid MarathonDetailRequest marathonDetailRequest,
+            @RequestPart MultipartFile thumbnailFile,
+            @RequestPart MultipartFile infoImageFile,
+            @RequestPart MultipartFile courseImageFile) {
 
-        marathonService.updateMarathon(marathonDetailRequest);
+        marathonService.updateMarathon(marathonDetailRequest, thumbnailFile, infoImageFile, courseImageFile);
 
         return ResponseEntity.ok(BooleanResponse.success());
     }
