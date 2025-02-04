@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -225,6 +227,21 @@ fun AppNavigation(){
                         }
                     )
                 }
+            },
+            bottomButton = {
+                if(bottomSheetViewModel.pageName=="기본"){
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(55.dp),
+                        onClick = {
+                            marathonListViewModel.applyFilters()
+                            bottomSheetViewModel.hideBottomSheet()
+                        }
+                    ) {
+                        Text("대회 보기")
+                    }
+                }
             }
         ) {
 
@@ -246,16 +263,6 @@ fun AppNavigation(){
 
                         FilterListItemSelect(title, filterContent) {
                             bottomSheetViewModel.showSubPage(title, "필터")
-                        }
-                    }
-                    item {
-                        Button(
-                            onClick = {
-                                marathonListViewModel.applyFilters()
-                                bottomSheetViewModel.hideBottomSheet()
-                            }
-                        ) {
-                            Text("대회 보기")
                         }
                     }
                 } else {
