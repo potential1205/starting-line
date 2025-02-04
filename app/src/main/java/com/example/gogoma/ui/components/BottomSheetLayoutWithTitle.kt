@@ -1,6 +1,5 @@
 package com.example.gogoma.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,8 @@ fun BottomSheetContentWithTitle(
     title: String, //제목
     headerLeftContent : @Composable (() -> Unit)? = null, //뒤로 버튼 등 제목 좌측 요소
     headerRightContent : @Composable (() -> Unit)? = null, //제목 우측 요소
-    content: @Composable () -> Unit //내용
+    bottomButton: @Composable (() -> Unit)? = null, // 하단 버튼
+    content: @Composable () -> Unit, //내용
 ){
     Column(
         modifier = Modifier
@@ -73,7 +73,16 @@ fun BottomSheetContentWithTitle(
         // 제목과 내용 사이의 간격
         Spacer(modifier = Modifier.height(17.5.dp))
 
-        content()
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+        ) {
+            content()
+        }
+        bottomButton?.let {
+            it()
+        }
     }
 }
 
