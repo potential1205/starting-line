@@ -17,9 +17,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.gogoma.R
+import com.example.gogoma.data.model.SelectedFilters
 
 @Composable
-fun Filter(onFilterClick : (String) -> Unit){
+fun Filter(
+    onFilterClick: (String) -> Unit,
+    selectedFilters: SelectedFilters
+){
     val scrollState = rememberScrollState()
 
     Box(
@@ -44,31 +48,31 @@ fun Filter(onFilterClick : (String) -> Unit){
                 },
             )
             FilterChip(
-                text = "지역",
+                text = selectedFilters.city ?: "지역",
                 onCLick = {
                     onFilterClick("지역")
                 }
             )
             FilterChip(
-                text = "접수 상태",
+                text = selectedFilters.marathonStatus ?: "접수 상태",
                 onCLick = {
                     onFilterClick("접수 상태")
                 }
             )
             FilterChip(
-                text = "종목",
+                text = selectedFilters.courseTypeList?.joinToString(", ") ?: "종목",
                 onCLick = {
                     onFilterClick("종목")
                 }
             )
             FilterChip(
-                text = "년도",
+                text = selectedFilters.year ?: "년도",
                 onCLick = {
                     onFilterClick("년도")
                 }
             )
             FilterChip(
-                text = "월",
+                text = selectedFilters.month ?: "월",
                 onCLick = {
                     onFilterClick("월")
                 }

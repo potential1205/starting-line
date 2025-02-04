@@ -1,6 +1,7 @@
 package com.example.gogoma.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,12 @@ class BottomSheetViewModel : ViewModel() {
     // 현재 모달 내 페이지 상태
     var pageName by mutableStateOf("기본")
         private set
+
+    // 필터 변수
+    var selectedFilters = mutableStateListOf<String>()
+    // 사용자가 선택한 필터 항목을 저장하는 임시 리스트
+    // 대회 보기를 누르기 전까지 적용되지 않음
+
 
     fun showBottomSheet(page: String = "기본"){
         isBottomSheetVisible = true

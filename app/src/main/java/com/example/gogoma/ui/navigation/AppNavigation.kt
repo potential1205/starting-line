@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -82,8 +83,18 @@ fun AppNavigation(){
                 Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
                     MainScreen(
                         navController,
+                        marathonListViewModel = marathonListViewModel,
                         onFilterClick = { filter ->
-                            bottomSheetViewModel.showBottomSheet(filter) //Bottom Sheet 보이기
+                            if(!bottomSheetViewModel.isSubPageVisible){//하위페이지가 아니라면
+                                marathonListViewModel.updatePendingFilter(
+                                    marathonListViewModel.selectedFilters.city,
+                                    marathonListViewModel.selectedFilters.marathonStatus,
+                                    marathonListViewModel.selectedFilters.year,
+                                    marathonListViewModel.selectedFilters.month,
+                                    marathonListViewModel.selectedFilters.courseTypeList,
+                                )
+                            }
+                                bottomSheetViewModel.showBottomSheet(filter) //Bottom Sheet 보이기
                         },
                         onMarathonClick = { marathonId ->
                             // 마라톤 클릭 시 상세 페이지로 이동
@@ -97,10 +108,11 @@ fun AppNavigation(){
 
         composable("registList") {
             Scaffold (
-                topBar = { TopBarArrow (
-                    title = "신청 내역",
-                    onBackClick = { navController.popBackStack() }
-                )
+                topBar = {
+                    TopBarArrow (
+                        title = "신청 내역",
+                        onBackClick = { navController.popBackStack() }
+                    )
                 },
                 bottomBar = { BottomBar(navController = navController) }
             ){ paddingValues ->
@@ -223,8 +235,27 @@ fun AppNavigation(){
             LazyColumn {
                 if(bottomSheetViewModel.pageName == "기본"){
                     items(filterTitles) { title ->
-                        FilterListItemSelect(title, "모든 ${title}") {
+                        val filterContent = when (title) {
+                            "지역" -> marathonListViewModel.pendingFilters.city ?: "모든 지역"
+                            "접수 상태" -> marathonListViewModel.pendingFilters.marathonStatus ?: "모든 접수 상태"
+                            "종목" -> marathonListViewModel.pendingFilters.courseTypeList?.joinToString(", ") ?: "모든 종목"
+                            "년도" -> marathonListViewModel.pendingFilters.year ?: "모든 년도"
+                            "월" -> marathonListViewModel.pendingFilters.month ?: "모든 월"
+                            else -> "모든 ${title}"
+                        }
+
+                        FilterListItemSelect(title, filterContent) {
                             bottomSheetViewModel.showSubPage(title, "필터")
+                        }
+                    }
+                    item {
+                        Button(
+                            onClick = {
+                                marathonListViewModel.applyFilters()
+                                bottomSheetViewModel.hideBottomSheet()
+                            }
+                        ) {
+                            Text("대회 보기")
                         }
                     }
                 } else {
@@ -233,19 +264,48 @@ fun AppNavigation(){
                         item {
                             FilterListItemTitle(bottomSheetViewModel.pageName)
                         }
-                        items(contentList) { content ->
-                            FilterListItemContent(content, onClick = {
-                                // 필터 값 업데이트
+                        item {
+                            FilterListItemContent("전체", onClick = {
                                 when (bottomSheetViewModel.pageName) {
-                                    "지역" -> marathonListViewModel.updateFilters(city = content)
-                                    "접수 상태" -> marathonListViewModel.updateFilters(marathonStatus = content)
-                                    "종목" -> marathonListViewModel.updateFilters(courseTypeList = listOf(content))
-                                    "년도" -> marathonListViewModel.updateFilters(year = content)
-                                    "월" -> marathonListViewModel.updateFilters(month = content)
+                                    "지역" -> marathonListViewModel.updateFilters(city = null)
+                                    "접수 상태" -> marathonListViewModel.updateFilters(marathonStatus = null)
+                                    "종목" -> marathonListViewModel.updateFilters(courseTypeList = null)
+                                    "년도" -> marathonListViewModel.updateFilters(year = null)
+                                    "월" -> marathonListViewModel.updateFilters(month = null)
                                 }
 
                                 // 모달창 닫기
                                 bottomSheetViewModel.hideBottomSheet()
+                            })
+                        }
+                        items(contentList) { content ->
+                            FilterListItemContent(content, onClick = {
+
+                                if(bottomSheetViewModel.isSubPageVisible){//기본 페이지에서 들어간 경우
+                                    when (bottomSheetViewModel.pageName) {
+                                        "지역" -> marathonListViewModel.updatePendingFilter(city = content)
+                                        "접수 상태" -> marathonListViewModel.updatePendingFilter(marathonStatus = content)
+                                        "종목" -> marathonListViewModel.updatePendingFilter(courseTypeList = listOf(content))
+                                        "년도" -> marathonListViewModel.updatePendingFilter(year = content)
+                                        "월" -> marathonListViewModel.updatePendingFilter(month = content)
+                                    }
+
+                                    // 이전 모달창으로 돌아가기
+                                    bottomSheetViewModel.goBackToPreviousPage()
+                                }else{//하위 페이지에 바로 들어간 경우
+                                    // 필터 값 업데이트
+                                    when (bottomSheetViewModel.pageName) {
+                                        "지역" -> marathonListViewModel.updateFilters(city = content)
+                                        "접수 상태" -> marathonListViewModel.updateFilters(marathonStatus = content)
+                                        "종목" -> marathonListViewModel.updateFilters(courseTypeList = listOf(content))
+                                        "년도" -> marathonListViewModel.updateFilters(year = content)
+                                        "월" -> marathonListViewModel.updateFilters(month = content)
+                                    }
+
+                                    // 모달창 닫기
+                                    bottomSheetViewModel.hideBottomSheet()
+                                }
+
                             })
                         }
                     } else {

@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.gogoma.ui.components.Filter
 import com.example.gogoma.ui.components.MarathonListItem
@@ -23,11 +22,10 @@ import com.example.gogoma.viewmodel.MarathonListViewModel
 @Composable
 fun MainScreen(
     navController: NavController,
+    marathonListViewModel: MarathonListViewModel,
     onFilterClick: (String) -> Unit,
     onMarathonClick: (Int) -> Unit,
 ) {
-    // ViewModel에서 상태를 직접 읽습니다.
-    val marathonListViewModel: MarathonListViewModel = viewModel()
     val marathonList = marathonListViewModel.marathonSearchResponseList
     val isLoading = marathonListViewModel.isLoading
     val errorMessage = marathonListViewModel.errorMessage
@@ -35,6 +33,7 @@ fun MainScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
         // 오류 메시지가 있을 경우 표시
         errorMessage?.let { msg ->
             Box(
@@ -61,7 +60,10 @@ fun MainScreen(
         ) {
             // 필터 컴포넌트
             item {
-                Filter(onFilterClick = onFilterClick)
+                Filter(
+                    onFilterClick = onFilterClick,
+                    selectedFilters = marathonListViewModel.selectedFilters
+                )
             }
             // 로딩 중일 때
             if (isLoading) {
