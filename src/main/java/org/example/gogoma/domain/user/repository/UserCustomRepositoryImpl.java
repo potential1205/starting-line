@@ -1,12 +1,16 @@
 package org.example.gogoma.domain.user.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.example.gogoma.controller.response.ApplyResponse;
+import org.example.gogoma.domain.user.dto.FriendResponse;
+import org.example.gogoma.domain.user.entity.QFriend;
 import org.example.gogoma.domain.user.entity.QUser;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 public class UserCustomRepositoryImpl implements UserCustomRepository {
@@ -52,5 +56,34 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .fetchOne();
 
         return Optional.ofNullable(userId);
+    }
+
+    @Override
+    public Optional<List<FriendResponse>> findFriendsOrderByTotalDistanceDesc(int userId) {
+        QUser user = QUser.user;
+        QFriend friend = QFriend.friend;
+
+        List<FriendResponse> result = queryFactory
+                .select(Projections.constructor(
+                        FriendResponse.class,
+                        user.id,
+                        user.name,
+                        user.profileImage,
+                        user.totalDistance
+                ))
+                .from(user)
+                .where(
+                        user.id.eq(userId)
+                                .or(user.id.in(
+                                        JPAExpressions
+                                                .select(friend.friendId)
+                                                .from(friend)
+                                                .where(friend.userId.eq(userId))
+                                ))
+                )
+                .orderBy(user.totalDistance.desc())
+                .fetch();
+
+        return Optional.ofNullable(result);
     }
 }

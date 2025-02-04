@@ -5,8 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.FriendListResponse;
 import org.example.gogoma.domain.user.dto.FriendResponse;
+import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
+import org.example.gogoma.external.kakao.oauth.KakaoFriendResponse;
 import org.example.gogoma.domain.user.entity.Friend;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.FriendRepository;
@@ -18,6 +19,7 @@ import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,16 +70,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int getIdByEmail(String email){
-        return userCustomRepository.findIdByEmail(email)
-                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
-    }
-
-    @Override
     @Transactional
-    public void updateFriend(int userId, FriendListResponse friendListResponse) {
-        for (FriendResponse friendResponse: friendListResponse.getFriends()){
-            Optional<User> friendOptional = userRepository.findByKakaoId(friendResponse.getId());
+    public void updateFriend(int userId, KakaoFriendListResponse kakaoFriendListResponse) {
+        for (KakaoFriendResponse kakaoFriendResponse : kakaoFriendListResponse.getFriends()){
+            Optional<User> friendOptional = userRepository.findByKakaoId(kakaoFriendResponse.getId());
 
             if(friendOptional.isPresent()){
                 User friend = friendOptional.get();
@@ -91,5 +87,18 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
+    @Override
+    public int getIdByEmail(String email){
+        return userCustomRepository.findIdByEmail(email)
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public List<FriendResponse> getFriendListOrderByTotalDistance(String email) {
+        return userCustomRepository.findFriendsOrderByTotalDistanceDesc(getIdByEmail(email))
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+    }
+
 
 }

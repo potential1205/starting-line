@@ -1,20 +1,19 @@
 package org.example.gogoma.domain.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FriendResponse {
 
-        @JsonProperty("id")
-        private Long id;
+    private int friendId;
 
-        @JsonProperty("uuid")
-        private String uuid;
+    private String name;
 
-        @JsonProperty("profile_nickname")
-        private String profileNickname;
+    private String profileImage;
 
-        @JsonProperty("profile_thumbnail_image")
-        private String profileThumbnailImage;
+    private int totalDistance;
 }
