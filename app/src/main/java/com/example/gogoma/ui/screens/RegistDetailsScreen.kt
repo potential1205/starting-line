@@ -17,9 +17,10 @@ import com.example.gogoma.data.model.PaymentDetail
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.PaymentDetails
 import com.example.gogoma.ui.components.TopBarArrow
+import com.example.gogoma.viewmodel.UserViewModel
 
 @Composable
-fun RegistDetailsScreen(registId: Int, navController: NavController) {
+fun RegistDetailsScreen(registId: Int, navController: NavController, userViewModel: UserViewModel) {
     val paymentDetails = PaymentDetail(
         paymentDate = "2025-01-29",
         paymentType = "신용카드",
@@ -31,7 +32,7 @@ fun RegistDetailsScreen(registId: Int, navController: NavController) {
 
     Scaffold(
         topBar = { TopBarArrow(title = "신청 상세") { navController.popBackStack() } },
-        bottomBar = { BottomBar(navController) }
+        bottomBar = { BottomBar(navController, userViewModel) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -53,5 +54,5 @@ fun RegistDetailsScreen(registId: Int, navController: NavController) {
 @Composable
 fun RegistDetailsScreenPreview() {
     val navController = rememberNavController()
-    RegistDetailsScreen(1, navController)
+    RegistDetailsScreen(1, navController, userViewModel = UserViewModel())
 }

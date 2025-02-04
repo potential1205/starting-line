@@ -45,9 +45,11 @@ import com.example.gogoma.ui.screens.PaymentScreen
 import com.example.gogoma.ui.screens.PaymentStatusScreen
 import com.example.gogoma.ui.screens.RegistDetailsScreen
 import com.example.gogoma.ui.screens.RegistListScreen
+import com.example.gogoma.ui.screens.SignScreen
 import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonListViewModel
 import com.example.gogoma.viewmodel.PaymentViewModel
+import com.example.gogoma.viewmodel.UserViewModel
 
 @Composable
 fun AppNavigation(){
@@ -55,6 +57,7 @@ fun AppNavigation(){
     val bottomSheetViewModel : BottomSheetViewModel = viewModel()
     val marathonListViewModel: MarathonListViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
+    val userViewModel: UserViewModel = viewModel()
 
     // 뒤로 가기 동작 정의
     BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
@@ -80,7 +83,7 @@ fun AppNavigation(){
         composable("main") {
             Scaffold (
                 topBar = { TopBar() },
-                bottomBar = { BottomBar(navController = navController) }
+                bottomBar = { BottomBar(navController = navController, userViewModel) }
             ){ paddingValues ->
                 Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
                     MainScreen(
@@ -116,7 +119,7 @@ fun AppNavigation(){
                         onBackClick = { navController.popBackStack() }
                     )
                 },
-                bottomBar = { BottomBar(navController = navController) }
+                bottomBar = { BottomBar(navController = navController, userViewModel) }
             ){ paddingValues ->
                 Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
                     RegistListScreen(
@@ -136,7 +139,7 @@ fun AppNavigation(){
         ) { backStackEntry ->
             val registId = backStackEntry.arguments?.getInt("id")
             registId?.let {
-                RegistDetailsScreen(registId = it, navController = navController)
+                RegistDetailsScreen(registId = it, navController = navController, userViewModel)
             }
         }
 
@@ -166,19 +169,11 @@ fun AppNavigation(){
         }
 
         composable("mypage") {
-            Scaffold (
-                topBar = { TopBarArrow (
-                    title = "마이 페이지",
-                    onBackClick = { navController.popBackStack() }
-                )
-                },
-                bottomBar = { BottomBar(navController = navController) }
-            ){ paddingValues ->
-                Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
-                    MypageScreen(navController = navController)
-                }
+            MypageScreen(navController, userViewModel)
+        }
 
-            }
+        composable("signpage") {
+            SignScreen(navController, userViewModel)
         }
 
         // 결제 성공 화면

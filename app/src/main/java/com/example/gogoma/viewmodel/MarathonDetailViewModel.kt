@@ -24,7 +24,7 @@ class MarathonDetailViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 // RetrofitInstance를 사용하여 API 호출
-                val response = RetrofitInstance.apiService.getMarathonById(marathonId)
+                val response = RetrofitInstance.marathonApiService.getMarathonById(marathonId)
                 if (response.isSuccessful) {
                     marathonDetail = response.body()
                 } else {
