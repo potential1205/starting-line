@@ -14,11 +14,14 @@ pipeline {
         }
         stage('Prepare SSH Key') {
             steps {
-                withCredentials([file(credentialsId: 'ec2-key', variable: 'EC2_KEY_FILE')]) {
-                    sh '''
-                        chmod 400 $EC2_KEY_FILE
-                        ls -l $EC2_KEY_FILE
-                    '''
+                // 'ec2-key'를 secret text로 받습니다.
+                withCredentials([string(credentialsId: 'ec2-key', variable: 'EC2_KEY_CONTENT')]) {
+                 sh '''
+                     # Secret text로 받은 내용을 ec2_key.pem 파일로 저장
+                     echo "${EC2_KEY_CONTENT}" > ec2_key.pem
+                     chmod 400 ec2_key.pem
+                     ls -l ec2_key.pem
+                 '''
                 }
             }
         }
