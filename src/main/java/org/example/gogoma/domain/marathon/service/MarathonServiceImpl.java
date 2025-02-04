@@ -350,6 +350,8 @@ public class MarathonServiceImpl implements MarathonService {
                 "제주특별자치도"
         ));
 
+        Set<String> marathonTypeSet = new HashSet<>();
+
         List<MarathonPreviewDto> marathonPreviewDtoList = marathonList.stream()
                 .map(marathon -> {
                     List<MarathonType> marathonTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId());
@@ -361,6 +363,8 @@ public class MarathonServiceImpl implements MarathonService {
                             .stream()
                             .sorted()
                             .toList();
+
+                    marathonTypeSet.addAll(courseTypeList);
 
                     return MarathonPreviewDto.builder()
                             .id(marathon.getId())
@@ -382,7 +386,7 @@ public class MarathonServiceImpl implements MarathonService {
                 .sorted(Comparator.comparing(MarathonPreviewDto::getRaceStartTime))
                 .toList();
 
-        return MarathonSearchResponse.of(marathonPreviewDtoList, cityList);
+        return MarathonSearchResponse.of(marathonPreviewDtoList, cityList, marathonTypeSet.stream().toList());
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {
