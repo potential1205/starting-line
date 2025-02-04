@@ -12,6 +12,21 @@ import com.example.gogoma.data.model.SelectedFilters
 import kotlinx.coroutines.launch
 
 class MarathonListViewModel : ViewModel() {
+    var selectedFilters by mutableStateOf(SelectedFilters())
+    var pendingFilters by mutableStateOf(SelectedFilters()) //임시 저장 변수
+
+    //마라톤 리스트 내용
+    var marathonSearchResponseList by mutableStateOf<List<MarathonPreviewDto>>(emptyList())
+        private set
+    var cityList by mutableStateOf<List<String>>(emptyList())
+        private set
+
+    var isLoading by mutableStateOf(false)
+        private set
+
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
     //필터 내용
     val filterTitles = listOf(
         "지역",
@@ -21,26 +36,14 @@ class MarathonListViewModel : ViewModel() {
         "월"
     )
 
-    val filterContents = mapOf(
-        "지역" to listOf("서울특별시", "경기도", "부산광역시"),
-        "접수 상태" to listOf("OPEN", "CLOSED", "FINISHED"),
-        "종목" to listOf("마라톤", "하프마라톤", "10km", "5km"),
-        "년도" to (2025 downTo 2000).map { "${it}년" },
-        "월" to (1..12).map { "${it}월" }
-    )
-
-    var selectedFilters by mutableStateOf(SelectedFilters())
-    var pendingFilters by mutableStateOf(SelectedFilters()) //임시 저장 변수
-
-    //마라톤 리스트 내용
-    var marathonSearchResponseList by mutableStateOf<List<MarathonPreviewDto>>(emptyList())
-        private set
-
-    var isLoading by mutableStateOf(false)
-        private set
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    val filterContents: Map<String, List<String>>
+        get() = mapOf(
+            "지역" to cityList,  // 동적으로 cityList를 반영
+            "접수 상태" to listOf("OPEN", "CLOSED", "FINISHED"),
+            "종목" to listOf("마라톤", "하프마라톤", "10km", "5km"),
+            "년도" to (2025 downTo 2000).map { "${it}년" },
+            "월" to (1..12).map { "${it}월" }
+        )
 
     init {
         loadMarathons()
@@ -61,6 +64,7 @@ class MarathonListViewModel : ViewModel() {
                 )
                 if (response.isSuccessful) {
                     marathonSearchResponseList = response.body()?.marathonPreviewDtoList ?: emptyList()
+                    cityList = response.body()?.cityList ?: emptyList()
                 } else {
                     errorMessage = "Failed to load data: ${response.code()}"
                 }
