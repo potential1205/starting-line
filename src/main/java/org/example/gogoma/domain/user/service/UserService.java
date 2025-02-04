@@ -27,4 +27,6 @@ public interface UserService {
     int getIdByEmail(String email);
 
     List<FriendResponse> getFriendListOrderByTotalDistance(String email);
+
+    List<FriendResponse> getUpcomingMarathonFriendList(String email);
 }

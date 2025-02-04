@@ -155,4 +155,10 @@ public class UserController {
         return ResponseEntity.ok(friendResponses);
     }
 
+    @GetMapping("/upcoming/friends")
+    @Operation(summary = "나에게 가장 가까이 다가온 대회에 신청한 친구 목록 조회", description = "accessToken을 사용하여 내가 신청한 가장 가까운 대회에 신청한 친구 목록을 조회합니다.")
+    public ResponseEntity<List<FriendResponse>> getUpcomingMarathonFriendList(@RequestHeader("Authorization") String accessToken) {
+        List<FriendResponse> friendResponses = userService.getUpcomingMarathonFriendList(kakaoOauthClient.getUserInfo(accessToken).getEmail());
+        return ResponseEntity.ok(friendResponses);
+    }
 }

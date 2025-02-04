@@ -3,6 +3,7 @@ package org.example.gogoma.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.controller.response.ApplyResponse;
+import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
 import org.example.gogoma.domain.user.dto.FriendResponse;
@@ -100,5 +101,14 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
     }
 
+    @Override
+    public List<FriendResponse> getUpcomingMarathonFriendList(String email) {
+        int userId = getIdByEmail(email);
+        Marathon upComingMarathon = userCustomRepository.findUpcomingMarathonForUser(userId)
+                .orElseThrow(() -> new DbException((ExceptionCode.MARATHON_NOT_FOUND)));
+
+        return userCustomRepository.findFriendsWhoAppliedForMarathon(userId, upComingMarathon.getId())
+                .orElseThrow(() -> new DbException((ExceptionCode.USER_NOT_FOUND)));
+    }
 
 }
