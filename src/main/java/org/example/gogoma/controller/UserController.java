@@ -6,7 +6,8 @@ import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.FriendListResponse;
+import org.example.gogoma.domain.user.dto.FriendResponse;
+import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
@@ -14,6 +15,8 @@ import org.example.gogoma.external.kakao.oauth.KakaoUrlBuilder;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -77,9 +80,9 @@ public class UserController {
      */
     @GetMapping("/kakao/friendInfo")
     @Operation(summary = "카카오 친구 목록 조회", description = "AccessToken을 통해 카카오 친구 목록을 조회합니다.")
-    public ResponseEntity<FriendListResponse> getKakaoFriendList(@RequestHeader("Authorization") String accessToken) {
-        FriendListResponse friendListResponse = kakaoOauthClient.getFriendList(accessToken);
-        return ResponseEntity.ok(friendListResponse);
+    public ResponseEntity<KakaoFriendListResponse> getKakaoFriendList(@RequestHeader("Authorization") String accessToken) {
+        KakaoFriendListResponse kakaoFriendListResponse = kakaoOauthClient.getFriendList(accessToken);
+        return ResponseEntity.ok(kakaoFriendListResponse);
     }
     
     /**
@@ -92,8 +95,8 @@ public class UserController {
     public ResponseEntity<BooleanResponse> login(@RequestHeader("Authorization") String accessToken) {
         KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
         userService.updateUser(kakaoUserInfo);
-        FriendListResponse friendListResponse = kakaoOauthClient.getFriendList(accessToken);
-        userService.updateFriend(userService.getIdByEmail(kakaoUserInfo.getEmail()),friendListResponse);
+        KakaoFriendListResponse kakaoFriendListResponse = kakaoOauthClient.getFriendList(accessToken);
+        userService.updateFriend(userService.getIdByEmail(kakaoUserInfo.getEmail()), kakaoFriendListResponse);
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
@@ -145,4 +148,17 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+    @GetMapping("/friends")
+    @Operation(summary = "친구 목록 누적 거리 순으로 조회", description = "accessToken을 사용하여 사용자의 친구 목록을 누적 거리 순으로 조회합니다.")
+    public ResponseEntity<List<FriendResponse>> getFriendListOrderByTotalDistance(@RequestHeader("Authorization") String accessToken) {
+        List<FriendResponse> friendResponses = userService.getFriendListOrderByTotalDistance(kakaoOauthClient.getUserInfo(accessToken).getEmail());
+        return ResponseEntity.ok(friendResponses);
+    }
+
+    @GetMapping("/upcoming/friends")
+    @Operation(summary = "나에게 가장 가까이 다가온 대회에 신청한 친구 목록 조회", description = "accessToken을 사용하여 내가 신청한 가장 가까운 대회에 신청한 친구 목록을 조회합니다.")
+    public ResponseEntity<List<FriendResponse>> getUpcomingMarathonFriendList(@RequestHeader("Authorization") String accessToken) {
+        List<FriendResponse> friendResponses = userService.getUpcomingMarathonFriendList(kakaoOauthClient.getUserInfo(accessToken).getEmail());
+        return ResponseEntity.ok(friendResponses);
+    }
 }

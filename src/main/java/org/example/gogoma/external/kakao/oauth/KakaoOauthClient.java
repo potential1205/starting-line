@@ -1,7 +1,6 @@
 package org.example.gogoma.external.kakao.oauth;
 
 import lombok.RequiredArgsConstructor;
-import org.example.gogoma.domain.user.dto.FriendListResponse;
 import org.example.gogoma.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -60,12 +59,12 @@ public class KakaoOauthClient {
                 .block();
     }
 
-    public FriendListResponse getFriendList(String accessToken) {
+    public KakaoFriendListResponse getFriendList(String accessToken) {
         return webClient.get()
                 .uri(FRIEND_INFO_URL)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
-                .bodyToMono(FriendListResponse.class)
+                .bodyToMono(KakaoFriendListResponse.class)
                 .block();
     }
 
