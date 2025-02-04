@@ -3,6 +3,7 @@ pipeline {
     stages {
         stage('Prepare Secret') {
             steps {
+                //test용 주석 추가
                 withCredentials([string(credentialsId: 'application-secrets', variable: 'APPLICATION_SECRETS')]) {
                     sh '''
                         echo "${APPLICATION_SECRETS}" > ./src/main/resources/secret.properties
