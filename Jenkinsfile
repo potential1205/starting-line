@@ -1,12 +1,21 @@
 pipeline {
     agent any
     stages {
-        stage('Prepare Secret') {
+         stage('Find Properties') {
+             steps {
+                 // 현재 디렉토리부터 재귀적으로 secrets.properties 파일 검색
+                 sh 'find . -type f -name "application.properties"'
+             }
+         }
+        stage('Prepare Secrets') {
             steps {
-                //test용 주석 추가
-                withCredentials([string(credentialsId: 'application-secrets', variable: 'APPLICATION_SECRETS')]) {
+                // withCredentials를 사용해 secret file을 TEMP_FILE 변수에 할당
+                withCredentials([file(credentialsId: 'secret-properties', variable: 'SECRET_FILE')]) {
                     sh '''
-                        echo "${APPLICATION_SECRETS}" > ./src/main/resources/secret.properties
+                        # 기존 secrets.properties 파일 삭제 (존재하지 않아도 오류 없이 진행)
+                        rm -f src/main/resources/secrets.properties
+                        # 새로운 secrets.properties 파일 복사
+                        cp "$SECRET_FILE" src/main/resources/secrets.properties
                     '''
                 }
             }
@@ -22,17 +31,12 @@ pipeline {
                 withCredentials([
                     sshUserPrivateKey(
                         credentialsId: 'server-ssh',    // SSH Username with private key 타입으로 등록한 credentials ID
-                        keyFileVariable: 'SSH_KEY_FILE', // Jenkins가 임시 파일 경로를 저장할 변수명
-                        usernameVariable: 'SERVER_USER'  // SSH 사용자명을 저장할 변수명
+                        keyFileVariable: 'SSH_KEY_FILE', // Jenkins가 임시 파일 경로를 저장할 변수
+                        usernameVariable: 'SERVER_USER'  // ssh 사용자명
                     ),
                     string(credentialsId: 'server-ip', variable: 'SERVER_IP')
                 ]) {
-                        // 빌드 결과물 위치 확인: build/libs 디렉토리 내 파일 목록 출력
-                        sh '''
-                            echo "Listing files in build/libs:"
-                            ls -l build/libs
-                        '''
-                        // 파일 경로 확인 후 전송 (빌드 결과물이 build/libs 폴더에 있다고 가정)
+                        // 빌드
                         sh '''
                             echo "Transferring JAR file to remote server..."
                             scp -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no build/libs/gogoma-0.0.1-SNAPSHOT.jar ${SERVER_USER}@${SERVER_IP}:/home/ubuntu/backend/
@@ -40,7 +44,7 @@ pipeline {
                         // 원격 서버에서 docker-compose 실행
                         sh '''
                             echo "Updating springboot container on remote server..."
-                            ssh -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "cd /home/ubuntu/backend && sudo docker-compose -f /home/ubuntu/docker-compose.yml up -d springboot"
+                            ssh -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "cd /home/ubuntu && sudo docker-compose stop springboot && sudo docker-compose up -d --build springboot"
                         '''
                 }
             }
