@@ -3,6 +3,7 @@ package org.example.gogoma.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.request.CreateMarathonRequest;
 import org.example.gogoma.controller.request.MarathonDetailRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/marathons")
 @CrossOrigin("*")
+@Slf4j
 public class MarathonController {
 
     private final MarathonService marathonService;
@@ -52,7 +54,7 @@ public class MarathonController {
     @GetMapping("/{id}")
     @Operation(summary = "마라톤 정보 조회", description = "마라톤 ID를 이용해 마라톤 정보를 조회합니다.")
     public ResponseEntity<MarathonDetailResponse> getMarathonById(@PathVariable int id) {
-
+        log.info("log: 현재 마라톤 정보 조회를 호출했습니다.");
         MarathonDetailResponse marathonDetailResponse = marathonService.getMarathonById(id);
 
         return ResponseEntity.ok(marathonDetailResponse);
