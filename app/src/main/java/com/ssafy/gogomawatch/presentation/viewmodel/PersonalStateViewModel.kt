@@ -3,6 +3,7 @@ package com.ssafy.gogomawatch.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import com.ssafy.gogomawatch.presentation.screens.PersonalState
 import kotlinx.coroutines.delay
@@ -25,6 +26,9 @@ class PersonalStateViewModel : ViewModel() {
     private val _targetTime = mutableStateOf(0)
     val targetTime: State<Int> = _targetTime
 
+    // 색상 상태 추가
+    private val _currentColor = mutableStateOf(Color.Gray)
+    val currentColor: State<Color> = _currentColor
 
     init {
         // 목표 시간 계산
@@ -35,6 +39,7 @@ class PersonalStateViewModel : ViewModel() {
             while (true) {
                 delay(2000L)
                 _personalState.value = _personalState.value.copy(currentPace = generateRandomPace())
+                updateColor() // 색상 업데이트
             }
         }
 
@@ -70,5 +75,22 @@ class PersonalStateViewModel : ViewModel() {
     private fun calculateTargetTime() {
         val targetTimeInSeconds = (personalState.value.targetPace * personalState.value.totalDistance).toInt()
         _targetTime.value = targetTimeInSeconds
+    }
+
+    // 색상 계산 함수
+    private fun updateColor() {
+        val currentPace = _personalState.value.currentPace
+        val targetPace = _personalState.value.targetPace
+
+        // 페이스 차이를 계산하여 색상을 결정
+        val paceDifference = currentPace - targetPace
+
+        val color = when {
+            paceDifference <= 0 -> Color.Green // 목표보다 빠를 때
+            paceDifference <= 30 -> Color.Yellow // 목표보다 약간 느림 (차이 30초 이하)
+            else -> Color.Red // 목표보다 너무 느림 (차이 30초 초과)
+        }
+
+        _currentColor.value = color
     }
 }

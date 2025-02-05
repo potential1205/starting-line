@@ -12,7 +12,6 @@ import androidx.wear.compose.material.MaterialTheme
 import com.ssafy.gogomawatch.presentation.components.ProgressBar
 import com.ssafy.gogomawatch.presentation.viewmodel.PersonalStateViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ssafy.gogomawatch.presentation.components.ChangeColor
 import com.ssafy.gogomawatch.presentation.components.PersonalStatus
 
 @Composable
@@ -23,7 +22,7 @@ fun PersonalScreen () {
     val personalState = personalStateViewModel.personalState.value
 
     // ChangeColor 함수로 색상 계산
-    val currentColor = ChangeColor(personalState.targetPace, personalState.currentPace)
+    val currentColor = personalStateViewModel.currentColor.value
 
     // ViewModel에서 currentIndex 가져오기
     val currentIndex = personalStateViewModel.currentIndex.value
