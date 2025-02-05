@@ -268,16 +268,30 @@ fun AppNavigation(){
                         }
                         item {
                             FilterListItemContent("전체", onClick = {
-                                when (bottomSheetViewModel.pageName) {
-                                    "지역" -> marathonListViewModel.updateFilters(city = null)
-                                    "접수 상태" -> marathonListViewModel.updateFilters(marathonStatus = null)
-                                    "종목" -> marathonListViewModel.updateFilters(courseTypeList = null)
-                                    "년도" -> marathonListViewModel.updateFilters(year = null)
-                                    "월" -> marathonListViewModel.updateFilters(month = null)
-                                }
+                                if(bottomSheetViewModel.isSubPageVisible){//기본 페이지에서 들어간 경우
+                                    when (bottomSheetViewModel.pageName) {
+                                        "지역" -> marathonListViewModel.updatePendingFilter(city = null)
+                                        "접수 상태" -> marathonListViewModel.updatePendingFilter(marathonStatus = null)
+                                        "종목" -> marathonListViewModel.updatePendingFilter(courseTypeList = null)
+                                        "년도" -> marathonListViewModel.updatePendingFilter(year = null)
+                                        "월" -> marathonListViewModel.updatePendingFilter(month = null)
+                                    }
 
-                                // 모달창 닫기
-                                bottomSheetViewModel.hideBottomSheet()
+                                    // 이전 모달창으로 돌아가기
+                                    bottomSheetViewModel.goBackToPreviousPage()
+                                }else{//하위 페이지에 바로 들어간 경우
+                                    // 필터 값 업데이트
+                                    when (bottomSheetViewModel.pageName) {
+                                        "지역" -> marathonListViewModel.updateFilters(city = null)
+                                        "접수 상태" -> marathonListViewModel.updateFilters(marathonStatus = null)
+                                        "종목" -> marathonListViewModel.updateFilters(courseTypeList = null)
+                                        "년도" -> marathonListViewModel.updateFilters(year = null)
+                                        "월" -> marathonListViewModel.updateFilters(month = null)
+                                    }
+
+                                    // 모달창 닫기
+                                    bottomSheetViewModel.hideBottomSheet()
+                                }
                             })
                         }
                         items(contentList) { content ->
