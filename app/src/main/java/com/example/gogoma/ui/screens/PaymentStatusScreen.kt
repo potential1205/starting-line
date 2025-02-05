@@ -72,7 +72,7 @@ fun PaymentStatusScreen(
                 onClick = onConfirm
             )
         } else {
-            BottomBar(navController = rememberNavController())
+//            BottomBar(navController = rememberNavController())
         }
     }
 }

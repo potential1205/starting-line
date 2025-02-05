@@ -1,6 +1,5 @@
 package com.example.gogoma.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,19 +14,24 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.viewmodel.UserViewModel
 
 @Composable
-fun BottomBar(navController : NavController){
+fun BottomBar(navController : NavController, userViewModel: UserViewModel){
+    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
+
     val bottomInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     Row(
@@ -71,7 +75,13 @@ fun BottomBar(navController : NavController){
                 modifier = Modifier.size(34.dp).padding(3.dp)
             )
         }
-        IconButton (onClick = { navController.navigate("mypage") }){
+        IconButton (onClick = {
+            if (isLoggedIn) {
+                navController.navigate("mypage")
+            } else {
+                navController.navigate("signpage")
+            }
+        }){
             Icon(
                 painter = painterResource(id = R.drawable.logo_image),
                 contentDescription = "icon of mypage",
@@ -86,6 +96,6 @@ fun BottomBar(navController : NavController){
 @Composable
 fun BottomBarPreview() {
     GogomaTheme {
-        BottomBar(navController = rememberNavController())
+        BottomBar(navController = rememberNavController(), userViewModel = viewModel())
     }
 }

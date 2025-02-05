@@ -54,7 +54,7 @@ class MarathonListViewModel : ViewModel() {
         errorMessage = null
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.apiService.getMarathons(
+                val response = RetrofitInstance.marathonApiService.getMarathons(
                     selectedFilters.marathonStatus,
                     selectedFilters.city,
                     selectedFilters.year,
