@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class PersonalStateViewModel : ViewModel() {
-    private val _personalState = mutableStateOf(PersonalState(totalDistance = 2000, targetPace = 330f))
+    private val _personalState = mutableStateOf(PersonalState(totalDistance = 2000.0f, targetPace = 330f))
     val personalState: State<PersonalState> = _personalState
 
     init {

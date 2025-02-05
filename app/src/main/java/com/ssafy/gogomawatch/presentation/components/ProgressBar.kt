@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.CircularProgressIndicator
@@ -27,15 +28,11 @@ import androidx.wear.compose.material.Text
 import kotlin.random.Random
 
 @Composable
-fun ProgressBar(distance: Int, totalDistance: Int, currentPace: Float, targetPace: Float) {
+fun ProgressBar(distance: Float, totalDistance: Float, currentPace: Float, targetPace: Float, progressBarColor: Color) {
     var progress by remember { mutableStateOf(0f) } // Progress percentage
 
     // Calculate progress as a percentage
     val progress_dis = (distance / totalDistance.toFloat()).coerceIn(0f, 1f)
-
-    // ChangeColor 함수로 색상 계산
-    val progressBarColor = ChangeColor(targetPace, currentPace)
-
     Box(
         modifier = Modifier
             .fillMaxSize(),
