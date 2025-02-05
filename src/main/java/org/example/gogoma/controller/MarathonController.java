@@ -54,7 +54,6 @@ public class MarathonController {
     @GetMapping("/{id}")
     @Operation(summary = "마라톤 정보 조회", description = "마라톤 ID를 이용해 마라톤 정보를 조회합니다.")
     public ResponseEntity<MarathonDetailResponse> getMarathonById(@PathVariable int id) {
-        log.info("log: 현재 마라톤 정보 조회를 호출했습니다.");
         MarathonDetailResponse marathonDetailResponse = marathonService.getMarathonById(id);
 
         return ResponseEntity.ok(marathonDetailResponse);
