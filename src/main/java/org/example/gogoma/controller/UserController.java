@@ -7,6 +7,7 @@ import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
 import org.example.gogoma.domain.user.dto.FriendResponse;
+import org.example.gogoma.domain.user.dto.StatusResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
@@ -45,8 +46,20 @@ public class UserController {
     @GetMapping("/kakao/callback")
     @Operation(summary = "callback 후 가입 여부 확인", description = "인가코드를 통해 정보를 받아와 회원가입 여부를 판단하고 토큰을 반환합니다.")
     public ResponseEntity<KakaoClientOauthTokenResponse> handleKakaoCallback(@RequestParam("code") String code) {
-        KakaoClientOauthTokenResponse kakaoClientOauthTokenResponse = kakaoOauthClient.determineLoginOrSignup(code);
+        KakaoClientOauthTokenResponse kakaoClientOauthTokenResponse = kakaoOauthClient.determineLoginOrSignupWithWeb(code);
         return ResponseEntity.ok(kakaoClientOauthTokenResponse);
+    }
+
+    /**
+     * 회원가입 판단 여부
+     * @header AccessToken
+     * @return access_Token, refresh_Token, status ( login, signup )
+     */
+    @GetMapping("/auth/check")
+    @Operation(summary = "토큰을 통해 회원가입 판단 여부 확인", description = "토큰을 통해 회원가입 여부를 판단하고 상태를 반환합니다.")
+    public ResponseEntity<StatusResponse> determineLoginOrSignUp(@RequestHeader("Authorization") String accessToken) {
+        StatusResponse statusResponse = kakaoOauthClient.determineLoginOrSignup(accessToken);
+        return ResponseEntity.ok(statusResponse);
     }
 
     /**
@@ -83,6 +96,13 @@ public class UserController {
     public ResponseEntity<KakaoFriendListResponse> getKakaoFriendList(@RequestHeader("Authorization") String accessToken) {
         KakaoFriendListResponse kakaoFriendListResponse = kakaoOauthClient.getFriendList(accessToken);
         return ResponseEntity.ok(kakaoFriendListResponse);
+    }
+
+    @PostMapping("/update/friend")
+    @Operation(summary = "카카오 친구 목록 조회", description = "AccessToken을 통해 카카오 친구 목록을 조회합니다.")
+    public ResponseEntity<BooleanResponse> updateFriendList(@RequestHeader("Authorization") String accessToken) {
+        userService.updateFriend(userService.getIdByEmail(kakaoOauthClient.getUserInfo(accessToken).getEmail()),kakaoOauthClient.getFriendList(accessToken));
+        return ResponseEntity.ok(BooleanResponse.success());
     }
     
     /**

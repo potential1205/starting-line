@@ -1,6 +1,7 @@
 package org.example.gogoma.external.kakao.oauth;
 
 import lombok.RequiredArgsConstructor;
+import org.example.gogoma.domain.user.dto.StatusResponse;
 import org.example.gogoma.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class KakaoOauthClient {
     private static final String USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
     private static final String FRIEND_INFO_URL = "https://kapi.kakao.com/v1/api/talk/friends";
 
-    public KakaoClientOauthTokenResponse determineLoginOrSignup(String code) {
+    public KakaoClientOauthTokenResponse determineLoginOrSignupWithWeb(String code) {
         KakaoClientOauthTokenResponse tokens = getToken(code);
         String accessToken = tokens.getAccessToken();
         String refreshToken = tokens.getRefreshToken();
@@ -33,6 +34,15 @@ public class KakaoOauthClient {
 
         String status = isUserExists ? "login" : "signup";
         return KakaoClientOauthTokenResponse.of(accessToken, refreshToken, status);
+    }
+
+    public StatusResponse determineLoginOrSignup(String accessToken) {
+
+        KakaoUserInfo userInfo = getUserInfo(accessToken);
+        boolean isUserExists = userRepository.findByEmail(userInfo.getEmail()).isPresent();
+
+        String status = isUserExists ? "login" : "signup";
+        return StatusResponse.of(status);
     }
 
     public KakaoClientOauthTokenResponse getToken(String authorizationCode) {
