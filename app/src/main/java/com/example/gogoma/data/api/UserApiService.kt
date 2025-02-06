@@ -1,17 +1,54 @@
 package com.example.gogoma.data.api
 
+import com.example.gogoma.data.model.BooleanResponse
 import com.example.gogoma.data.model.CreateUserRequest
-import com.example.gogoma.data.model.CreateUserResponse
+import com.example.gogoma.data.model.KakaoClientOauthTokenResponse
+import com.example.gogoma.data.model.KakaoUserInfo
+import com.example.gogoma.data.model.StatusResponse
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface UserApiService {
 
-    //카카오 회원가입
+    //카카오 인가코드 받아오기
+    @GET("api/v1/users/kakao/login")
+    suspend fun redirectToKakaoLogin(
+        @Header("Authorization") accessToken: String
+    ) : Response<ResponseBody>
+
+    //카카오 콜백 함수
+    @GET("api/v1/users/kakao/callback")
+    suspend fun handleKakaoCallback(
+        @Query("code") code: String
+    ): Response<KakaoClientOauthTokenResponse>
+
+    // 로그인/회원가입 판단
+    @GET("api/v1/users/auth/check")
+    suspend fun determineLoginOrSignUp(
+        @Header("Authorization") accessToken: String
+    ): Response<StatusResponse>
+
+    //꼬마 서비스 회원가입
     @POST("api/v1/users/signup")
-    suspend fun signupKakao(
+    suspend fun signup(
         @Body request: CreateUserRequest
-    ): Response<CreateUserResponse>
+    ): Response<BooleanResponse>
+
+    //꼬마 서비스 로그인
+    @POST("api/v1/users/login")
+    suspend fun login(
+        @Header("Authorization") accessToken: String
+    ): Response<BooleanResponse>
+
+    // 카카오 User 정보 조회 API
+    @GET("api/v1/users/kakao/userinfo")
+    suspend fun getKakaoUserInfo(
+        @Header("Authorization") accessToken: String
+    ): Response<KakaoUserInfo>
 
 }
