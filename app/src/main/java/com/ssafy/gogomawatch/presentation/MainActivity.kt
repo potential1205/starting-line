@@ -24,6 +24,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.ssafy.gogomawatch.R
+import com.ssafy.gogomawatch.presentation.screens.PersonalScreen
 import com.ssafy.gogomawatch.presentation.theme.GogomaWatchTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +36,7 @@ class MainActivity : ComponentActivity() {
         setTheme(android.R.style.Theme_DeviceDefault)
 
         setContent {
-            WearApp("Android")
+            PersonalScreen()
         }
     }
 }
