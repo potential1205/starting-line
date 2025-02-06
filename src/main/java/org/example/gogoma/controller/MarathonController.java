@@ -52,7 +52,7 @@ public class MarathonController {
     @GetMapping("/{id}")
     @Operation(summary = "마라톤 정보 조회", description = "마라톤 ID를 이용해 마라톤 정보를 조회합니다.")
     public ResponseEntity<MarathonDetailResponse> getMarathonById(@PathVariable int id) {
-
+        
         MarathonDetailResponse marathonDetailResponse = marathonService.getMarathonById(id);
 
         return ResponseEntity.ok(marathonDetailResponse);
