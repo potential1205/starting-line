@@ -1,12 +1,6 @@
 pipeline {
     agent any
     stages {
-         stage('Find Properties') {
-             steps {
-                 // 현재 디렉토리부터 재귀적으로 secrets.properties 파일 검색
-                 sh 'find . -type f -name "application.properties"'
-             }
-         }
         stage('Prepare Secrets') {
             steps {
                 // withCredentials를 사용해 secret file을 TEMP_FILE 변수에 할당
@@ -38,21 +32,19 @@ pipeline {
                 ]) {
                         // 빌드
                         sh '''
-                            echo "Transferring JAR file to remote server..."
                             scp -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no build/libs/gogoma-0.0.1-SNAPSHOT.jar ${SERVER_USER}@${SERVER_IP}:/home/ubuntu/backend/
                         '''
                         // 원격 서버에서 docker-compose 실행
                         sh '''
-                            echo "Updating springboot container on remote server..."
                             ssh -i "$SSH_KEY_FILE" -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} "cd /home/ubuntu && sudo docker-compose stop springboot && sudo docker-compose up -d --build springboot"
                         '''
                 }
             }
         }
     }
-    post {
-        failure {
-            echo "Build or deployment failed. Please check the logs."
-        }
-    }
+     post {
+       failure {
+           echo "Build or deployment failed. Please check the logs."
+       }
+   }
 }
