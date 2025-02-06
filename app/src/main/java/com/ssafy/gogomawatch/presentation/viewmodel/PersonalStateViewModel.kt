@@ -37,7 +37,7 @@ class PersonalStateViewModel : ViewModel() {
         // 5초마다 currentPace를 갱신
         viewModelScope.launch {
             while (true) {
-                delay(2000L)
+                delay(5000L)
                 _personalState.value = _personalState.value.copy(currentPace = generateRandomPace())
                 updateColor() // 색상 업데이트
             }

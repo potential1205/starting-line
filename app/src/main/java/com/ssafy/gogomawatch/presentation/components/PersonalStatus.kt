@@ -32,7 +32,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
         Text (
             text = title,
             style = TextStyle(
-                fontSize = 12.sp,
+                fontSize = 15.sp,
                 fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                 color = Color(0xFFFFFFFF),
             )
@@ -46,7 +46,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
             Text(
                 text = current,
                 style = TextStyle(
-                    fontSize = 30.sp,
+                    fontSize = 38.sp,
                     fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
                     color = currentColor,
 
@@ -56,7 +56,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
                 Text(
                     text = it,
                     style = TextStyle(
-                        fontSize = 20.sp,
+                        fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
                         color = currentColor,
                     )
@@ -73,12 +73,12 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
                 painter = painterResource(id = R.drawable.icon_flag),
                 contentDescription = "image description",
                 tint = Color(0xFFB6B6B6),
-                modifier = Modifier.size(12.dp)
+                modifier = Modifier.size(17.dp)
             )
             Text(
                 text = goal,
                 style = TextStyle(
-                    fontSize = 12.sp,
+                    fontSize = 15.sp,
                     fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                     color = Color(0xFFB6B6B6),
                 )
@@ -87,7 +87,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
                 Text(
                     text = it,
                     style = TextStyle(
-                        fontSize = 12.sp,
+                        fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                         color = Color(0xFFB6B6B6),
                     )

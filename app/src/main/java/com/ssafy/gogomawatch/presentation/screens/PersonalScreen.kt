@@ -13,6 +13,7 @@ import com.ssafy.gogomawatch.presentation.components.ProgressBar
 import com.ssafy.gogomawatch.presentation.viewmodel.PersonalStateViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.gogomawatch.presentation.components.PersonalStatus
+import kotlin.math.floor
 
 @Composable
 fun PersonalScreen () {
@@ -71,7 +72,8 @@ fun formatTime(seconds: Int): String {
 
 // 거리 포맷팅 함수
 fun formatDistance(distance: Float): String {
-    return "%.3f".format(distance) // km 단위로 3자리 소수점까지 표시하고 반올림
+    val truncatedValue = floor(distance * 100) / 100 // 소수점 둘째 자리까지 내림
+    return "%.2f".format(truncatedValue)
 }
 
 @Preview
