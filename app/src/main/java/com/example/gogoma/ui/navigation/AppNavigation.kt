@@ -23,6 +23,8 @@ import com.example.gogoma.ui.components.TopBar
 import com.example.gogoma.ui.screens.MainScreen
 import com.example.gogoma.ui.screens.SplashScreen
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,18 +48,27 @@ import com.example.gogoma.ui.screens.PaymentStatusScreen
 import com.example.gogoma.ui.screens.RegistDetailsScreen
 import com.example.gogoma.ui.screens.RegistListScreen
 import com.example.gogoma.ui.screens.SignScreen
+import com.example.gogoma.ui.screens.SignUpScreen
 import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonListViewModel
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
-fun AppNavigation(){
+fun AppNavigation(userViewModel: UserViewModel){
     val navController = rememberNavController()
     val bottomSheetViewModel : BottomSheetViewModel = viewModel()
     val marathonListViewModel: MarathonListViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
-    val userViewModel: UserViewModel = viewModel()
+
+    // 로그인 상태 감지
+    LaunchedEffect(userViewModel.loginStatus) {
+        if (userViewModel.loginStatus == "signup") {
+            navController.navigate("signup") // signup 상태일 때 회원가입 화면으로 이동
+        }
+    }
 
     // 뒤로 가기 동작 정의
     BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
@@ -174,6 +185,10 @@ fun AppNavigation(){
 
         composable("signpage") {
             SignScreen(navController, userViewModel)
+        }
+
+        composable("signup") {
+            SignUpScreen(navController = navController, userViewModel = userViewModel)
         }
 
         // 결제 성공 화면
@@ -351,5 +366,5 @@ fun AppNavigation(){
 @Preview(showBackground = true)
 @Composable
 fun AppNavigationPreview() {
-    AppNavigation()
+    AppNavigation(UserViewModel())
 }

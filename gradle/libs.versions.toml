@@ -11,6 +11,7 @@ composeBom = "2024.04.01"
 playServicesWearable = "19.0.0"
 composeMaterial = "1.2.1"
 composeFoundation = "1.2.1"
+v2User = "2.20.6"
 wearToolingPreview = "1.0.0"
 coreSplashscreen = "1.0.1"
 tiles = "1.4.0"
@@ -28,6 +29,7 @@ coroutines = "1.7.3"
 securityCrypto = "1.1.0-alpha06"
 coil = "2.5.0"
 gson = "2.8.9"
+androidx-browser = "1.5.0"
 
 
 [libraries]
@@ -70,6 +72,8 @@ coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", vers
 security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
+v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
