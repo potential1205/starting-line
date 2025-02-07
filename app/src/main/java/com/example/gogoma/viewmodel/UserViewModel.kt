@@ -40,43 +40,31 @@ class UserViewModel() : ViewModel() {
         private set
 
     fun init(context: Context) {
-        println("init은 실행되었음!")
         //앱이 시작되면 SharedPreferences에서 저장된 access token과 refresh token을 확인
         accessToken = TokenManager.getAccessToken(context)
         refreshToken = TokenManager.getRefreshToken(context)
 
-        println("엑세스 토큰: "+accessToken)
-        println("리프레시 토큰: "+refreshToken)
-
         if(accessToken != null && !TokenManager.isTokenExpired(context)) {
             isLoggedIn = true
-            println("이곳에 들어왔다~")
         } else {
-            println("여기로 들어와버렸다 ㅠㅠ")
             refreshAccessToken(context)
         }
     }
 
     fun refreshAccessToken(context: Context) {
         val storedRefreshToken = TokenManager.getRefreshToken(context)
-        println("얘는 store임"+storedRefreshToken)
         if (storedRefreshToken != null) {
-            println("널이 아니라 들어왔어!")
             // refresh token을 서버로 보내서 새로운 access token을 요청
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val response = RetrofitInstance.userApiService.refreshAccessToken(storedRefreshToken)
 
                     if (response.isSuccessful) {
-                        println("성공에 진입!")
                         // 요청 성공 시 새로운 access token을 받아 TokenManager에 저장
                         val newAccessToken = response.body()?.access_token
                         val newRefreshToken = response.body()?.refresh_token
 
-                        println("이건 새 엑세스"+newAccessToken)
-                        println("이건 새 리프레시"+newRefreshToken)
                         if (newAccessToken != null && newRefreshToken != null) {
-                            println("드디어 이곳에 진입..")
                             val expirationTime = System.currentTimeMillis() + 3600000  // 만료 시간 1시간 후
                             TokenManager.saveTokens(context, newAccessToken, newRefreshToken, expirationTime)
                             // TokenManager에서 새로운 access token을 가져와 isLoggedIn을 true로 설정
