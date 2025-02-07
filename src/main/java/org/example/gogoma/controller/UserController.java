@@ -4,10 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.ApplyResponse;
-import org.example.gogoma.domain.user.dto.CreateUserRequest;
+import org.example.gogoma.domain.user.dto.*;
 import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.FriendResponse;
-import org.example.gogoma.domain.user.dto.StatusResponse;
+import org.example.gogoma.external.firebase.FirebaseNotificationClient;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
 import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.external.kakao.oauth.KakaoClientOauthTokenResponse;
@@ -16,6 +15,7 @@ import org.example.gogoma.external.kakao.oauth.KakaoUrlBuilder;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -145,12 +145,12 @@ public class UserController {
     }
 
     /**
-     * 신청 시 필요한 정보
+     * 마라톤 신청 시 필요한 정보
      * @Path accessToken
      * @return applyResponse
      */
     @GetMapping("/apply")
-    @Operation(summary = "신청 시 필요한 정보", description = "accessToken을 통해 신청 시 필요한 정보를 받아옵니다.")
+    @Operation(summary = "마라톤 신청 시 필요한 정보", description = "accessToken을 통해 신청 시 필요한 정보를 받아옵니다.")
     public ResponseEntity<ApplyResponse> getApplyInfoById(@RequestHeader("Authorization") String accessToken) {
         ApplyResponse applyResponse = userService.getApplyInfoById(kakaoOauthClient.getUserInfo(accessToken).getEmail());
         return ResponseEntity.ok(applyResponse);
@@ -180,5 +180,12 @@ public class UserController {
     public ResponseEntity<List<FriendResponse>> getUpcomingMarathonFriendList(@RequestHeader("Authorization") String accessToken) {
         List<FriendResponse> friendResponses = userService.getUpcomingMarathonFriendList(kakaoOauthClient.getUserInfo(accessToken).getEmail());
         return ResponseEntity.ok(friendResponses);
+    }
+
+    @PostMapping("/alert/friends")
+    @Operation(summary = "신청 시 친구에게 알림", description = "신청 시 내가 신청한 대회에 친구들에게 내가 신청했다는 알림 푸시")
+    public ResponseEntity<BooleanResponse> sendPushNotification(@RequestBody FcmRequest fcmRequest) {
+         userService.sendNotificationToFriends(fcmRequest);
+        return ResponseEntity.ok(BooleanResponse.success());
     }
 }

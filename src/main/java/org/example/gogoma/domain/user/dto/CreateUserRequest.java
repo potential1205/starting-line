@@ -17,4 +17,5 @@ public class CreateUserRequest {
     private String roadAddress;
     private String detailAddress;
     private String clothingSize;
+    private String fcmToken;
 }

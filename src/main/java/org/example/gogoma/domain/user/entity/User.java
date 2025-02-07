@@ -52,6 +52,8 @@ public class User {
 
     private int totalDistance;
 
+    private String fcmToken;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -69,7 +71,9 @@ public class User {
                 .roadAddress(createUserRequest.getRoadAddress())
                 .detailAddress(createUserRequest.getDetailAddress())
                 .clothingSize(createUserRequest.getClothingSize())
+                .fcmToken(createUserRequest.getFcmToken())
                 .totalDistance(0)
+
                 .build();
     }
 
