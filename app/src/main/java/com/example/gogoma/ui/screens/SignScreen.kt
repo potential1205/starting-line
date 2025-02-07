@@ -85,6 +85,7 @@ fun SignScreen(navController: NavController, userViewModel: UserViewModel) {
                             if (success) {
                                 Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
                                 Log.i("SignScreen", "로그인 성공")
+                                navController.navigate("mypage")
                             } else {
                                 Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
                                 Log.e("SignScreen", "로그인 실패")
