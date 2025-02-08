@@ -67,13 +67,13 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
             userViewModel.signUpUser(context = context, createUserRequest = request) { success ->
                 if (success) {
                     // 회원가입 성공 시 메인 화면으로 이동
-                    navController.navigate("main_screen") {
+                    navController.navigate("mypage") {
                         // 회원가입 후 뒤로 가기 스택을 없애기 위한 설정
-                        popUpTo("sign_up_screen") { inclusive = true }
+                        popUpTo("signup") { inclusive = true }
                     }
                 } else {
                     // 회원가입 실패 처리
-                    println("되지 아니하다")
+                    println("회원가입 실패")
                 }
             }
         }) {

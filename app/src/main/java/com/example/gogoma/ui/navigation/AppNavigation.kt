@@ -361,10 +361,3 @@ fun AppNavigation(userViewModel: UserViewModel){
         }
     )
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun AppNavigationPreview() {
-    AppNavigation(UserViewModel())
-}

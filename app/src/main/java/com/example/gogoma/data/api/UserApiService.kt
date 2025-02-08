@@ -27,6 +27,11 @@ interface UserApiService {
         @Query("code") code: String
     ): Response<KakaoClientOauthTokenResponse>
 
+    @POST("api/v1/users/kakao/refresh")
+    suspend fun refreshAccessToken(
+        @Header("Authorization") refreshToken: String
+    ): Response<KakaoClientOauthTokenResponse>
+
     // 로그인/회원가입 판단
     @GET("api/v1/users/auth/check")
     suspend fun determineLoginOrSignUp(
