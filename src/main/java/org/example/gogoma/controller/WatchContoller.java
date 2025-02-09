@@ -2,6 +2,7 @@ package org.example.gogoma.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.gogoma.domain.watch.service.WatchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/watch")
 public class WatchContoller {
+
+    private final WatchService watchService;
 
     @GetMapping("/ranking")
     public ResponseEntity<List<String>> getRanking() {
@@ -34,6 +37,14 @@ public class WatchContoller {
     @PostMapping("/send")
     public ResponseEntity<String> sendString(@RequestBody String request) {
         System.out.println("Receive a message from the watch " + request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/start/{userId}")
+    public ResponseEntity<String> sendMarathonStartInitData(@PathVariable int userId) {
+
+        watchService.sendMarathonStartInitData(userId);
 
         return ResponseEntity.ok().build();
     }
