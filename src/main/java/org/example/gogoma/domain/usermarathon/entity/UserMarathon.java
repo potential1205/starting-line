@@ -40,4 +40,6 @@ public class UserMarathon {
     private LocalDateTime paymentDateTime;
 
     private int marathonTypeId;
+
+    private int targetPace;
 }

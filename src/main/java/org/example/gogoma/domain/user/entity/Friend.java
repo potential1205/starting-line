@@ -30,6 +30,8 @@ public class Friend {
     @Column(nullable = false)
     private int friendId;
 
+    private String friendName;
+
     public static Friend of(int userId, int friendId) {
         return Friend.builder()
                 .userId(userId)

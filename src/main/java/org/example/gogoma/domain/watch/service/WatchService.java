@@ -1,5 +1,7 @@
 package org.example.gogoma.domain.watch.service;
 
+import org.example.gogoma.controller.response.MarathonStartInitDataResponse;
+
 public interface WatchService {
-    void sendMarathonStartInitData(int userId);
+    MarathonStartInitDataResponse sendMarathonStartInitData(int userId, int marathonId);
 }
