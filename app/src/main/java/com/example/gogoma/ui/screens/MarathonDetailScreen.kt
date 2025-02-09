@@ -24,16 +24,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.gogoma.R
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.ui.components.BottomBarButtonFull
 import com.example.gogoma.ui.components.FormattedDate
+import com.example.gogoma.ui.components.HashTag
 import com.example.gogoma.ui.components.InfoTableRow
 import com.example.gogoma.ui.components.TextBoxSmall
 import com.example.gogoma.ui.components.TopBarArrow
@@ -90,7 +93,9 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                 )
             }
         ){ paddingValues ->
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)){
                 // 마라톤 상세 정보
                 LazyColumn {
                     item {
@@ -150,11 +155,18 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                                     )
                                 )
                             }
+                            Row(
+                                modifier = Modifier
+                                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.0371174812316895.dp, Alignment.Start),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                 marathonDetail.marathonTypeList.forEach { type ->
+                                    HashTag(type.courseType)
+                                }
+                            }
 
-                        }
-                    }
-                    item {
-                        Column() {
+                            //대회 정보
                             val formattedRaceStartTime = FormattedDate(marathonDetail.marathon.raceStartTime)
                             InfoTableRow(label = "대회일시", value = formattedRaceStartTime)
                             InfoTableRow(label = "대회장소", value = marathonDetail.marathon.location)
@@ -190,8 +202,8 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                             InfoTableRow(label = "대회후원", value = marathonDetail.marathon.sponsorList.joinToString(", ") { "${it}" })
                         }
                     }
-
-
+                    
+                    //대회 이미지
                     item {
                         Row(
                             modifier = Modifier
@@ -239,4 +251,10 @@ fun ImageOrPlaceholder(imageUrl: String?) {
         )
     }
     }
+}
+
+@Preview
+@Composable
+fun MarathonDetailScreenPreview(){
+    MarathonDetailScreen(25, rememberNavController())
 }
