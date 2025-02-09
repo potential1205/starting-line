@@ -45,11 +45,13 @@ fun PaymentStatusScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        if (isSuccess) {
-            TopBarArrow("신청 완료", {})
-        } else {
-            TopBar()
-        }
+//        if (isSuccess) {
+//            TopBarArrow("신청 완료", {})
+//        } else {
+//            TopBar()
+//        }
+        TopBarArrow(title = if (isSuccess) "신청 완료" else "결제 실패", onBackClick = {})
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
@@ -64,16 +66,23 @@ fun PaymentStatusScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (isSuccess) {
-            BottomBarButton(
-                text = "완료",
-                backgroundColor = BrandColor1,
-                textColor = Color.White,
-                onClick = onConfirm
-            )
-        } else {
-//            BottomBar(navController = rememberNavController())
-        }
+//        if (isSuccess) {
+//            BottomBarButton(
+//                text = "완료",
+//                backgroundColor = BrandColor1,
+//                textColor = Color.White,
+//                onClick = onConfirm
+//            )
+//        } else {
+////            BottomBar(navController = rememberNavController())
+//        }
+        BottomBarButton(
+            text = "완료",
+            backgroundColor = BrandColor1,
+            textColor = Color.White,
+            onClick = onConfirm
+        )
+
     }
 }
 

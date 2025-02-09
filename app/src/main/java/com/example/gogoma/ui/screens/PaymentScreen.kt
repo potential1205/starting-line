@@ -1,5 +1,7 @@
 package com.example.gogoma.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,11 +9,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.gogoma.data.dto.KakaoPayReadyRequest
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.ui.components.*
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.data.model.MarathonDetailResponse
 import com.google.gson.Gson
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,9 +28,7 @@ fun PaymentScreen(
 ) {
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     var marathonDetail by remember { mutableStateOf<MarathonDetailResponse?>(null) }
-
     val gson = remember { Gson() } // ✅ Gson 인스턴스
-
 
     // ✅ 마라톤 상세 데이터를 가져오기
     LaunchedEffect(marathonId) {
@@ -39,6 +42,32 @@ fun PaymentScreen(
 
     var selectedPrice by remember { mutableStateOf(0) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
+    val kakaoPayReadyResponse by viewModel.kakaoPayReadyResponse.collectAsState()
+
+    // ✅ 여기서 regist 객체 생성
+    val regist = marathonDetail?.let { detail ->
+        val currentDate = SimpleDateFormat("yy.MM.dd", Locale.KOREA).format(Date())
+
+        val rawDate = detail.marathon.raceStartTime.substring(0, 10)
+        val formattedDate = try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
+            val outputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA)
+            val date = inputFormat.parse(rawDate)
+            outputFormat.format(date)
+        } catch (e: Exception) {
+            Log.e("PaymentScreen", "❌ 날짜 변환 실패: ${e.message}")
+            rawDate
+        }
+
+        val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
+
+        Regist(
+            registrationDate = currentDate,
+            title = detail.marathon.title,
+            date = formattedDate,
+            distance = distanceOnly
+        )
+    }
 
     Scaffold(
         topBar = { TopBarArrow(title = "결제하기", onBackClick = { navController.popBackStack() }) }
@@ -152,8 +181,14 @@ fun PaymentScreen(
 
                         when (selectedPayment) {
                             "카카오페이" -> {
-                                // **✅ NavController에 데이터 직접 전달**
-                                navController.navigate("paymentSuccess/$registJson")
+                                viewModel.requestKakaoPayReady(
+                                    KakaoPayReadyRequest(
+                                        userId = "1", // 커밋 후 연동
+                                        orderId = marathonId.toString(),
+                                        itemName = marathonDetail?.marathon?.title ?: "마라톤 참가권",
+                                        totalAmount = selectedPrice.toString()
+                                    )
+                                )
                             }
                             "토스" -> navController.navigate("paymentFailure")
                         }
@@ -161,8 +196,22 @@ fun PaymentScreen(
                 },
                 enabled = isAgreementChecked && selectedOption != null
             )
-
         }
     }
+    LaunchedEffect(kakaoPayReadyResponse) {
+        kakaoPayReadyResponse?.let { response ->
+            val paymentUrl = response.next_redirect_mobile_url ?: ""
+            val registJson = gson.toJson(regist)
+
+            // ✅ 데이터 저장
+            navController.currentBackStackEntry?.savedStateHandle?.set("paymentUrl", paymentUrl)
+            navController.currentBackStackEntry?.savedStateHandle?.set("registJson", registJson)
+
+            // ✅ 경로로는 단순히 이동만
+            navController.navigate("paymentWebViewScreen")
+        }
+    }
+
+
 }
 

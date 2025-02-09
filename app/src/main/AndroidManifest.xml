@@ -25,8 +25,14 @@
             android:theme="@style/Theme.Gogoma">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="gogoma" android:host="payment" android:pathPrefix="/result/success" />
+                <data android:scheme="gogoma" android:host="payment" android:pathPrefix="/result/fail" />
+                <data android:scheme="gogoma" android:host="payment" android:pathPrefix="/result/cancel" />
             </intent-filter>
         </activity>
     </application>

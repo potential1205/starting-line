@@ -1,5 +1,6 @@
 package com.example.gogoma.ui.navigation
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -55,6 +56,9 @@ import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.gogoma.ui.screens.PaymentWebViewScreen
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun AppNavigation(userViewModel: UserViewModel){
@@ -196,19 +200,36 @@ fun AppNavigation(userViewModel: UserViewModel){
             "paymentSuccess/{registJson}",
             arguments = listOf(navArgument("registJson") { type = NavType.StringType })
         ) { backStackEntry ->
-            val registJson = backStackEntry.arguments?.getString("registJson")
+            val registJsonEncoded = backStackEntry.arguments?.getString("registJson")
+            val registJson = registJsonEncoded?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) }
             PaymentStatusScreen(isSuccess = true, registJson = registJson, onConfirm = { navController.navigate("main") })
         }
-
 
         // 결제 실패 화면
         composable("paymentFailure") {
             PaymentStatusScreen(
                 isSuccess = false,
-                registJson = null,  // 🔥 실패 시에는 registJson을 넘기지 않음
+                registJson = null,  // 실패 시에는 registJson을 넘기지 않음
                 onConfirm = { navController.popBackStack() },
                 onNavigateToMain = { navController.navigate("main") }
             )
+        }
+
+        composable("paymentWebViewScreen") {
+            val paymentUrl = navController.previousBackStackEntry?.savedStateHandle?.get<String>("paymentUrl") ?: ""
+            val registJson = navController.previousBackStackEntry?.savedStateHandle?.get<String>("registJson") ?: ""
+
+            PaymentWebViewScreen(
+                navController = navController,
+                paymentUrl = paymentUrl,
+                viewModel = paymentViewModel,
+                registJson = registJson
+            )
+            val pgToken = Uri.parse(paymentUrl).getQueryParameter("pg_token") ?: ""
+            if (pgToken.isNotEmpty()) {
+                paymentViewModel.handlePaymentRedirect(pgToken)
+            }
+
         }
     }
 
