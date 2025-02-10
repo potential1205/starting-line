@@ -12,6 +12,7 @@ import androidx.wear.compose.material.MaterialTheme
 import com.ssafy.gogomawatch.presentation.components.ProgressBar
 import com.ssafy.gogomawatch.presentation.viewmodel.PersonalStateViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.wear.tooling.preview.devices.WearDevices
 import com.ssafy.gogomawatch.presentation.components.PersonalStatus
 import kotlin.math.floor
 
@@ -76,7 +77,7 @@ fun formatDistance(distance: Float): String {
     return "%.2f".format(truncatedValue)
 }
 
-@Preview
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun PersonalScreenPreview() {
     PersonalScreen()
