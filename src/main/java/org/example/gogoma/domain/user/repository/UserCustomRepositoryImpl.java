@@ -6,12 +6,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
-import org.example.gogoma.domain.marathon.entity.QMarathon;
+import static org.example.gogoma.domain.marathon.entity.QMarathon.marathon;
 import org.example.gogoma.domain.user.dto.FriendResponse;
 import org.example.gogoma.domain.user.dto.FriendToken;
-import org.example.gogoma.domain.user.entity.QFriend;
-import org.example.gogoma.domain.user.entity.QUser;
-import org.example.gogoma.domain.usermarathon.entity.QUserMarathon;
+import static org.example.gogoma.domain.user.entity.QFriend.friend;
+import static org.example.gogoma.domain.user.entity.QUser.user;
+import static org.example.gogoma.domain.usermarathon.entity.QUserMarathon.userMarathon;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -28,7 +28,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     @Override
     public Optional<ApplyResponse> getApplyInfoById(int id) {
-        QUser user = QUser.user;
 
         ApplyResponse result = queryFactory
                 .select(Projections.constructor(ApplyResponse.class,
@@ -52,23 +51,18 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     @Override
     public Optional<Integer> findIdByEmail(String email) {
-        QUser user = QUser.user;
 
-        Integer userId = queryFactory
+        return Optional.ofNullable(queryFactory
                 .select(user.id)
                 .from(user)
                 .where(user.email.eq(email))
-                .fetchOne();
-
-        return Optional.ofNullable(userId);
+                .fetchOne());
     }
 
     @Override
     public Optional<List<FriendResponse>> findFriendsOrderByTotalDistanceDesc(int userId) {
-        QUser user = QUser.user;
-        QFriend friend = QFriend.friend;
 
-        List<FriendResponse> result = queryFactory
+        return Optional.ofNullable(queryFactory
                 .select(Projections.constructor(
                         FriendResponse.class,
                         user.id,
@@ -87,17 +81,13 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                                 ))
                 )
                 .orderBy(user.totalDistance.desc())
-                .fetch();
-
-        return Optional.ofNullable(result);
+                .fetch());
     }
 
     @Override
     public Optional<Marathon> findUpcomingMarathonForUser(int userId) {
-        QUserMarathon userMarathon = QUserMarathon.userMarathon;
-        QMarathon marathon = QMarathon.marathon;
 
-        Marathon upcomingMarathon = queryFactory
+        return Optional.ofNullable(queryFactory
                 .select(marathon)
                 .from(userMarathon)
                 .join(marathon).on(marathon.id.eq(userMarathon.marathonId))
@@ -106,18 +96,13 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                                 .and(marathon.raceStartTime.after(LocalDateTime.now()))
                 )
                 .orderBy(marathon.raceStartTime.asc())
-                .fetchFirst();
-
-        return Optional.ofNullable(upcomingMarathon);
+                .fetchFirst());
     }
 
     @Override
     public Optional<List<FriendResponse>> findFriendsWhoAppliedForMarathon(int userId, int marathonId) {
-        QFriend friend = QFriend.friend;
-        QUser user = QUser.user;
-        QUserMarathon userMarathon = QUserMarathon.userMarathon;
 
-        List<FriendResponse> result = queryFactory
+        return Optional.ofNullable(queryFactory
                 .select(Projections.constructor(
                         FriendResponse.class,
                         user.id,
@@ -131,20 +116,15 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .on(userMarathon.userId.eq(friend.friendId)
                         .and(userMarathon.marathonId.eq(marathonId)))
                 .where(friend.userId.eq(userId))
-                .fetch();
-
-        return Optional.ofNullable(result);
+                .fetch());
     }
 
     public Optional<List<FriendToken>> findFcmTokensOfFriendsInMarathon(int userId, int marathonId) {
-        QFriend friend = QFriend.friend;
-        QUser user = QUser.user;
-        QUserMarathon userMarathon = QUserMarathon.userMarathon;
 
-        List<FriendToken> friendTokens = queryFactory
+        return Optional.ofNullable(queryFactory
                 .select(Projections.constructor(
                         FriendToken.class,
-                        user.pfmToken
+                        user.fcmToken
                 ))
                 .from(user)
                 .where(user.id.in(
@@ -159,9 +139,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                                         )
                         )
                 )
-                .fetch();
-
-        return Optional.ofNullable(friendTokens);
+                .fetch());
     }
 
 }
