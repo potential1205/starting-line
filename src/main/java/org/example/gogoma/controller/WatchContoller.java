@@ -17,11 +17,12 @@ public class WatchContoller {
 
     private final WatchService watchService;
 
-    @GetMapping("/start/users/{userId}/marathons/{marathonId}")
-    public ResponseEntity<MarathonStartInitDataResponse> sendMarathonStartInitData(@PathVariable int userId, @PathVariable int marathonId) {
+    @GetMapping("/start/marathons/{marathonId}")
+    public ResponseEntity<MarathonStartInitDataResponse> sendMarathonStartInitData(
+            @RequestHeader("Authorization") String accessToken, @PathVariable int marathonId) {
 
         MarathonStartInitDataResponse marathonStartInitDataResponse =
-                watchService.sendMarathonStartInitData(userId, marathonId);
+                watchService.sendMarathonStartInitData(accessToken, marathonId);
 
         return ResponseEntity.ok(marathonStartInitDataResponse);
     }
