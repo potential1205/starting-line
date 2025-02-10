@@ -4,13 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.controller.response.UpcomingMarathonInfoResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
-import org.example.gogoma.domain.user.entity.User;
-import org.example.gogoma.domain.user.repository.UserRepository;
 import org.example.gogoma.domain.usermarathon.service.UserMarathonService;
-import org.example.gogoma.exception.ExceptionCode;
-import org.example.gogoma.exception.type.DbException;
-import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
-import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/usermarathons")
 public class UserMarathonController {
 
-    private final UserRepository userRepository;
-    private final KakaoOauthClient kakaoOauthClient;
     private final UserMarathonService userMarathonService;
 
     @GetMapping
@@ -52,6 +44,4 @@ public class UserMarathonController {
 
         return ResponseEntity.ok(upcomingMarathonInfoResponse);
     }
-
-
 }
