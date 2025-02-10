@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,38 +19,55 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.gogoma.data.model.Friend
 import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.FriendListItem
+import com.example.gogoma.ui.components.TopBarArrow
 import com.example.gogoma.viewmodel.FriendsViewModel
+import com.example.gogoma.viewmodel.UserViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun FriendListScreen(friendsViewModel: FriendsViewModel) {
+fun FriendListScreen(
+    navController: NavController,
+    userViewModel: UserViewModel,
+    friendsViewModel: FriendsViewModel
+) {
     val friends = friendsViewModel.friends.collectAsState()
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        friendsViewModel.fetchFriends("yourAccessToken")
+        friendsViewModel.fetchFriends(userViewModel.accessToken)
 
         friendsViewModel.errorMessage.collectLatest { message ->
             errorMessage = message
         }
     }
 
-    Column {
-        if (errorMessage != null) {
-            Text(text = errorMessage ?:"", color = Color.Red)
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 20.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                itemsIndexed(friends.value) { index, friend ->
-                    FriendListItem(friend.copy(rank = index + 1))
+    Scaffold (
+        topBar = { TopBarArrow (
+            title = "친구",
+            onBackClick = { navController.popBackStack() }
+        )
+        },
+        bottomBar = { BottomBar(navController = navController, userViewModel) }
+    ){ paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)){
+            if (errorMessage != null) {
+                Text(text = errorMessage ?:"", color = Color.Red)
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 20.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(friends.value) { index, friend ->
+                        FriendListItem(friend.copy(rank = index + 1))
+                    }
                 }
             }
         }
