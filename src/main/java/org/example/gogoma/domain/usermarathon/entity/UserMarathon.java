@@ -18,6 +18,7 @@ import java.time.LocalTime;
 public class UserMarathon {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @NotNull
@@ -42,4 +43,8 @@ public class UserMarathon {
     private int marathonTypeId;
 
     private int targetPace;
+
+    public void updateTargetPace(int targetPace) {
+        this.targetPace = targetPace;
+    }
 }

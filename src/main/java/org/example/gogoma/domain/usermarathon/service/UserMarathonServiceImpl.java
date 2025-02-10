@@ -1,6 +1,8 @@
 package org.example.gogoma.domain.usermarathon.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.gogoma.controller.response.UpdateUserMarathonResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
@@ -97,6 +99,23 @@ public class UserMarathonServiceImpl implements UserMarathonService {
                 .build();
 
         return UserMarathonDetailResponse.of(userMarathonDetailDto);
+    }
+
+    @Override
+    @Transactional
+    public void updateUserMarathon(String accessToken, int marathonId, int targetPace) {
+        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+
+        Marathon marathon = marathonRepository.findById(marathonId)
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        UserMarathon userMarathon = userMarathonRepository.findByUserIdAndMarathonId(user.getId(), marathon.getId())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_MARATHON_NOT_FOUND));
+
+        userMarathon.updateTargetPace(targetPace);
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {
