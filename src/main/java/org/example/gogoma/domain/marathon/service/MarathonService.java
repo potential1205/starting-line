@@ -5,6 +5,7 @@ import org.example.gogoma.controller.request.MarathonDetailRequest;
 import org.example.gogoma.controller.request.MarathonSearchRequest;
 import org.example.gogoma.controller.response.MarathonDetailResponse;
 import org.example.gogoma.controller.response.MarathonSearchResponse;
+import org.example.gogoma.controller.response.UpcomingMarathonInfoResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface MarathonService {
@@ -23,4 +24,6 @@ public interface MarathonService {
                         MultipartFile thumbnailFile,
                         MultipartFile infoImageFile,
                         MultipartFile courseImageFile);
+
+    UpcomingMarathonInfoResponse getUpcomingMarathonInfo(String accessToken, int dDay);
 }

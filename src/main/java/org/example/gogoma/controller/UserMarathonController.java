@@ -1,7 +1,6 @@
 package org.example.gogoma.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.gogoma.controller.response.UpcomingMarathonInfoResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
 import org.example.gogoma.domain.usermarathon.service.UserMarathonService;
@@ -33,15 +32,5 @@ public class UserMarathonController {
                 userMarathonService.getUserMarathonById(accessToken, id);
 
         return ResponseEntity.ok(userMarathonDetailResponse);
-    }
-
-    @GetMapping("/upcoming/{dDay}")
-    public ResponseEntity<UpcomingMarathonInfoResponse> getUpcomingMarathonInfo(
-            @RequestHeader("Authorization") String accessToken, @PathVariable int dDay) {
-
-        UpcomingMarathonInfoResponse upcomingMarathonInfoResponse =
-                userMarathonService.getUpcomingMarathonInfo(accessToken, dDay);
-
-        return ResponseEntity.ok(upcomingMarathonInfoResponse);
     }
 }

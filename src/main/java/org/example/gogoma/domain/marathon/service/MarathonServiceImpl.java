@@ -12,6 +12,7 @@ import org.example.gogoma.controller.request.MarathonDetailRequest;
 import org.example.gogoma.controller.request.MarathonSearchRequest;
 import org.example.gogoma.controller.response.MarathonDetailResponse;
 import org.example.gogoma.controller.response.MarathonSearchResponse;
+import org.example.gogoma.controller.response.UpcomingMarathonInfoResponse;
 import org.example.gogoma.domain.marathon.dto.CustomMultipartFile;
 import org.example.gogoma.domain.marathon.dto.MarathonDataDto;
 import org.example.gogoma.domain.marathon.dto.MarathonPreviewDto;
@@ -22,12 +23,16 @@ import org.example.gogoma.domain.marathon.repository.MarathonCustomRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonCustomRepositoryImpl;
 import org.example.gogoma.domain.marathon.repository.MarathonRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonTypeRepository;
+import org.example.gogoma.domain.user.entity.User;
+import org.example.gogoma.domain.user.repository.UserRepository;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.exception.type.BusinessException;
 import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.external.kakao.local.KakaoAddressResponse;
 import org.example.gogoma.external.kakao.local.KakaoLocalClient;
 import org.example.gogoma.external.kakao.local.KakaoRegionResponse;
+import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
+import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.example.gogoma.external.openai.ChatGptClient;
 import org.example.gogoma.external.openai.Prompt;
 import org.springframework.stereotype.Service;
@@ -59,6 +64,8 @@ public class MarathonServiceImpl implements MarathonService {
     private final MarathonTypeRepository marathonTypeRepository;
     private final MarathonCustomRepository marathonCustomRepository;
     private final KakaoLocalClient kakaoLocalClient;
+    private final KakaoOauthClient kakaoOauthClient;
+    private final UserRepository userRepository;
     private static final Gson gson = new Gson();
 
     @Override
@@ -387,6 +394,22 @@ public class MarathonServiceImpl implements MarathonService {
                 .toList();
 
         return MarathonSearchResponse.of(marathonPreviewDtoList, cityList, marathonTypeSet.stream().toList());
+    }
+
+    @Override
+    public UpcomingMarathonInfoResponse getUpcomingMarathonInfo(String accessToken, int dDay) {
+        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime upcomingDateTime = now.plusDays(dDay);
+
+        Marathon marathon = marathonCustomRepository.findByUpcomingMarathon(user.getId(), upcomingDateTime)
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        return UpcomingMarathonInfoResponse.of(marathon);
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {

@@ -1,12 +1,10 @@
 package org.example.gogoma.domain.usermarathon.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.gogoma.controller.response.UpcomingMarathonInfoResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.marathon.entity.MarathonType;
-import org.example.gogoma.domain.marathon.repository.MarathonCustomRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonTypeRepository;
 import org.example.gogoma.domain.user.entity.User;
@@ -33,7 +31,6 @@ public class UserMarathonServiceImpl implements UserMarathonService {
 
     private final UserMarathonRepository userMarathonRepository;
     private final UserRepository userRepository;
-    private final MarathonCustomRepository marathonCustomRepository;
     private final KakaoOauthClient kakaoOauthClient;
     private final MarathonTypeRepository marathonTypeRepository;
     private final MarathonRepository marathonRepository;
@@ -100,22 +97,6 @@ public class UserMarathonServiceImpl implements UserMarathonService {
                 .build();
 
         return UserMarathonDetailResponse.of(userMarathonDetailDto);
-    }
-
-    @Override
-    public UpcomingMarathonInfoResponse getUpcomingMarathonInfo(String accessToken, int dDay) {
-        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
-
-        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
-                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime upcomingDateTime = now.plusDays(dDay);
-
-        Marathon marathon = marathonCustomRepository.findByUpcomingMarathon(user.getId(), upcomingDateTime)
-                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
-
-        return UpcomingMarathonInfoResponse.of(marathon);
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {

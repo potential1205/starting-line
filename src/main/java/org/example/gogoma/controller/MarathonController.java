@@ -9,6 +9,7 @@ import org.example.gogoma.controller.request.MarathonDetailRequest;
 import org.example.gogoma.controller.request.MarathonSearchRequest;
 import org.example.gogoma.controller.response.MarathonDetailResponse;
 import org.example.gogoma.controller.response.MarathonSearchResponse;
+import org.example.gogoma.controller.response.UpcomingMarathonInfoResponse;
 import org.example.gogoma.domain.marathon.service.MarathonService;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -106,6 +107,16 @@ public class MarathonController {
                 marathonService.searchMarathonList(marathonSearchRequest);
 
         return ResponseEntity.ok(marathonSearchResponse);
+    }
+
+    @GetMapping("/upcoming/{dDay}")
+    public ResponseEntity<UpcomingMarathonInfoResponse> getUpcomingMarathonInfo(
+            @RequestHeader("Authorization") String accessToken, @PathVariable int dDay) {
+
+        UpcomingMarathonInfoResponse upcomingMarathonInfoResponse =
+                marathonService.getUpcomingMarathonInfo(accessToken, dDay);
+
+        return ResponseEntity.ok(upcomingMarathonInfoResponse);
     }
 
 }
