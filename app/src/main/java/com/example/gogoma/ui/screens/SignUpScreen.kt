@@ -21,7 +21,7 @@ import com.example.gogoma.data.model.CreateUserRequest
 fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
     val context = LocalContext.current
 
-    val kakaoUserInfo = userViewModel.kakaoUserInfo
+    val tmpkakaoUserInfo = userViewModel.tmpkakaoUserInfo
     var roadAddress by remember { mutableStateOf("") }
     var detailAddress by remember { mutableStateOf("") }
     var clothingSize by remember { mutableStateOf("") }
@@ -29,8 +29,8 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
     // UI 구성: 기본적으로 kakaoUserInfo의 데이터와 사용자가 입력한 추가 정보 보여주기
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "회원가입")
-        Text(text = "이름: ${kakaoUserInfo?.name ?: ""}")
-        Text(text = "이메일: ${kakaoUserInfo?.email ?: ""}")
+        Text(text = "이름: ${tmpkakaoUserInfo?.name ?: ""}")
+        Text(text = "이메일: ${tmpkakaoUserInfo?.email ?: ""}")
         // ... 기타 카카오에서 받아온 정보
 
         OutlinedTextField(
@@ -51,14 +51,14 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
         Button (onClick = {
             // CreateUserRequest 구성
             val request = CreateUserRequest(
-                kakaoId = kakaoUserInfo?.id ?: 0,
-                name = kakaoUserInfo?.name ?: "",
-                profileImage = kakaoUserInfo?.profileImage ?: "",
-                email = kakaoUserInfo?.email ?: "",
-                gender = kakaoUserInfo?.gender ?: "MALE",
-                birthDate = kakaoUserInfo?.birthDate ?: "",
-                birthYear = kakaoUserInfo?.birthYear ?: "",
-                phoneNumber = kakaoUserInfo?.phoneNumber ?: "",
+                kakaoId = tmpkakaoUserInfo?.id ?: 0,
+                name = tmpkakaoUserInfo?.name ?: "",
+                profileImage = tmpkakaoUserInfo?.profileImage ?: "",
+                email = tmpkakaoUserInfo?.email ?: "",
+                gender = tmpkakaoUserInfo?.gender ?: "MALE",
+                birthDate = tmpkakaoUserInfo?.birthDate ?: "",
+                birthYear = tmpkakaoUserInfo?.birthYear ?: "",
+                phoneNumber = tmpkakaoUserInfo?.phoneNumber ?: "",
                 roadAddress = roadAddress,
                 detailAddress = detailAddress,
                 clothingSize = clothingSize
