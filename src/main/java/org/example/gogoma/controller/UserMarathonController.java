@@ -1,6 +1,9 @@
 package org.example.gogoma.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.gogoma.common.dto.BooleanResponse;
+import org.example.gogoma.controller.request.UpdateUserMarathonRequest;
+import org.example.gogoma.controller.response.UpdateUserMarathonResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
 import org.example.gogoma.domain.usermarathon.service.UserMarathonService;
@@ -32,5 +35,16 @@ public class UserMarathonController {
                 userMarathonService.getUserMarathonById(accessToken, id);
 
         return ResponseEntity.ok(userMarathonDetailResponse);
+    }
+
+    @PatchMapping("/{marathonId}")
+    public ResponseEntity<BooleanResponse> updateUserMarathon(
+            @RequestHeader("Authorization") String accessToken,
+            @PathVariable int marathonId,
+            @RequestBody UpdateUserMarathonRequest updateUserMarathonRequest) {
+
+        userMarathonService.updateUserMarathon(accessToken, marathonId, updateUserMarathonRequest.getTargetPace());
+
+        return ResponseEntity.ok(BooleanResponse.success());
     }
 }
