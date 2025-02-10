@@ -121,5 +121,5 @@ val sampleFriend = Friend(
     friendId = 101,
     name = "김지훈",
     profileImage = null,  // profile 값이 null
-    totalDistance = 320.7
+    totalDistance = 320
 )

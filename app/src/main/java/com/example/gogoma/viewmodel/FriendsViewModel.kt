@@ -33,4 +33,9 @@ class FriendsViewModel : ViewModel() {
             }
         }
     }
+
+    // m → km 변환
+    private fun Friend.toKm(): Friend {
+        return this.copy(totalDistance = this.totalDistance / 1000)
+    }
 }

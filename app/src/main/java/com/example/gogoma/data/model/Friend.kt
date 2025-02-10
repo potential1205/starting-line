@@ -9,5 +9,5 @@ data class Friend (
     val friendId : Int,
     val name : String,
     val profileImage : String?,
-    val totalDistance: Double
+    val totalDistance: Int
 ) : Parcelable
