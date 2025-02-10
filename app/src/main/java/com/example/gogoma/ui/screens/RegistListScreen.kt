@@ -12,28 +12,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.ui.components.Regist
 import com.example.gogoma.ui.components.RegistListItem
 import com.example.gogoma.ui.components.RegistMarathonCountSection
+import com.example.gogoma.viewmodel.RegistViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
-fun RegistListScreen(navController: NavController, onRegistClick: (Int) -> Unit) {
-    val registList = listOf(
-        Regist("24.06.18", "2025 서울마라톤", "2025.03.16", "10km"),
-        Regist("24.06.10", "2025 부산마라톤", "2025.04.10", "15km"),
-        Regist("24.05.30", "2025 대구마라톤", "2025.05.05", "5km"),
-        Regist("24.05.25", "2025 인천마라톤", "2025.06.01", "20km"),
-        Regist("24.05.10", "2025 광주마라톤", "2025.07.10", "42km"),
-        Regist("24.04.28", "2025 대전마라톤", "2025.08.15", "21km"),
-        Regist("23.12.18", "2024 서울마라톤", "2024.03.16", "10km"),
-        Regist("23.11.10", "2024 부산마라톤", "2024.04.10", "15km"),
-        Regist("23.10.25", "2024 대구마라톤", "2024.05.05", "5km"),
-        Regist("23.10.15", "2024 인천마라톤", "2024.06.01", "20km"),
-        Regist("23.09.05", "2024 광주마라톤", "2024.07.10", "42km"),
-        Regist("23.08.01", "2024 대전마라톤", "2024.08.15", "21km")
-    )
+fun RegistListScreen(navController: NavController, viewModel: RegistViewModel, onRegistClick: (Regist) -> Unit) {
+    val registList by viewModel.registList.collectAsState()
+
+    // 마라톤 날짜 순으로 정렬
+    val sortedRegistList = registList.sortedBy {
+        SimpleDateFormat("yyyy.MM.dd", Locale.KOREA).parse(it.date)
+    }
 
     Column(
         modifier = Modifier
@@ -41,14 +38,16 @@ fun RegistListScreen(navController: NavController, onRegistClick: (Int) -> Unit)
             .background(MaterialTheme.colorScheme.background)
     ) {
         // 마라톤 카운트 표시
-        RegistMarathonCountSection(registList)
+        RegistMarathonCountSection(sortedRegistList)
 
         // 신청 내역 리스트
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(registList) { regist ->
-                RegistListItem(regist, onClick = {onRegistClick(1)})
+            items(sortedRegistList) { regist ->
+                RegistListItem(regist, onClick = {
+//                    navController.navigate("registDetail/${sortedRegistList.indexOf(regist)}")
+                })
             }
         }
     }
@@ -58,5 +57,8 @@ fun RegistListScreen(navController: NavController, onRegistClick: (Int) -> Unit)
 @Composable
 fun RegistListScreenPreivew() {
     val navController = rememberNavController()
-    RegistListScreen(navController, onRegistClick = {})
+    val previewViewModel = RegistViewModel().apply {
+        addRegist(Regist("24.06.18", "2025 서울마라톤", "2025.03.16", "10km"))
+    }
+    RegistListScreen(navController, viewModel = previewViewModel, onRegistClick = {})
 }
