@@ -1,5 +1,9 @@
 package com.example.gogoma.ui.screens
 
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
@@ -26,6 +30,18 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
     var detailAddress by remember { mutableStateOf("") }
     var clothingSize by remember { mutableStateOf("") }
 
+    // AddressApiActivity를 실행하여 주소 검색 결과를 받아오는 launcher 생성
+    val addressLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // AddressApiActivity에서 반환한 "data" 값을 roadAddress에 반영
+            val addressData = result.data?.getStringExtra("data") ?: ""
+            roadAddress = addressData
+        }
+    }
+
+
     // UI 구성: 기본적으로 kakaoUserInfo의 데이터와 사용자가 입력한 추가 정보 보여주기
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "회원가입")
@@ -35,9 +51,16 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
 
         OutlinedTextField(
             value = roadAddress,
-            onValueChange = { roadAddress = it },
-            label = { Text("도로명 주소") }
+            onValueChange = { /* 직접 입력하지 못하도록 비워둠 */ },
+            label = { Text("도로명 주소") },
+            readOnly = true
         )
+        Button(onClick = {
+            addressLauncher.launch(Intent(context, AddressApiActivity::class.java))
+        }) {
+            Text("주소 검색")
+        }
+
         OutlinedTextField(
             value = detailAddress,
             onValueChange = { detailAddress = it },
