@@ -1,13 +1,8 @@
 package org.example.gogoma.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.gogoma.controller.request.MarathonSearchRequest;
-import org.example.gogoma.controller.response.MarathonSearchResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
-import org.example.gogoma.domain.usermarathon.entity.UserMarathon;
 import org.example.gogoma.domain.usermarathon.service.UserMarathonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
