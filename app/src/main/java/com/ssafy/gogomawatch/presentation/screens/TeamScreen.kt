@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -120,7 +121,10 @@ fun TeamScreen() {
                             val secondOffset = lazyListState.layoutInfo.visibleItemsInfo[1].offset
                         }
 
-                        return 0 // item의 움직일 포지션값
+//                        return 0 // item의 움직일 포지션값
+                        // 중앙 정렬을 위한 위치 계산
+                        val centerPosition = (layoutSize - itemSize) / 2
+                        return centerPosition
                     }
                 }
                 SnapLayoutInfoProvider(lazyListState, snapPosition)
@@ -131,28 +135,47 @@ fun TeamScreen() {
             // 스크롤 중이냐 아니냐 check. 멈추면 보이고 있는 첫번째 index로 animateScroll
             LaunchedEffect(key1 = lazyListState.isScrollInProgress) {
                 if (!lazyListState.isScrollInProgress) {
-                    lazyListState.animateScrollToItem(lazyListState.firstVisibleItemIndex)
+//                    lazyListState.animateScrollToItem(lazyListState.firstVisibleItemIndex)
+                    val lastIndex = lazyListState.layoutInfo.totalItemsCount - 1
+                    val visibleCount = lazyListState.layoutInfo.visibleItemsInfo.size
+                    val targetIndex = if (lazyListState.firstVisibleItemIndex >= lastIndex - visibleCount) lastIndex
+                                        else lazyListState.firstVisibleItemIndex
+                    lazyListState.animateScrollToItem(targetIndex)
                 }
             }
+
+            // 앞 뒤로 빈 아이템 추가
+            val emptyItem = ""
+            val itemsWithPadding = listOf(emptyItem) + itemsList + listOf(emptyItem)
 
             LazyColumn (
                 state = lazyListState,
                 modifier = Modifier
-                    .fillMaxHeight(),
-                flingBehavior = flingBehavior
+                    .fillMaxHeight()
+                    .padding(start = 5.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
-                items(itemsList.size) { index ->
-                    val isCenterItem = index == lazyListState.firstVisibleItemIndex + 1
+                items(itemsWithPadding.size) { index ->
+                    val visibleItems = lazyListState.layoutInfo.visibleItemsInfo
+                    val listCenterY = lazyListState.layoutInfo.viewportSize.height / 2
+
+                    val centerItemIndex = visibleItems.minByOrNull { item ->
+                        kotlin.math.abs((item.offset + item.size / 2) - listCenterY)
+                    }?.index ?: -1
+
+                    val isCenterItem = index == centerItemIndex
                     val scale by animateFloatAsState(
-                        targetValue = if (isCenterItem) 1.3f else 1.0f,
+                        targetValue = if (isCenterItem) 1.2f else 1.0f,
                         label = "itemScale"
                     )
                     Box(
                         Modifier.height(40.dp)
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+//                            .scale(scale),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = itemsList[index],
+                            text = itemsWithPadding[index],
                             fontSize = (25.sp * scale),
                             modifier = Modifier
                                 .align(Alignment.CenterStart)
