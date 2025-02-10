@@ -32,6 +32,8 @@ public class Friend {
 
     private String friendName;
 
+    private String friendProfileUrl;
+
     public static Friend of(int userId, int friendId) {
         return Friend.builder()
                 .userId(userId)

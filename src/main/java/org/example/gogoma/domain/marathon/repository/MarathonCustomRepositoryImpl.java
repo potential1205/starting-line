@@ -4,13 +4,17 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import static org.example.gogoma.domain.marathon.entity.QMarathon.marathon;
+import static org.example.gogoma.domain.usermarathon.entity.QUserMarathon.userMarathon;
+
 import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.marathon.enums.MarathonStatus;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-import static org.example.gogoma.domain.marathon.entity.QMarathon.marathon;
 import static org.example.gogoma.domain.marathon.entity.QMarathonType.marathonType;
 
 @Repository
@@ -66,5 +70,17 @@ public class MarathonCustomRepositoryImpl implements MarathonCustomRepository {
                 .join(marathonType).on(marathon.id.eq(marathonType.marathonId))
                 .where(builder)
                 .fetch();
+    }
+
+    @Override
+    public Optional<Marathon> findByUpcomingMarathon(int userId, LocalDateTime upcomingDateTime) {
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(marathon)
+                .join(userMarathon).on(userMarathon.marathonId.eq(marathon.id))
+                .where(userMarathon.userId.eq(userId)
+                        .and(marathon.raceStartTime.year().eq(upcomingDateTime.getYear()))
+                        .and(marathon.raceStartTime.month().eq(upcomingDateTime.getMonthValue()))
+                        .and(marathon.raceStartTime.dayOfMonth().eq(upcomingDateTime.getDayOfMonth())))
+                .fetchOne());
     }
 }
