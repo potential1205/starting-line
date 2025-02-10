@@ -8,6 +8,7 @@ import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.marathon.entity.QMarathon;
 import org.example.gogoma.domain.user.dto.FriendResponse;
+import org.example.gogoma.domain.user.dto.FriendToken;
 import org.example.gogoma.domain.user.entity.QFriend;
 import org.example.gogoma.domain.user.entity.QUser;
 import org.example.gogoma.domain.usermarathon.entity.QUserMarathon;
@@ -133,6 +134,34 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .fetch();
 
         return Optional.ofNullable(result);
+    }
+
+    public Optional<List<FriendToken>> findFcmTokensOfFriendsInMarathon(int userId, int marathonId) {
+        QFriend friend = QFriend.friend;
+        QUser user = QUser.user;
+        QUserMarathon userMarathon = QUserMarathon.userMarathon;
+
+        List<FriendToken> friendTokens = queryFactory
+                .select(Projections.constructor(
+                        FriendToken.class,
+                        user.pfmToken
+                ))
+                .from(user)
+                .where(user.id.in(
+                                queryFactory.select(userMarathon.userId)
+                                        .from(userMarathon)
+                                        .where(userMarathon.marathonId.eq(marathonId)
+                                                .and(userMarathon.userId.in(
+                                                        queryFactory.select(friend.friendId)
+                                                                .from(friend)
+                                                                .where(friend.userId.eq(userId))
+                                                ))
+                                        )
+                        )
+                )
+                .fetch();
+
+        return Optional.ofNullable(friendTokens);
     }
 
 }

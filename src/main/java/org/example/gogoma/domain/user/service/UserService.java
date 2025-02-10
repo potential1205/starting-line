@@ -3,6 +3,7 @@ package org.example.gogoma.domain.user.service;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.dto.FcmRequest;
 import org.example.gogoma.domain.user.dto.FriendResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
@@ -29,4 +30,6 @@ public interface UserService {
     List<FriendResponse> getFriendListOrderByTotalDistance(String email);
 
     List<FriendResponse> getUpcomingMarathonFriendList(String email);
+
+    void sendNotificationToFriends(FcmRequest fcmRequest);
 }
