@@ -2,6 +2,7 @@ package com.example.gogoma.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,17 +16,26 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -49,12 +59,29 @@ import java.util.Locale
 @Composable
 fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Unit) {
 
+    var isColumn by remember { mutableStateOf(false) }
+    var totalLocationWidth by remember { mutableStateOf(0) }
+    var totalHashWidth by remember { mutableStateOf(0) }
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp
+    val contentWidth = screenWidth - 21  // 패딩값
+
+    val locationModifier = Modifier.onGloballyPositioned { coordinates ->
+        totalLocationWidth = coordinates.size.width
+    }
+    val hashModifier = Modifier.onGloballyPositioned { coordinates ->
+        totalHashWidth = coordinates.size.width
+    }
+
+    LaunchedEffect (totalLocationWidth + totalHashWidth) {
+        isColumn = (totalLocationWidth + totalHashWidth) > contentWidth
+    }
+
     Row(
         modifier = Modifier
             .clickable(onClick = onClick)
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.background)
-            .padding(start = 11.dp, end = 11.dp)
             .then(
                 Modifier.drawBehind {
                     val strokeWidth = 1.dp.toPx()
@@ -67,7 +94,7 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
                     )
                 }
             )
-            .padding(top = 25.dp, bottom = 25.dp),
+            .padding(top = 25.dp, bottom = 25.dp, start = 11.dp, end = 11.dp),
         horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
         verticalAlignment = Alignment.Top,
     ) {
@@ -119,7 +146,7 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
                 verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
                 horizontalAlignment = Alignment.Start,
             ) {
-                Text(marathonPreviewDto.title)
+                Text(marathonPreviewDto.title, style = TextStyle(fontWeight = FontWeight.Bold))
                 Text(
                     text = if (marathonPreviewDto.registrationStartDateTime == null && marathonPreviewDto.registrationEndDateTime == null) {
                         "접수 선착순"
@@ -131,32 +158,73 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
                         fontFamily = FontFamily(Font(R.font.nanum_square_round_l)),
                         fontWeight = FontWeight(400),
                         color = Color(0xFFB3B3B3),
-                    )
+                    ),
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_location_on),
-                        contentDescription = "Logo",
-                        tint = Color(0xFF606060),
-                        modifier = Modifier.size(9.dp)
-                    )
-                    Text(
-                        text = marathonPreviewDto.location,
-                        style = TextStyle(
-                            fontSize = 10.sp,
-                            color = Color(0xFF606060)
+                if(isColumn){//반응형
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_location_on),
+                                contentDescription = "Logo",
+                                tint = Color(0xFF606060),
+                                modifier = Modifier.size(9.dp)
+                            )
+                            Text(
+                                text = marathonPreviewDto.location,
+                                style = TextStyle(
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF606060)
+                                )
+                            )
+                        }
+                        Text(
+                            text = marathonPreviewDto.courseTypeList.joinToString(" ") { "#${it}" },
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                color = Color(0xFF606060)
+                            )
                         )
-                    )
-                    Text(
-                        text = marathonPreviewDto.courseTypeList.joinToString(" ") { "#${it}" },
-                        style = TextStyle(
-                            fontSize = 10.sp,
-                            color = Color(0xFF606060)
+                    }
+                }else{
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Row(
+                            modifier = locationModifier,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_location_on),
+                                contentDescription = "Logo",
+                                tint = Color(0xFF606060),
+                                modifier = Modifier.size(9.dp)
+                            )
+                            Text(
+                                text = marathonPreviewDto.location,
+                                style = TextStyle(
+                                    fontSize = 10.sp,
+                                    color = Color(0xFF606060)
+                                )
+                            )
+                        }
+                        Text(
+                            text = marathonPreviewDto.courseTypeList.joinToString(" ") { "#${it}" },
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                color = Color(0xFF606060)
+                            ),
+                            modifier = hashModifier
                         )
-                    )
+                    }
                 }
 
             }
@@ -183,7 +251,7 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun MarathonListItemPreview(){
     MarathonListItem(
@@ -214,11 +282,13 @@ fun MarathonListItemPreview(){
 
 @Composable
 fun ImageOrPlaceholder(imageUrl: String?) {
+    val round = 10.dp
     Box(
         modifier = Modifier
             .width(125.dp)
             .height(105.dp)
-            .background(MaterialTheme.colorScheme.tertiary)
+            .border(width = 0.4.dp, color = Color(0xFFE7E7E7), shape = RoundedCornerShape(size = round))
+            .background(color = MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(size = round))
     ) {
         val painter =
             rememberAsyncImagePainter(ImageRequest.Builder
@@ -231,7 +301,7 @@ fun ImageOrPlaceholder(imageUrl: String?) {
         Image(
             painter = painter,
             contentDescription = "Image",
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(round)),
             contentScale = ContentScale.Crop
         )
     }
