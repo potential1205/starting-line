@@ -1,5 +1,6 @@
 package com.example.gogoma.ui.navigation
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,8 @@ import com.example.gogoma.ui.components.TopBar
 import com.example.gogoma.ui.screens.MainScreen
 import com.example.gogoma.ui.screens.SplashScreen
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,18 +49,30 @@ import com.example.gogoma.ui.screens.PaymentStatusScreen
 import com.example.gogoma.ui.screens.RegistDetailsScreen
 import com.example.gogoma.ui.screens.RegistListScreen
 import com.example.gogoma.ui.screens.SignScreen
+import com.example.gogoma.ui.screens.SignUpScreen
 import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonListViewModel
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.gogoma.ui.screens.PaymentWebViewScreen
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @Composable
-fun AppNavigation(){
+fun AppNavigation(userViewModel: UserViewModel){
     val navController = rememberNavController()
     val bottomSheetViewModel : BottomSheetViewModel = viewModel()
     val marathonListViewModel: MarathonListViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
-    val userViewModel: UserViewModel = viewModel()
+
+    // 로그인 상태 감지
+    LaunchedEffect(userViewModel.loginStatus) {
+        if (userViewModel.loginStatus == "signup") {
+            navController.navigate("signup") // signup 상태일 때 회원가입 화면으로 이동
+        }
+    }
 
     // 뒤로 가기 동작 정의
     BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
@@ -176,24 +191,45 @@ fun AppNavigation(){
             SignScreen(navController, userViewModel)
         }
 
+        composable("signup") {
+            SignUpScreen(navController = navController, userViewModel = userViewModel)
+        }
+
         // 결제 성공 화면
         composable(
             "paymentSuccess/{registJson}",
             arguments = listOf(navArgument("registJson") { type = NavType.StringType })
         ) { backStackEntry ->
-            val registJson = backStackEntry.arguments?.getString("registJson")
+            val registJsonEncoded = backStackEntry.arguments?.getString("registJson")
+            val registJson = registJsonEncoded?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) }
             PaymentStatusScreen(isSuccess = true, registJson = registJson, onConfirm = { navController.navigate("main") })
         }
-
 
         // 결제 실패 화면
         composable("paymentFailure") {
             PaymentStatusScreen(
                 isSuccess = false,
-                registJson = null,  // 🔥 실패 시에는 registJson을 넘기지 않음
+                registJson = null,  // 실패 시에는 registJson을 넘기지 않음
                 onConfirm = { navController.popBackStack() },
                 onNavigateToMain = { navController.navigate("main") }
             )
+        }
+
+        composable("paymentWebViewScreen") {
+            val paymentUrl = navController.previousBackStackEntry?.savedStateHandle?.get<String>("paymentUrl") ?: ""
+            val registJson = navController.previousBackStackEntry?.savedStateHandle?.get<String>("registJson") ?: ""
+
+            PaymentWebViewScreen(
+                navController = navController,
+                paymentUrl = paymentUrl,
+                viewModel = paymentViewModel,
+                registJson = registJson
+            )
+            val pgToken = Uri.parse(paymentUrl).getQueryParameter("pg_token") ?: ""
+            if (pgToken.isNotEmpty()) {
+                paymentViewModel.handlePaymentRedirect(pgToken)
+            }
+
         }
     }
 
@@ -345,11 +381,4 @@ fun AppNavigation(){
             }
         }
     )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun AppNavigationPreview() {
-    AppNavigation()
 }

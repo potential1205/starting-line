@@ -12,8 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.BrandColor2
 import com.example.gogoma.ui.components.*
@@ -22,13 +20,12 @@ import com.google.gson.Gson
 @Composable
 fun PaymentStatusScreen(
     isSuccess: Boolean,
-    registJson: String? = null,  // 🔥 여기서 기본값을 null로 설정
+    registJson: String? = null,
     onConfirm: () -> Unit,
     onNavigateToMain: (() -> Unit)? = null
 ) {
     val gson = remember { Gson() }
 
-    // ✅ JSON -> Regist 객체 변환 (실패 화면에서는 JSON이 없을 수 있음)
     val regist: Regist? = registJson?.let {
         try {
             gson.fromJson(it, Regist::class.java).apply {
@@ -40,21 +37,31 @@ fun PaymentStatusScreen(
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        if (isSuccess) {
-            TopBarArrow("신청 완료", {})
-        } else {
-            TopBar()
+    Scaffold(
+        topBar = { TopBarArrow(title = if (isSuccess) "신청 완료" else "결제 실패", onBackClick = {}) },
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(16.dp)
+            ) {
+                BottomBarButton(
+                    text = "완료",
+                    backgroundColor = BrandColor1,
+                    textColor = Color.White,
+                    onClick = onConfirm
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
-            modifier = Modifier.weight(1f).fillMaxSize(),
-            contentAlignment = Alignment.Center
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             if (isSuccess) {
                 SuccessContent(onConfirm, regist)
@@ -62,22 +69,8 @@ fun PaymentStatusScreen(
                 FailureContent(onConfirm, onNavigateToMain)
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (isSuccess) {
-            BottomBarButton(
-                text = "완료",
-                backgroundColor = BrandColor1,
-                textColor = Color.White,
-                onClick = onConfirm
-            )
-        } else {
-//            BottomBar(navController = rememberNavController())
-        }
     }
 }
-
-
 
 @Composable
 fun SuccessContent(onConfirm: () -> Unit, registInfo: Regist?) {

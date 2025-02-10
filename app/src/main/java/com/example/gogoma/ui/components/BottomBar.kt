@@ -14,8 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -27,10 +25,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.viewmodel.UserViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun BottomBar(navController : NavController, userViewModel: UserViewModel){
-    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
+    val isLoggedIn = userViewModel.isLoggedIn
 
     val bottomInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 

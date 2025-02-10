@@ -24,6 +24,7 @@ fun MypageScreen(navController: NavController, userViewModel: UserViewModel) {
     ){ paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
             Text("마이페이지입니다")
+            Text("${userViewModel.kakaoUserInfo?.name}님 안녕하세요")
         }
     }
 }

@@ -32,4 +32,12 @@ object RetrofitInstance {
             .build()
             .create(FriendApiService::class.java)
     }
+
+    val paymentApiService: PaymentApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(PaymentApiService::class.java)
+    }
 }

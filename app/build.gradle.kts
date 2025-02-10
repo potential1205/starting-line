@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -12,11 +15,20 @@ android {
     defaultConfig {
         applicationId = "com.example.gogoma"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Kakao API Key를 BuildConfig에 추가
+        val localProperties = rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(localProperties.inputStream())
+        val kakaoApiKey = properties.getProperty("KAKAO_APP_KEY")
+
+        // BuildConfig에 키 추가
+        buildConfigField("String", "KAKAO_APP_KEY", "\"${kakaoApiKey}\"")
     }
 
     buildTypes {
@@ -37,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -72,7 +85,11 @@ dependencies {
     // Security (EncryptedSharedPreferences)
     implementation(libs.security.crypto)
 
+    implementation(libs.androidx.browser)
+
     implementation(libs.coil.compose)
 
     implementation(libs.gson)
+
+    implementation(libs.v2.user) // 카카오 로그인 API 모듈
 }
