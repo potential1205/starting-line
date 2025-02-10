@@ -2,6 +2,7 @@ package org.example.gogoma.domain.usermarathon.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.gogoma.controller.request.CreateUserMarathonRequest;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
@@ -131,6 +132,34 @@ public class UserMarathonServiceImpl implements UserMarathonService {
         if (userMarathonRepository.existsByUserIdAndMarathonId(user.getId(), marathon.getId())) {
             throw new BusinessException(ExceptionCode.USER_MARATHON_ALREADY_EXISTS);
         }
+    }
+
+    @Override
+    @Transactional
+    public void createUserMarathon(String accessToken, CreateUserMarathonRequest createUserMarathonRequest) {
+        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+
+        Marathon marathon = marathonRepository.findById(createUserMarathonRequest.getMarathonId())
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        MarathonType marathonType = marathonTypeRepository
+                .findByMarathonIdAndCourseType(marathon.getId(), createUserMarathonRequest.getCourseType())
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_TYPE_NOT_FOUND));
+
+        UserMarathon userMarathon = UserMarathon.builder()
+                .userId(user.getId())
+                .marathonId(marathon.getId())
+                .marathonTypeId(marathonType.getId())
+                .address(createUserMarathonRequest.getAddress())
+                .paymentType(createUserMarathonRequest.getPaymentType())
+                .paymentAmount(createUserMarathonRequest.getPaymentAmount())
+                .paymentDateTime(createUserMarathonRequest.getPaymentDateTime())
+                .build();
+
+        userMarathonRepository.save(userMarathon);
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {

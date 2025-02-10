@@ -2,8 +2,8 @@ package org.example.gogoma.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
+import org.example.gogoma.controller.request.CreateUserMarathonRequest;
 import org.example.gogoma.controller.request.UpdateUserMarathonRequest;
-import org.example.gogoma.controller.response.UpdateUserMarathonResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
 import org.example.gogoma.domain.usermarathon.service.UserMarathonService;
@@ -54,6 +54,16 @@ public class UserMarathonController {
             @PathVariable int marathonId) {
 
         userMarathonService.checkDuplicateUserMarathon(accessToken, marathonId);
+
+        return ResponseEntity.ok(BooleanResponse.success());
+    }
+
+    @PostMapping
+    public ResponseEntity<BooleanResponse> createUserMarathon(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody CreateUserMarathonRequest createUserMarathonRequest) {
+
+        userMarathonService.createUserMarathon(accessToken, createUserMarathonRequest);
 
         return ResponseEntity.ok(BooleanResponse.success());
     }
