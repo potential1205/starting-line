@@ -11,4 +11,6 @@ public interface UserMarathonRepository extends JpaRepository<UserMarathon, Inte
     List<UserMarathon> findAllByUserId(int id);
 
     Optional<UserMarathon> findByUserIdAndMarathonId(int userId, int marathonId);
+
+    boolean existsByUserIdAndMarathonId(int id, int id1);
 }

@@ -47,4 +47,14 @@ public class UserMarathonController {
 
         return ResponseEntity.ok(BooleanResponse.success());
     }
+
+    @GetMapping("/{marathonId}")
+    public ResponseEntity<BooleanResponse> checkDuplicateUserMarathon(
+            @RequestHeader("Authorization") String accessToken,
+            @PathVariable int marathonId) {
+
+        userMarathonService.checkDuplicateUserMarathon(accessToken, marathonId);
+
+        return ResponseEntity.ok(BooleanResponse.success());
+    }
 }

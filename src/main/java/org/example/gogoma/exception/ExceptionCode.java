@@ -20,6 +20,7 @@ public enum ExceptionCode {
     MARATHON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 마라톤이 존재하지 않습니다.", 3003),
     MARATHON_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 마라톤 종목이 존재하지 않습니다.", 3004),
     USER_MARATHON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 마라톤 신청 내역이 존재하지 않습니다.", 3005),
+    USER_MARATHON_ALREADY_EXISTS(HttpStatus.NOT_FOUND, "이미 신청한 마라톤입니다.", 3006),
 
     // 외부 API 사용시 발생할 수 있는 예외 작성
     EXTERNAL_API_ERROR(HttpStatus.BAD_GATEWAY, "외부 API를 호출하는 과정에서 예외가 발생했습니다.", 4001),

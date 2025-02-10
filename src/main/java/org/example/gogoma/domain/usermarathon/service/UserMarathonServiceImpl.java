@@ -2,7 +2,6 @@ package org.example.gogoma.domain.usermarathon.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.gogoma.controller.response.UpdateUserMarathonResponse;
 import org.example.gogoma.controller.response.UserMarathonDetailResponse;
 import org.example.gogoma.controller.response.UserMarathonSearchResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
@@ -16,6 +15,7 @@ import org.example.gogoma.domain.usermarathon.dto.UserMarathonSearchDto;
 import org.example.gogoma.domain.usermarathon.entity.UserMarathon;
 import org.example.gogoma.domain.usermarathon.repository.UserMarathonRepository;
 import org.example.gogoma.exception.ExceptionCode;
+import org.example.gogoma.exception.type.BusinessException;
 import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.external.kakao.oauth.KakaoOauthClient;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
@@ -116,6 +116,21 @@ public class UserMarathonServiceImpl implements UserMarathonService {
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_MARATHON_NOT_FOUND));
 
         userMarathon.updateTargetPace(targetPace);
+    }
+
+    @Override
+    public void checkDuplicateUserMarathon(String accessToken, int marathonId) {
+        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+
+        Marathon marathon = marathonRepository.findById(marathonId)
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+
+        if (userMarathonRepository.existsByUserIdAndMarathonId(user.getId(), marathon.getId())) {
+            throw new BusinessException(ExceptionCode.USER_MARATHON_ALREADY_EXISTS);
+        }
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {
