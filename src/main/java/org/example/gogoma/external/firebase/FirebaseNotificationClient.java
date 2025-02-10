@@ -16,8 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +31,12 @@ public class FirebaseNotificationClient {
 
     private final WebClient webClient = WebClient.builder().baseUrl(FCM_API_URL).defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).build();
 
+    @Value("${firebase.serviceAccountKey}")
+    private String serviceAccountKey;
+
     private String getAccessToken()  {
         try {
-            InputStream serviceAccountStream = new ClassPathResource("ServiceAccountKey.json").getInputStream();
+            InputStream serviceAccountStream = new ByteArrayInputStream(serviceAccountKey.getBytes(StandardCharsets.UTF_8));
             GoogleCredentials googleCredentials = GoogleCredentials
                     .fromStream(serviceAccountStream)
                     .createScoped("https://www.googleapis.com/auth/firebase.messaging");
@@ -48,9 +53,6 @@ public class FirebaseNotificationClient {
         webClient.post()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .bodyValue(NotificationRequest.of(fcmRequest,token))
-                .retrieve()
-                .bodyToMono(FcmResponse.class)
-                .subscribe(response -> System.out.println("FCM 알림 전송 성공: " + response),
-                        error -> System.err.println("FCM 알림 전송 실패: " + error.getMessage()));
+                .retrieve();
     }
 }
