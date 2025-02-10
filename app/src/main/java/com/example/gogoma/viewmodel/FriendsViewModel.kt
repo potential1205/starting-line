@@ -19,17 +19,17 @@ class FriendsViewModel : ViewModel() {
     private val _errorMessage = MutableSharedFlow<String?>()
     val errorMessage: SharedFlow<String?> = _errorMessage
 
-    fun fetchFriends(accessToken: String) {
+    fun fetchFriends(accessToken: String?) {
         viewModelScope.launch {
             try {
-                val friends = RetrofitInstance.friendApiService.getFriends("Bearer $accessToken")
+                val friends = RetrofitInstance.friendApiService.getFriends(accessToken)
                 _friends.value = friends
             } catch (e: HttpException) {
                 _errorMessage.emit("HTTP 오류 발생: ${e.message}")
             } catch (e: IOException) {
                 _errorMessage.emit("네트워크 오류 발생")
             } catch (e: Exception) {
-                _errorMessage.emit("알 수 없는 오류 발생")
+                _errorMessage.emit(e.message)
             }
         }
     }

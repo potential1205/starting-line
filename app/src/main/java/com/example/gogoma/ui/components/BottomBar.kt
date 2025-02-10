@@ -51,7 +51,7 @@ fun BottomBar(navController : NavController, userViewModel: UserViewModel){
                 modifier = Modifier.size(34.dp).padding(3.dp)
             )
         }
-        IconButton (onClick = { /* 클릭 시 동작 */ }){
+        IconButton (onClick = { navController.navigate("paceSetting") }){
             Icon(
                 painter = painterResource(id = R.drawable.icon_running),
                 contentDescription = "icon of pacemaker using watch",
@@ -67,7 +67,7 @@ fun BottomBar(navController : NavController, userViewModel: UserViewModel){
                 modifier = Modifier.size(34.dp).padding(3.dp)
             )
         }
-        IconButton (onClick = { /* 클릭 시 동작 */ }){
+        IconButton (onClick = { navController.navigate("friendList") }){
             Icon(
                 painter = painterResource(id = R.drawable.icon_friend),
                 contentDescription = "icon of friend list",

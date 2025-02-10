@@ -36,13 +36,14 @@ import com.example.gogoma.data.model.Marathon
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.ButtonBasic
 import com.example.gogoma.ui.components.TopBarArrow
+import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 
 @Composable
 fun PaceScreen(
     navController: NavController,
     userViewModel: UserViewModel,
-    onPaceSettingClick: () -> Unit,
+    bottomSheetViewModel: BottomSheetViewModel,
 ) {
 
     val marathon = Marathon(
@@ -155,7 +156,7 @@ fun PaceScreen(
                                     text = "페이스 설정",
                                     contentColor = Color(0xFF8A8A8A),
                                     round = 0.dp,
-                                    onClick = { onPaceSettingClick() }
+                                    onClick = { bottomSheetViewModel.showBottomSheet() }
                                 )
                             }
                         }
@@ -201,7 +202,7 @@ fun PaceScreen(
                                     text = "페이스 설정",
                                     contentColor = Color(0xFF8A8A8A),
                                     round = 0.dp,
-                                    onClick = { onPaceSettingClick() }
+                                    onClick = { bottomSheetViewModel.showBottomSheet() }
                                 )
                             }
                         }
@@ -254,11 +255,11 @@ fun PaceScreen(
 @Preview(showBackground = true, widthDp = 320)
 @Composable
 fun PaceScreenSmallPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), onPaceSettingClick = {})
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PaceScreenPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), onPaceSettingClick = {})
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
 }

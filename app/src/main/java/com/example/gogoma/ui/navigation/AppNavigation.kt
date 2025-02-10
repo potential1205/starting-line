@@ -56,7 +56,11 @@ import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.gogoma.ui.screens.FriendListScreen
+import com.example.gogoma.ui.screens.PaceScreen
 import com.example.gogoma.ui.screens.PaymentWebViewScreen
+import com.example.gogoma.ui.screens.WatchConnectScreen
+import com.example.gogoma.viewmodel.FriendsViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -66,6 +70,7 @@ fun AppNavigation(userViewModel: UserViewModel){
     val bottomSheetViewModel : BottomSheetViewModel = viewModel()
     val marathonListViewModel: MarathonListViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
+    val friendsViewModel: FriendsViewModel = viewModel()
 
     // 로그인 상태 감지
     LaunchedEffect(userViewModel.loginStatus) {
@@ -93,6 +98,14 @@ fun AppNavigation(userViewModel: UserViewModel){
         composable("splash") {
             //스플래시 화면
             SplashScreen(navController = navController)
+        }
+
+        composable("paceSetting") {
+            PaceScreen (navController = navController, userViewModel, bottomSheetViewModel)
+        }
+
+        composable("watchConnect") {
+            WatchConnectScreen()
         }
 
         composable("main") {
@@ -230,6 +243,10 @@ fun AppNavigation(userViewModel: UserViewModel){
                 paymentViewModel.handlePaymentRedirect(pgToken)
             }
 
+        }
+
+        composable("friendList") {
+            FriendListScreen(navController, userViewModel, friendsViewModel)
         }
     }
 
