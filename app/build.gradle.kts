@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
     kotlin("kapt")
+
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
 android {
@@ -99,4 +101,12 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
 
+    // Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    // Firebase Realtime Database 의존성 추가 (버전은 BoM에 의해 관리됨)
+    implementation("com.google.firebase:firebase-database")
+    // GPS 라이브러리
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 }
+
+apply(plugin = "com.google.gms.google-services")

@@ -5,6 +5,12 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
 
     <application
         android:name=".GlobalApplication"
@@ -41,6 +47,15 @@
             android:name="com.example.gogoma.ui.screens.AddressApiActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name=".ui.screens.MarathonDistanceGPSTestActivity"
+            android:exported="true" />
+
+        <service
+            android:name=".services.LocationForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 
 </manifest>

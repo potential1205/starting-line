@@ -74,7 +74,7 @@ fun AppNavigation(userViewModel: UserViewModel){
     val friendsViewModel: FriendsViewModel = viewModel()
     val registViewModel: RegistViewModel = viewModel()
 
-    val protectedRouted = listOf("mypage", "paceSetting", "watchConnect", "friendList")
+    val protectedRouted = listOf("mypage", "friendList")
 
     // 로그인 상태 감지
     LaunchedEffect(userViewModel.loginStatus) {
@@ -119,7 +119,7 @@ fun AppNavigation(userViewModel: UserViewModel){
                     when (route) {
                         "mypage" -> MypageScreen(navController, userViewModel)
                         "paceSetting" -> PaceScreen (navController = navController, userViewModel, bottomSheetViewModel)
-                        "watchConnect" -> WatchConnectScreen()
+                        "watchConnect" -> WatchConnectScreen(navController, userViewModel)
                         "friendList" -> FriendListScreen(navController, userViewModel, friendsViewModel)
 
                     }
@@ -132,6 +132,14 @@ fun AppNavigation(userViewModel: UserViewModel){
                     }
                 }
             }
+        }
+
+        composable("paceSetting") {
+            PaceScreen (navController = navController, userViewModel, bottomSheetViewModel)
+        }
+
+        composable("watchConnect") {
+            WatchConnectScreen(navController, userViewModel)
         }
 
         composable("main") {
