@@ -19,12 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.ssafy.gogomawatch.R
-import com.ssafy.gogomawatch.presentation.screens.PersonalScreen
+import com.ssafy.gogomawatch.presentation.navigation.AppNavigation
 import com.ssafy.gogomawatch.presentation.theme.GogomaWatchTheme
 
 class MainActivity : ComponentActivity() {
@@ -36,7 +37,8 @@ class MainActivity : ComponentActivity() {
         setTheme(android.R.style.Theme_DeviceDefault)
 
         setContent {
-            PersonalScreen()
+            val navController = rememberNavController()
+            AppNavigation(navController = navController)
         }
     }
 }
