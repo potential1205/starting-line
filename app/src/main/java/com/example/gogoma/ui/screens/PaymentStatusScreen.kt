@@ -15,17 +15,18 @@ import androidx.compose.ui.unit.sp
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.BrandColor2
 import com.example.gogoma.ui.components.*
+import com.example.gogoma.viewmodel.RegistViewModel
 import com.google.gson.Gson
 
 @Composable
 fun PaymentStatusScreen(
     isSuccess: Boolean,
     registJson: String? = null,
+    viewModel: RegistViewModel,
     onConfirm: () -> Unit,
     onNavigateToMain: (() -> Unit)? = null
 ) {
     val gson = remember { Gson() }
-
     val regist: Regist? = registJson?.let {
         try {
             gson.fromJson(it, Regist::class.java).apply {
@@ -34,6 +35,12 @@ fun PaymentStatusScreen(
         } catch (e: Exception) {
             Log.e("PaymentStatusScreen", "❌ JSON 변환 실패: ${e.message}")
             null
+        }
+    }
+
+    LaunchedEffect(isSuccess) {
+        if (isSuccess && regist != null) {
+            viewModel.addRegist(regist) // 결제 성공 시 리스트에 추가
         }
     }
 

@@ -61,6 +61,7 @@ import com.example.gogoma.ui.screens.PaceScreen
 import com.example.gogoma.ui.screens.PaymentWebViewScreen
 import com.example.gogoma.ui.screens.WatchConnectScreen
 import com.example.gogoma.viewmodel.FriendsViewModel
+import com.example.gogoma.viewmodel.RegistViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -71,6 +72,7 @@ fun AppNavigation(userViewModel: UserViewModel){
     val marathonListViewModel: MarathonListViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
     val friendsViewModel: FriendsViewModel = viewModel()
+    val registViewModel: RegistViewModel = viewModel()
 
     val protectedRouted = listOf("mypage", "paceSetting", "watchConnect", "friendList")
 
@@ -180,6 +182,7 @@ fun AppNavigation(userViewModel: UserViewModel){
                     .padding(paddingValues)){
                     RegistListScreen(
                         navController,
+                        viewModel = registViewModel,
                         onRegistClick = { registId ->
                             navController.navigate("registDetail/$registId")
                         }
@@ -231,7 +234,7 @@ fun AppNavigation(userViewModel: UserViewModel){
         ) { backStackEntry ->
             val registJsonEncoded = backStackEntry.arguments?.getString("registJson")
             val registJson = registJsonEncoded?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) }
-            PaymentStatusScreen(isSuccess = true, registJson = registJson, onConfirm = { navController.navigate("main") })
+            PaymentStatusScreen(isSuccess = true, registJson = registJson, viewModel = registViewModel, onConfirm = { navController.navigate("main") })
         }
 
         // 결제 실패 화면
@@ -239,6 +242,7 @@ fun AppNavigation(userViewModel: UserViewModel){
             PaymentStatusScreen(
                 isSuccess = false,
                 registJson = null,  // 실패 시에는 registJson을 넘기지 않음
+                viewModel = registViewModel,
                 onConfirm = { navController.popBackStack() },
                 onNavigateToMain = { navController.navigate("main") }
             )
