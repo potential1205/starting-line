@@ -37,7 +37,7 @@ fun BottomBarButtonFull(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = bottomInset)
-            .height(50.dp + bottomInset) // 버튼 높이 설정
+            .height(50.dp) // 버튼 높이 설정
     ) {
         Text(
             text = text,
