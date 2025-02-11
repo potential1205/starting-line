@@ -46,6 +46,16 @@ object TokenManager {
         }
     }
 
+    // 모든 토큰 및 만료 시간을 삭제
+    fun clearToken(context: Context) {
+        getSharedPreferences(context).edit().apply {
+            remove(KEY_ACCESS_TOKEN)
+            remove(KEY_REFRESH_TOKEN)
+            remove(KEY_EXPIRATION_TIME)
+            apply()
+        }
+    }
+
     // 저장된 토큰 만료 시간 가져오기
     private fun getExpirationTime(context: Context): Long {
         return getSharedPreferences(context).getLong(KEY_EXPIRATION_TIME, -1L)
