@@ -30,7 +30,7 @@ fun StartScreen(navController: NavController) {
         ) {
             Text("제60회 광주일보 마라톤 대회", fontSize = 12.sp, color = Color.White)
             Spacer(modifier = Modifier.height(12.dp))
-            Button(onClick = { navController.navigate("personalScreen") }) {
+            Button(onClick = { navController.navigate("viewPagerScreen") }) {
                 Text("시작!")
             }
             Spacer(modifier = Modifier.height(12.dp))
