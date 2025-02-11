@@ -6,14 +6,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,12 +61,14 @@ fun FriendListItem(friend: Friend) {
                     textAlign = TextAlign.Center,
                 )
             )
+
             val painter = if (friend.profileImage.isNullOrEmpty()) {
                 painterResource(id = R.drawable.logo_image)
             } else {
+                val secureProfileImage = friend.profileImage?.replaceFirst("http://", "https://")
                 rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(data = friend.profileImage)
+                        .data(data = secureProfileImage)
                         .apply {
                             crossfade(true) // 이미지 로딩 시 부드러운 전환 효과
                             placeholder(R.drawable.icon_running) // 로딩 중에 보여줄 이미지
@@ -74,7 +80,10 @@ fun FriendListItem(friend: Friend) {
             Image(
                 painter = painter,
                 contentDescription = "image description",
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(45.dp)
+                    .clip(CircleShape)
             )
             Text(
                 text = friend.name,
@@ -101,7 +110,7 @@ fun FriendListItem(friend: Friend) {
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = Color.Black,
                 )
             )
         }

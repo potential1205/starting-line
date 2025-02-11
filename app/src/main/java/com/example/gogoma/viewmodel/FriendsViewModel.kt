@@ -34,6 +34,20 @@ class FriendsViewModel : ViewModel() {
         }
     }
 
+    fun updateFriend(accessToken: String?) {
+        viewModelScope.launch {
+            try {
+                // 친구 목록 갱신
+                val response = RetrofitInstance.friendApiService.updateFriend(accessToken)
+
+                if (response.isSuccessful) fetchFriends(accessToken)
+                else _errorMessage.emit("친구 목록 갱신 실패: ${response.message()}")
+            } catch (e: Exception) {
+                _errorMessage.emit("오류 발생: ${e.message}")
+            }
+        }
+    }
+
     // m → km 변환
     private fun Friend.toKm(): Friend {
         return this.copy(totalDistance = this.totalDistance / 1000)

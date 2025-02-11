@@ -50,7 +50,8 @@ fun FriendListScreen(
     Scaffold (
         topBar = { TopBarArrow (
             title = "친구",
-            onBackClick = { navController.popBackStack() }
+            onBackClick = { navController.popBackStack() },
+            refreshAction = { friendsViewModel.updateFriend(userViewModel.accessToken) }
         )
         },
         bottomBar = { BottomBar(navController = navController, userViewModel) }
