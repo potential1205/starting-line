@@ -11,12 +11,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
 
 @Composable
-fun TopBarArrow(title: String, onBackClick: () -> Unit) {
+fun TopBarArrow(title: String, onBackClick: () -> Unit, refreshAction: (()->Unit)? = null) {
     val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     Row(
@@ -35,7 +34,7 @@ fun TopBarArrow(title: String, onBackClick: () -> Unit) {
             Icon(
                 painter = painterResource(id = R.drawable.arrow_back),
                 contentDescription = "Back Arrow",
-                tint = Color.Black,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(30.dp)
             )
         }
@@ -48,12 +47,25 @@ fun TopBarArrow(title: String, onBackClick: () -> Unit) {
             Text(
                 text = title,
                 fontSize = 20.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 
+        if (refreshAction != null) {
+            IconButton(
+                onClick = refreshAction,
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.icon_refresh),
+                    contentDescription = "Refresh",
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+        }
         // 오른쪽 공백 (뒤로가기 버튼과 크기 맞추기)
-        Spacer(modifier = Modifier.size(40.dp))
+        else Spacer(modifier = Modifier.size(40.dp))
     }
 }
 
@@ -61,6 +73,6 @@ fun TopBarArrow(title: String, onBackClick: () -> Unit) {
 @Composable
 fun TopBarArrowPreview() {
     GogomaTheme {
-        TopBarArrow(title = "결제하기", onBackClick = {})
+        TopBarArrow(title = "결제하기", onBackClick = {}, refreshAction = { println("refresh") })
     }
 }

@@ -30,7 +30,7 @@ securityCrypto = "1.1.0-alpha06"
 coil = "2.5.0"
 gson = "2.8.9"
 androidx-browser = "1.5.0"
-
+room = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -74,6 +74,9 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
 v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
+androidx-room-runtime  = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx      = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

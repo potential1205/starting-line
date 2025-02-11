@@ -31,7 +31,7 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
     )
 
     Scaffold(
-        topBar = { TopBarArrow(title = "신청 상세") { navController.popBackStack() } },
+        topBar = { TopBarArrow(title = "신청 상세", { navController.popBackStack() } ) },
         bottomBar = { BottomBar(navController, userViewModel) }
     ) { paddingValues ->
         Column(
