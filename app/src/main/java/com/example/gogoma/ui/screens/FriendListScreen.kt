@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -25,6 +26,7 @@ import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.FriendListItem
 import com.example.gogoma.ui.components.TopBarArrow
+import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.viewmodel.FriendsViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -39,8 +41,9 @@ fun FriendListScreen(
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
-        friendsViewModel.fetchFriends(userViewModel.accessToken)
+        friendsViewModel.fetchFriends(TokenManager.getAccessToken(context))
 
         friendsViewModel.errorMessage.collectLatest { message ->
             errorMessage = message
@@ -51,7 +54,7 @@ fun FriendListScreen(
         topBar = { TopBarArrow (
             title = "친구",
             onBackClick = { navController.popBackStack() },
-            refreshAction = { friendsViewModel.updateFriend(userViewModel.accessToken) }
+            refreshAction = { friendsViewModel.updateFriend(TokenManager.getAccessToken(context)) }
         )
         },
         bottomBar = { BottomBar(navController = navController, userViewModel) }
