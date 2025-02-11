@@ -243,10 +243,12 @@ fun PaceScreen(
                 }
             }
             ButtonBasic(
-                text = "날짜",
+                text = "준비",
                 modifier = Modifier.fillMaxWidth(),
                 round = 0.dp,
-                onClick = {}
+                onClick = {
+                    navController.navigate("watchConnect")
+                }
             )
         }
     }
