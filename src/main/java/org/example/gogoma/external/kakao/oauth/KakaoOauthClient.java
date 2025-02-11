@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.domain.user.dto.StatusResponse;
 import org.example.gogoma.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
@@ -91,6 +95,20 @@ public class KakaoOauthClient {
                 .retrieve()
                 .bodyToMono(KakaoClientOauthTokenResponse.class)
                 .block();
+    }
+
+    public void unlinkKakao(String accessToken) {
+        webClient.post()
+                .uri("/v1/user/unlink")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .retrieve();
+    }
+
+    public HttpHeaders generateRedirectUri(String code) {
+        String redirectUrl = "gogoma://oauth?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", redirectUrl);
+        return headers;
     }
 
 }
