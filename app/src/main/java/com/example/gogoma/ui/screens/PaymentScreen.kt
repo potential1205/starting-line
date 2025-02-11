@@ -112,7 +112,7 @@ fun PaymentScreen(
                                 "카카오페이" -> {
                                     viewModel.requestKakaoPayReady(
                                         KakaoPayReadyRequest(
-                                            userId = "1",
+                                            userId = "1", // 추후 실제 아이디 받아오게끔 수정해야 함
                                             orderId = marathonId.toString(),
                                             itemName = marathonDetail?.marathon?.title ?: "마라톤 참가권",
                                             totalAmount = selectedPrice.toString()

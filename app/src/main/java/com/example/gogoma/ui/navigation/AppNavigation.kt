@@ -61,6 +61,7 @@ import com.example.gogoma.ui.screens.PaceScreen
 import com.example.gogoma.ui.screens.PaymentWebViewScreen
 import com.example.gogoma.ui.screens.WatchConnectScreen
 import com.example.gogoma.viewmodel.FriendsViewModel
+import com.example.gogoma.viewmodel.RegistViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -71,6 +72,9 @@ fun AppNavigation(userViewModel: UserViewModel){
     val marathonListViewModel: MarathonListViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
     val friendsViewModel: FriendsViewModel = viewModel()
+    val registViewModel: RegistViewModel = viewModel()
+
+    val protectedRouted = listOf("mypage", "paceSetting", "watchConnect", "friendList")
 
     // 로그인 상태 감지
     LaunchedEffect(userViewModel.loginStatus) {
@@ -100,12 +104,34 @@ fun AppNavigation(userViewModel: UserViewModel){
             SplashScreen(navController = navController)
         }
 
-        composable("paceSetting") {
-            PaceScreen (navController = navController, userViewModel, bottomSheetViewModel)
+        composable("signpage") {
+            SignScreen(navController, userViewModel)
         }
 
-        composable("watchConnect") {
-            WatchConnectScreen()
+        composable("signup") {
+            SignUpScreen(navController = navController, userViewModel = userViewModel)
+        }
+
+        //로그인 해야 접근 가능한 페이지
+        protectedRouted.forEach { route ->
+            composable(route) { backStackEntry ->
+                if(userViewModel.isLoggedIn){
+                    when (route) {
+                        "mypage" -> MypageScreen(navController, userViewModel)
+                        "paceSetting" -> PaceScreen (navController = navController, userViewModel, bottomSheetViewModel)
+                        "watchConnect" -> WatchConnectScreen()
+                        "friendList" -> FriendListScreen(navController, userViewModel, friendsViewModel)
+
+                    }
+                } else {
+                    LaunchedEffect(Unit) {
+                        navController.navigate("signpage"){
+                            // 로그인 페이지를 뒤로 가기 스택에서 제거
+                            popUpTo("signpage") { inclusive = true }
+                        }
+                    }
+                }
+            }
         }
 
         composable("main") {
@@ -113,7 +139,9 @@ fun AppNavigation(userViewModel: UserViewModel){
                 topBar = { TopBar() },
                 bottomBar = { BottomBar(navController = navController, userViewModel) }
             ){ paddingValues ->
-                Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)){
                     MainScreen(
                         navController,
                         marathonListViewModel = marathonListViewModel,
@@ -149,9 +177,12 @@ fun AppNavigation(userViewModel: UserViewModel){
                 },
                 bottomBar = { BottomBar(navController = navController, userViewModel) }
             ){ paddingValues ->
-                Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)){
                     RegistListScreen(
                         navController,
+                        viewModel = registViewModel,
                         onRegistClick = { registId ->
                             navController.navigate("registDetail/$registId")
                         }
@@ -196,18 +227,6 @@ fun AppNavigation(userViewModel: UserViewModel){
             AddressSelectionScreen(navController = navController, viewModel = paymentViewModel)
         }
 
-        composable("mypage") {
-            MypageScreen(navController, userViewModel)
-        }
-
-        composable("signpage") {
-            SignScreen(navController, userViewModel)
-        }
-
-        composable("signup") {
-            SignUpScreen(navController = navController, userViewModel = userViewModel)
-        }
-
         // 결제 성공 화면
         composable(
             "paymentSuccess/{registJson}",
@@ -215,7 +234,7 @@ fun AppNavigation(userViewModel: UserViewModel){
         ) { backStackEntry ->
             val registJsonEncoded = backStackEntry.arguments?.getString("registJson")
             val registJson = registJsonEncoded?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) }
-            PaymentStatusScreen(isSuccess = true, registJson = registJson, onConfirm = { navController.navigate("main") })
+            PaymentStatusScreen(isSuccess = true, registJson = registJson, viewModel = registViewModel, onConfirm = { navController.navigate("main") })
         }
 
         // 결제 실패 화면
@@ -223,6 +242,7 @@ fun AppNavigation(userViewModel: UserViewModel){
             PaymentStatusScreen(
                 isSuccess = false,
                 registJson = null,  // 실패 시에는 registJson을 넘기지 않음
+                viewModel = registViewModel,
                 onConfirm = { navController.popBackStack() },
                 onNavigateToMain = { navController.navigate("main") }
             )
@@ -245,9 +265,7 @@ fun AppNavigation(userViewModel: UserViewModel){
 
         }
 
-        composable("friendList") {
-            FriendListScreen(navController, userViewModel, friendsViewModel)
-        }
+
     }
 
 
