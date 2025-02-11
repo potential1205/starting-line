@@ -40,4 +40,13 @@ object RetrofitInstance {
             .build()
             .create(PaymentApiService::class.java)
     }
+
+    val watchApiService: WatchApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(WatchApiService::class.java)
+    }
+
 }
