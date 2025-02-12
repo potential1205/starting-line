@@ -412,6 +412,12 @@ public class MarathonServiceImpl implements MarathonService {
         return UpcomingMarathonInfoResponse.of(marathon);
     }
 
+    @Override
+    public String getMarathonNameById(int id) {
+        return marathonCustomRepository.findMarathonNameById(id)
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+    }
+
     private String calculateDDay(LocalDateTime raceStartTime) {
         if (raceStartTime == null) {
             return "D-?";

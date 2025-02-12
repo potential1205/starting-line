@@ -26,4 +26,6 @@ public interface MarathonService {
                         MultipartFile courseImageFile);
 
     UpcomingMarathonInfoResponse getUpcomingMarathonInfo(String accessToken, int dDay);
+
+    String getMarathonNameById(int id);
 }

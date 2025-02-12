@@ -1,6 +1,7 @@
 package org.example.gogoma.domain.marathon.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -81,6 +82,16 @@ public class MarathonCustomRepositoryImpl implements MarathonCustomRepository {
                         .and(marathon.raceStartTime.year().eq(upcomingDateTime.getYear()))
                         .and(marathon.raceStartTime.month().eq(upcomingDateTime.getMonthValue()))
                         .and(marathon.raceStartTime.dayOfMonth().eq(upcomingDateTime.getDayOfMonth())))
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<String> findMarathonNameById(int id) {
+        return Optional.ofNullable(jpaQueryFactory
+                .select(Projections.constructor(
+                        String.class, marathon.title))
+                .from(marathon)
+                .where(marathon.id.eq(id))
                 .fetchOne());
     }
 }
