@@ -23,10 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -90,7 +93,6 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                     text = "상세보기 >",
                     fontSize = 12.sp,
                     color = Color.Gray.copy(alpha = 0.7f),
-//                    modifier = Modifier.clickable { /* 상세보기 기능 추가 */ }
                 )
             }
 
@@ -108,8 +110,11 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                     // 마라톤 제목
                     Text(
                         text = regist.title,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -122,9 +127,8 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                             text = "${regist.date}",
                             style = TextStyle(
                                 fontSize = 14.sp,
-//                                fontFamily = FontFamily(Font(R.font.nanum_square_round)),
-                                fontWeight = FontWeight(300),
-                                color = Color(0xFF000000),
+                                fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         )
 
@@ -134,9 +138,8 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                             text = "# ${regist.distance}",
                             style = TextStyle(
                                 fontSize = 14.sp,
-//                                fontFamily = FontFamily(Font(R.font.nanum_square_round)),
-                                fontWeight = FontWeight(700),
-                                color = Color(0xFF606060),
+                                fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         )
                     }
@@ -148,8 +151,11 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                 ) {
                     Text(
                         text = statusText,
-                        color = Color.White,
-                        fontSize = 12.sp,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                            color = Color.White
+                        ),
                         modifier = Modifier
                             .background(
                                 // 지난 마라톤이면 회색, 아니면 초록색

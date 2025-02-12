@@ -8,27 +8,47 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.gogoma.data.model.PaymentDetail
+import com.example.gogoma.data.dto.UserMarathonDetailDto
+import com.example.gogoma.data.model.MarathonDetailResponse
 import com.example.gogoma.ui.components.BottomBar
+import com.example.gogoma.ui.components.MarathonDetailItem
 import com.example.gogoma.ui.components.PaymentDetails
 import com.example.gogoma.ui.components.TopBarArrow
+import com.example.gogoma.utils.TokenManager
+import com.example.gogoma.viewmodel.MarathonDetailViewModel
+import com.example.gogoma.viewmodel.RegistDetailViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 
 @Composable
-fun RegistDetailsScreen(registId: Int, navController: NavController, userViewModel: UserViewModel) {
-    val paymentDetails = PaymentDetail(
-        paymentDate = "2025-01-29",
-        paymentType = "신용카드",
-        paymentAmount = "50,000원",
-        address = "서울특별시 강남구 테헤란로 123",
-        raceCategory = "5km",
-        gift = "반팔(95)"
-    )
+fun RegistDetailsScreen(registId: Int, navController: NavController, userViewModel: UserViewModel, ) {
+    val registDetailViewModel: RegistDetailViewModel = viewModel()
+    val marathonDetailViewModel: MarathonDetailViewModel = viewModel()
+
+    val context = LocalContext.current
+    var userMarathonDetail by remember { mutableStateOf<UserMarathonDetailDto?>(null) }
+    var marathonDetail by remember { mutableStateOf<MarathonDetailResponse?>(null) }
+
+    // 유저 마라톤 상세 정보 로드
+    LaunchedEffect(registId) {
+        val token = TokenManager.getAccessToken(context)
+        token?.let { registDetailViewModel.getUserMarathonById(it, registId) }
+    }
+
+    LaunchedEffect(userMarathonDetail?.marathon?.id) {
+        userMarathonDetail?.marathon?.id?.let { marathonDetailViewModel.loadMarathonDetail(it) }
+    }
 
     Scaffold(
         topBar = { TopBarArrow(title = "신청 상세", { navController.popBackStack() } ) },
@@ -42,10 +62,10 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
                 .verticalScroll(rememberScrollState()) // 스크롤 추가
         ) {
             // 마라톤 상세 정보
-
+            marathonDetail?.let { MarathonDetailItem(it) }
 
             // 결제 내역
-            PaymentDetails(paymentDetails)
+            userMarathonDetail?.let { PaymentDetails(it) }
         }
     }
 }

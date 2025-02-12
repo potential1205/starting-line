@@ -46,7 +46,7 @@ fun RegistListScreen(navController: NavController, viewModel: RegistViewModel, o
         ) {
             items(sortedRegistList) { regist ->
                 RegistListItem(regist, onClick = {
-//                    navController.navigate("registDetail/${sortedRegistList.indexOf(regist)}")
+                    navController.navigate("registDetail/${sortedRegistList.indexOf(regist)}")
                 })
             }
         }
