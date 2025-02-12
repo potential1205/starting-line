@@ -12,6 +12,8 @@ import org.example.gogoma.domain.user.dto.FriendToken;
 import static org.example.gogoma.domain.user.entity.QFriend.friend;
 import static org.example.gogoma.domain.user.entity.QUser.user;
 import static org.example.gogoma.domain.usermarathon.entity.QUserMarathon.userMarathon;
+
+import org.example.gogoma.domain.user.dto.UserAlertInfo;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -140,6 +142,16 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         )
                 )
                 .fetch());
+    }
+
+    @Override
+    public Optional<UserAlertInfo> findIdAndNameByEmail(String email) {
+        return Optional.ofNullable(queryFactory
+                .select(Projections.constructor(
+                                UserAlertInfo.class, user.id, user.name))
+                .from(user)
+                .where(user.email.eq(email))
+                .fetchOne());
     }
 
 }

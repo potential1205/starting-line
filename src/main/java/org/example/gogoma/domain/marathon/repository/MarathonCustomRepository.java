@@ -17,4 +17,6 @@ public interface MarathonCustomRepository {
             List<String> courseTypeList);
 
     Optional<Marathon> findByUpcomingMarathon(int id, LocalDateTime upcomingDateTime);
+
+    Optional<String> findMarathonNameById(int id);
 }

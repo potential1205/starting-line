@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
 import org.example.gogoma.controller.response.ApplyResponse;
+import org.example.gogoma.domain.marathon.service.MarathonService;
 import org.example.gogoma.domain.user.dto.*;
 import org.example.gogoma.controller.response.UserResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
@@ -26,6 +27,7 @@ public class UserController {
 
     private final KakaoOauthClient kakaoOauthClient;
     private final UserService userService;
+    private final MarathonService marathonService;
     private final KakaoUrlBuilder kakaoUrlBuilder;
 
     @GetMapping("/kakao/redirect")
@@ -189,10 +191,11 @@ public class UserController {
         return ResponseEntity.ok(friendResponses);
     }
 
-    @PostMapping("/alert/friends")
+    @PostMapping("/alert/{marathonId}")
     @Operation(summary = "신청 시 친구에게 알림", description = "신청 시 내가 신청한 대회에 친구들에게 내가 신청했다는 알림 푸시")
-    public ResponseEntity<BooleanResponse> sendPushNotification(@RequestBody FcmRequest fcmRequest) {
-         userService.sendNotificationToFriends(fcmRequest);
+    public ResponseEntity<BooleanResponse> sendPushNotification(@RequestHeader("Authorization") String accessToken,@PathVariable int marathonId) {
+        UserAlertInfo userAlertInfo = userService.getUserAlertInfoByEmail(kakaoOauthClient.getUserInfo(accessToken).getEmail());
+        userService.sendNotificationToFriends(FcmRequest.of(userAlertInfo,marathonId,marathonService.getMarathonNameById(marathonId)));
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
