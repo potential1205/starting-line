@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gogoma.data.dto.KakaoPayReadyRequest
@@ -28,6 +29,7 @@ fun PaymentScreen(
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     var marathonDetail by remember { mutableStateOf<MarathonDetailResponse?>(null) }
     val gson = remember { Gson() }
+    val context = LocalContext.current
 
     LaunchedEffect(marathonId) {
         marathonDetail = savedStateHandle?.get<MarathonDetailResponse>("marathonDetail_$marathonId")
@@ -112,11 +114,11 @@ fun PaymentScreen(
                                 "카카오페이" -> {
                                     viewModel.requestKakaoPayReady(
                                         KakaoPayReadyRequest(
-                                            userId = "1", // 추후 실제 아이디 받아오게끔 수정해야 함
                                             orderId = marathonId.toString(),
                                             itemName = marathonDetail?.marathon?.title ?: "마라톤 참가권",
                                             totalAmount = selectedPrice.toString()
-                                        )
+                                        ),
+                                        context
                                     )
                                 }
                                 "토스" -> navController.navigate("paymentFailure")

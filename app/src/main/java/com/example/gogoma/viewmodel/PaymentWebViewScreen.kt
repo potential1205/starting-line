@@ -13,6 +13,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.example.gogoma.viewmodel.PaymentViewModel
@@ -26,6 +27,8 @@ fun PaymentWebViewScreen(
     viewModel: PaymentViewModel,
     registJson: String
 ) {
+    val context = LocalContext.current
+
     AndroidView(
         factory = { context ->
             WebView(context).apply {
@@ -51,7 +54,7 @@ fun PaymentWebViewScreen(
                                 val pgToken = Uri.parse(url).getQueryParameter("pg_token")
                                 if (!pgToken.isNullOrEmpty()) {
                                     val redirectUrl = "gogoma://payment/result/success"
-                                    viewModel.redirectAfterPayment(pgToken, redirectUrl) { isSuccess ->
+                                    viewModel.redirectAfterPayment(pgToken, redirectUrl, context) { isSuccess ->
                                         if (isSuccess) {
                                             navController.navigate("paymentSuccess/${Uri.encode(registJson)}")
                                         } else {
@@ -103,20 +106,20 @@ private fun handleIntentScheme(context: Context, view: WebView?, url: String): B
     }
 }
 
-fun isAppInstalled(context: Context, packageName: String): Boolean {
-    return try {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            context.packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
-        } else {
-            @Suppress("DEPRECATION")
-            context.packageManager.getPackageInfo(packageName, 0)
-        }
-        Log.d("PaymentWebViewScreen", "✅ $packageName 설치됨")
-        true
-    } catch (e: PackageManager.NameNotFoundException) {
-        Log.e("PaymentWebViewScreen", "❌ $packageName 설치되지 않음")
-        false
-    }
-}
+//fun isAppInstalled(context: Context, packageName: String): Boolean {
+//    return try {
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+//            context.packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+//        } else {
+//            @Suppress("DEPRECATION")
+//            context.packageManager.getPackageInfo(packageName, 0)
+//        }
+//        Log.d("PaymentWebViewScreen", "✅ $packageName 설치됨")
+//        true
+//    } catch (e: PackageManager.NameNotFoundException) {
+//        Log.e("PaymentWebViewScreen", "❌ $packageName 설치되지 않음")
+//        false
+//    }
+//}
 
 
