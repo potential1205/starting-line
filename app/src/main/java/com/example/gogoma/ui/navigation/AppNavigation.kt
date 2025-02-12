@@ -97,12 +97,8 @@ fun AppNavigation(userViewModel: UserViewModel){
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "main"
     ){
-        composable("splash") {
-            //스플래시 화면
-            SplashScreen(navController = navController)
-        }
 
         composable("signpage") {
             SignScreen(navController, userViewModel)

@@ -2,6 +2,7 @@ package com.example.gogoma.ui.screens
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import com.example.gogoma.data.model.CreateUserRequest
 @Composable
 fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
     val context = LocalContext.current
+    val previousDestination = navController.previousBackStackEntry?.destination?.route
 
     val tmpkakaoUserInfo = userViewModel.tmpkakaoUserInfo
     var roadAddress by remember { mutableStateOf("") }
@@ -89,15 +91,12 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
             // 회원가입 API 호출
             userViewModel.signUpUser(context = context, createUserRequest = request) { success ->
                 if (success) {
-//                    // 회원가입 성공 시 메인 화면으로 이동
-//                    navController.navigate("mypage") {
-//                        // 회원가입 후 뒤로 가기 스택을 없애기 위한 설정
-//                        popUpTo("signup") { inclusive = true }
-//                    }
-                    navController.popBackStack()
+                    navController.navigate(previousDestination ?: "mypage") {//현재는 메인으로 돌아가게 되어 있음
+                        popUpTo("signup") {inclusive = true}
+                    }
                 } else {
+                    Toast.makeText(context, "회원 가입 실패", Toast.LENGTH_SHORT).show()
                     // 회원가입 실패 처리
-                    println("회원가입 실패")
                 }
             }
         }) {

@@ -47,8 +47,22 @@ class UserViewModel() : ViewModel() {
         CoroutineScope(Dispatchers.Main).launch {
             val isValid = checkTokenValidity(context)
             if(isValid){//토큰이 유효함
-                isLoggedIn = true //로그인 처리
+                println("유효합니다")
+
+                //로그인 처리
+                val accessToken = TokenManager.getAccessToken(context)
+                val refreshToken = TokenManager.getRefreshToken(context)
+                if(!refreshToken.isNullOrEmpty()) {
+                    val result = loginToOurService(context, accessToken.toString(), refreshToken)
+                    if (result) {
+                        println("서비스에 정상적으로 로그인되었습니다.")
+                    } else {
+                        println("서비스 로그인 실패")
+                    }
+                }
+
             } else {//유효하지 않음
+                println("유효하지 않습니다")
                 isLoggedIn = false
                 refreshAccessToken(context) //토큰 갱신하기
             }
@@ -59,7 +73,7 @@ class UserViewModel() : ViewModel() {
         val accessToken = TokenManager.getAccessToken(context)
         
         //토큰이 비어 있지 않고, 만료되지 않았다면
-        if(accessToken != null && TokenManager.isTokenExpired(context)){
+        if(accessToken != null && !TokenManager.isTokenExpired(context)){
             //로그인을 했는지 확인
             try {
                 val response = RetrofitInstance.userApiService.determineLoginOrSignUp(accessToken)
@@ -81,7 +95,7 @@ class UserViewModel() : ViewModel() {
         }
     }
 
-    //임시 회원 탈퇴
+    //카카오 SDK 카카오 연결 해제
     fun unlinkKakaoAccount(callback: (Boolean, Throwable?) -> Unit) {
         UserApiClient.instance.unlink { error ->
             if (error != null) {
@@ -92,6 +106,36 @@ class UserViewModel() : ViewModel() {
         }
     }
 
+    suspend fun unlinkKakaoAccountWeb(context: Context): Boolean {
+        val accessToken = TokenManager.getAccessToken(context)
+        if(accessToken.isNullOrEmpty()) {
+            return false
+        }
+        val unlinkResponse = RetrofitInstance.userApiService.unlinkKakao(accessToken)
+        if(unlinkResponse.isSuccessful && unlinkResponse.body()?.success == true) {
+            return true
+        }
+        return false
+    }
+
+    // API로 회원 탈퇴
+    suspend fun unlinkAndDeleteUser(context: Context): Boolean {
+        val accessToken = TokenManager.getAccessToken(context)
+        if(accessToken.isNullOrEmpty()) {
+            return false
+        }
+
+        val unlinkResponse = RetrofitInstance.userApiService.unlinkKakao(accessToken)
+        if(unlinkResponse.isSuccessful && unlinkResponse.body()?.success == true) {
+            val deleteResponse = RetrofitInstance.userApiService.deleteUserByID(accessToken)
+            if (deleteResponse.isSuccessful && deleteResponse.body()?.success == true) {
+                logout(context)
+                return true
+            }
+        }
+
+        return false
+    }
 
     // 토큰 갱신 처리
     fun refreshAccessToken(context: Context) {
@@ -103,16 +147,19 @@ class UserViewModel() : ViewModel() {
                 val response = RetrofitInstance.userApiService.refreshAccessToken(storedRefreshToken)
 
                 if (response.isSuccessful) {
-                    // 요청 성공 시 새로운 access token을 받아 TokenManager에 저장
+                    // 요청 성공 시 새로운 access token을 받아옴
                     val newAccessToken = response.body()?.access_token
-                    val newRefreshToken = response.body()?.refresh_token
 
-                    if (newAccessToken != null && newRefreshToken != null) {
+                    if (newAccessToken != null) {
                         val expirationTime = System.currentTimeMillis() + 3600000  // 만료 시간 1시간 후
-                        TokenManager.saveTokens(context, newAccessToken, newRefreshToken, expirationTime)
-                        // TokenManager에서 새로운 access token을 가져와 isLoggedIn을 true로 설정
-                        isLoggedIn = true
-                        Log.i("RefreshToken", "새로운 access token을 성공적으로 받았습니다.")
+                        TokenManager.saveTokens(context, newAccessToken, storedRefreshToken, expirationTime)
+                        // TokenManager에서 새로운 access token을 가져와 다시 로그인 진행
+                        val isLoginSuccess = loginToOurService(context, newAccessToken, storedRefreshToken)
+                        if(isLoginSuccess) {
+                            Log.i("Login", "서비스 로그인 성공")
+                        } else {
+                            Log.e("Login", "서비스 로그인 실패")
+                        }
                     }
                 } else {
                     // 요청 실패 시 처리
@@ -161,7 +208,6 @@ class UserViewModel() : ViewModel() {
                 callback(false)
             }
             token != null -> {
-                println("처음 토큰을 받았을 때 액세스"+token.accessToken)
                 Log.i("KakaoLogin", "응답 성공: ${token.accessToken}")
 
                 // accessToken과 함께 서버에 회원가입/로그인 판단 요청
@@ -173,7 +219,7 @@ class UserViewModel() : ViewModel() {
     }
 
     //로그인/회원가입 판단 API 호출
-    private fun checkLoginOrSignUp(context: Context, accessToken: String, refreshToken: String) {
+    fun checkLoginOrSignUp(context: Context, accessToken: String, refreshToken: String) {
         isLoading = true
         // 서버로부터 로그인/회원가입 상태를 확인 받음
         CoroutineScope(Dispatchers.IO).launch {
@@ -198,15 +244,11 @@ class UserViewModel() : ViewModel() {
                 if(statusResponse.status == "login"){
                     loginToOurService(context, accessToken, refreshToken)
                 }else if(statusResponse.status == "signup"){
-                    println("이곳에 들어왔다, 회원가입이다")
                     tmpAccessToken = accessToken
                     tmpRefreshToken = refreshToken
-                    println("액세스다"+tmpAccessToken)
-                    println("리프레시다"+tmpRefreshToken)
-                    
+
                     getKakaoUserInfo(context, tmpAccessToken?:""){ userInfo ->
                         if(userInfo != null){ //사용자 정보 불러오기 성공
-                            println("유저 인포는 널이 아니다")
                             tmpkakaoUserInfo = userInfo
                             Log.i("SignUp", "사용자 정보: ${userInfo.name}")
                             loginStatus = statusResponse.status //회원가입 화면으로 이동
@@ -227,8 +269,6 @@ class UserViewModel() : ViewModel() {
     private suspend fun loginToOurService(context: Context, accessToken: String, refreshToken: String):Boolean {
         return try {
             val response = RetrofitInstance.userApiService.login(accessToken)
-            println("이것은 response이다"+response)
-            println("이곳에 흘러들어온 accessTOken은 다음과 같다: "+accessToken)
             if(response.isSuccessful && response.body()?.success == true){
 //                val refreshToken = response.headers()["Set-cookie"] ?:"" //쿠키로 refreshToken 주기
                 val expirationTime = System.currentTimeMillis() + 3600000  // 1시간 후 만료
@@ -238,13 +278,10 @@ class UserViewModel() : ViewModel() {
 
                 //로그인 성공 후 사용자 정보 저장
                 getKakaoUserInfo(context, accessToken) { userInfo ->
-                    println("성공 후 저장하는 곳에 진입했다")
                     if (userInfo != null) {
-                        println("진정한 성공이다, 사용자는 널이 아니다")
                         kakaoUserInfo = userInfo
                         Log.i("KakaoUserInfo", "사용자 정보: ${userInfo.name}")
                     } else {
-                        println("이곳은 실패한 곳이다")
                         Log.e("KakaoUserInfo", "사용자 정보 가져오기 실패")
                     }
                 }
@@ -329,6 +366,7 @@ class UserViewModel() : ViewModel() {
     fun logout(context: Context) {
         TokenManager.clearToken(context)
         isLoggedIn = false
+        kakaoUserInfo = null
     }
 
 
