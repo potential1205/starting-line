@@ -3,7 +3,7 @@ package com.example.gogoma.data.repository
 import com.google.firebase.database.FirebaseDatabase
 
 data class UserData(
-    val distance: Double = 0.0,
+    val distance: Int = 0,
 )
 
 object UserDistanceRepository {
@@ -17,17 +17,17 @@ object UserDistanceRepository {
         onFailure: (Exception) -> Unit
     ) {
         // 예시 데이터: 누적거리 0
-        val initialData = UserData(distance = 0.0)
+        val initialData = UserData(distance = 0)
         marathonRef.child(userId).setValue(initialData)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
     // 누적 거리를 조회하는 메서드
-    fun getUserCumulativeDistance(userId: String, onResult: (Double?) -> Unit) {
+    fun getUserCumulativeDistance(userId: String, onResult: (Int?) -> Unit) {
         marathonRef.child(userId).child("distance").get()
             .addOnSuccessListener { snapshot ->
-                val distance = snapshot.getValue(Double::class.java)
+                val distance = snapshot.getValue(Int::class.java)
                 onResult(distance)
             }
             .addOnFailureListener { onResult(null) }
@@ -36,7 +36,7 @@ object UserDistanceRepository {
     // 누적 거리를 업데이트하는 메서드
     fun updateUserCumulativeDistance(
         userId: String,
-        newCumulativeDistance: Double,
+        newCumulativeDistance: Int,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {

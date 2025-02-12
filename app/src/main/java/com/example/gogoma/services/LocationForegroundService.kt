@@ -24,7 +24,7 @@ class LocationForegroundService : Service() {
     private lateinit var locationCallback: LocationCallback
 
     // 누적 거리 (킬로미터 단위)
-    private var cumulativeDistance = 0.0
+    private var cumulativeDistance: Int = 0
     private var previousLocation: Location? = null
 
     // 예시 사용자 ID (백엔드에서 auto PK로 생성된 ID; 여기서는 "1" 사용)
@@ -48,8 +48,8 @@ class LocationForegroundService : Service() {
 
                     // 이전 위치가 존재하면, 두 위치 사이의 거리를 계산하여 누적 거리 업데이트
                     previousLocation?.let { prevLoc ->
-                        val distanceInMeters = prevLoc.distanceTo(currentLocation)
-                        val incrementalDistance = distanceInMeters / 1000.0  // km 단위로 변환
+                        val distanceInMeters = Math.round(prevLoc.distanceTo(currentLocation))
+                        val incrementalDistance = distanceInMeters
                         cumulativeDistance += incrementalDistance
 
                         val formattedCumulative = formatDistance(cumulativeDistance)
@@ -84,8 +84,8 @@ class LocationForegroundService : Service() {
         startLocationUpdates()
     }
 
-    private fun formatDistance(distance: Double): String {
-        return String.format("%.2f", distance)
+    private fun formatDistance(distance: Int): String {
+        return String.format("%.2f", distance / 100000.0)
     }
 
     private fun startForegroundServiceWithNotification() {
