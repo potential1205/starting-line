@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.example.gogoma.domain.user.entity.Friend;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -16,10 +17,11 @@ public class MarathonReadyDto {
     private int targetPace;
     private int runningDistance;
     private String marathonTitle;
+    private LocalDateTime marathonStartTime;
     private List<Friend> friendList;
 
     public static MarathonReadyDto of(
-            int userId, String userName, int targetPace, int marathonId, String marathonTitle, List<Friend> friendList) {
+            int userId, String userName, int targetPace, int marathonId, String marathonTitle, List<Friend> friendList, LocalDateTime marathonStartTime) {
 
         return MarathonReadyDto.builder()
                 .userId(userId)
@@ -28,6 +30,7 @@ public class MarathonReadyDto {
                 .marathonId(marathonId)
                 .marathonTitle(marathonTitle)
                 .friendList(friendList)
+                .marathonStartTime(marathonStartTime)
                 .build();
     }
 }
