@@ -16,6 +16,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.gogoma.BuildConfig
 import com.example.gogoma.data.dto.MarathonReadyDto
 import com.example.gogoma.data.dto.MyData
 import com.example.gogoma.services.MarathonApiService
@@ -34,7 +35,7 @@ import java.util.Locale
 
 class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener {
 
-    private var serverBaseUrl = "http://10.0.2.2:8080/api/v1/watch/"
+    private var serverBaseUrl = "http://${BuildConfig.SERVER_IP}:8080/api/v1/watch/"
     private var receivedState = mutableStateOf("Waiting for data...")
     private var marathonReadyData = mutableStateOf<MarathonReadyDto?>(null)
     private val isAutoSending = mutableStateOf(false)

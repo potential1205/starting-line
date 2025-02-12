@@ -29,9 +29,11 @@ android {
         val properties = Properties()
         properties.load(localProperties.inputStream())
         val kakaoApiKey = properties.getProperty("KAKAO_APP_KEY")
+        val serverIP = properties.getProperty("SERVER_IP")
 
         // BuildConfig에 키 추가
         buildConfigField("String", "KAKAO_APP_KEY", "\"${kakaoApiKey}\"")
+        buildConfigField("String", "SERVER_IP", "\"${serverIP}\"")
     }
 
     buildTypes {
