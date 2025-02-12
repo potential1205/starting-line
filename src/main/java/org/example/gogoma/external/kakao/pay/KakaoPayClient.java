@@ -24,14 +24,14 @@ public class KakaoPayClient {
     @Value("${app.redirect-url}")
     private String appRedirectUrl;
 
-    public ReadyResponse preparePayment(ReadyRequest paymentRequest) {
+    public ReadyResponse preparePayment(PayReadyRequest payReadyRequest) {
         Map<String, String> params = new HashMap<>();
         params.put("cid", "TC0ONETIME");
-        params.put("partner_order_id", paymentRequest.getOrderId());
-        params.put("partner_user_id", paymentRequest.getUserId());
-        params.put("item_name", paymentRequest.getItemName());
+        params.put("partner_order_id", payReadyRequest.getOrderId());
+        params.put("partner_user_id", String.valueOf(payReadyRequest.getUserId()));
+        params.put("item_name", payReadyRequest.getItemName());
         params.put("quantity", "1");
-        params.put("total_amount", paymentRequest.getTotalAmount());
+        params.put("total_amount", payReadyRequest.getTotalAmount());
         params.put("tax_free_amount", "0");
         String redirectUrl = "api/v1/usermarathons/pay/kakao/redirect?redirect=";
         params.put("approval_url", serverBaseUrl + redirectUrl + appRedirectUrl + "success");
@@ -49,14 +49,14 @@ public class KakaoPayClient {
                 .block();
     }
 
-    public ApproveResponse approvePayment(ApproveRequest approveRequest) {
+    public ApproveResponse approvePayment(PayApproveRequest payApproveRequest) {
 
         Map<String, String> params = new HashMap<>();
         params.put("cid", "TC0ONETIME");
-        params.put("tid", approveRequest.getTid());
-        params.put("partner_order_id", approveRequest.getOrderId());
-        params.put("partner_user_id", approveRequest.getUserId());
-        params.put("pg_token", approveRequest.getPgToken());
+        params.put("tid", payApproveRequest.getTid());
+        params.put("partner_order_id", payApproveRequest.getOrderId());
+        params.put("partner_user_id", String.valueOf(payApproveRequest.getUserId()));
+        params.put("pg_token", payApproveRequest.getPgToken());
 
         return webClient.post()
                 .uri("/approve")
