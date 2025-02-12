@@ -107,6 +107,18 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     // GPS 라이브러리
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // 모바일 - 워치 통신 관련(data client)
+    implementation("com.google.android.gms:play-services-wearable:18.0.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+    // retrofit, restapi 관련
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // gson
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
 }
 
 apply(plugin = "com.google.gms.google-services")
