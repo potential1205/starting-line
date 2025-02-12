@@ -49,4 +49,12 @@ object RetrofitInstance {
             .create(WatchApiService::class.java)
     }
 
+    val userMarathonApiService: UserMarathonApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(UserMarathonApiService::class.java)
+    }
+
 }
