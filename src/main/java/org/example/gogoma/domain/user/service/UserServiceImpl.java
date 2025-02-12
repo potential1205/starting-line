@@ -4,11 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
-import org.example.gogoma.domain.user.dto.CreateUserRequest;
+import org.example.gogoma.domain.user.dto.*;
 import org.example.gogoma.controller.response.UserResponse;
-import org.example.gogoma.domain.user.dto.FcmRequest;
-import org.example.gogoma.domain.user.dto.FriendResponse;
-import org.example.gogoma.domain.user.dto.FriendToken;
 import org.example.gogoma.external.firebase.FirebaseNotificationClient;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendResponse;
@@ -20,7 +17,6 @@ import org.example.gogoma.domain.user.repository.UserRepository;
 import org.example.gogoma.exception.type.DbException;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,6 +120,11 @@ public class UserServiceImpl implements UserService {
         friendTokens.forEach(token -> firebaseNotificationClient.sendPushNotification(fcmRequest, String.valueOf(token)));
     }
 
+    @Override
+    public UserAlertInfo getUserAlertInfoByEmail(String email) {
+        return userCustomRepository.findIdAndNameByEmail(email)
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+    }
 
 
 }
