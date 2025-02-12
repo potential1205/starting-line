@@ -14,22 +14,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.data.dto.UserMarathonSearchDto
-import com.example.gogoma.theme.GogomaTheme
 
 @Composable
 fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
@@ -120,7 +114,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    regist.dDay?.let {
+                    regist.dday?.let {
                         Text(
                             text = it,
                             style = TextStyle(
@@ -131,7 +125,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             modifier = Modifier
                                 .background(
                                     // 지난 마라톤이면 회색, 아니면 초록색
-                                    color = if (regist.dDay.equals("D-?")) Color.Gray.copy(alpha = 0.5f) else Color(0xFF4CAF50),
+                                    color = if (regist.dday.equals("D-?")) Color.Gray.copy(alpha = 0.5f) else Color(0xFF4CAF50),
                                     shape = RoundedCornerShape(8.dp)
                                 )
                                 .padding(horizontal = 10.dp, vertical = 4.dp)

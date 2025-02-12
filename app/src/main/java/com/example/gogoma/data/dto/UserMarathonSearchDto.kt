@@ -11,7 +11,7 @@ data class UserMarathonSearchDto (
 
         val marathonType: String,
 
-        val dDay: String? = null,
+        val dday: String? = null,
 
         val raceStartDateTime: String,
 

@@ -14,9 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.data.dto.UserMarathonSearchDto
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 // 뛴 마라톤, 뛸 마라톤
 @Composable
@@ -27,7 +24,7 @@ fun RegistMarathonCountSection(registList: List<UserMarathonSearchDto>) {
         0 to 0
     } else {
         registList.partition { regist ->
-            regist.dDay?.equals("D-?") == true
+            regist.dday?.equals("D-?") == true
         }.let { (past, upcoming) -> past.size to upcoming.size }
     }
 

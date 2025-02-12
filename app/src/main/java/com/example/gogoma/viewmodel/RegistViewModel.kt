@@ -1,17 +1,12 @@
 package com.example.gogoma.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.data.api.RetrofitInstance
-import com.example.gogoma.data.dto.UserMarathonDetailDto
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
 
 class RegistViewModel : ViewModel() {
     // 상태를 StateFlow로 변경
@@ -30,8 +25,8 @@ class RegistViewModel : ViewModel() {
 
                 if (response.isSuccessful) {
                     val userMarathonResponse = response.body()
-                    if (userMarathonResponse?.userMarathons != null) {
-                        _registList.value = userMarathonResponse.userMarathons
+                    if (userMarathonResponse?.userMarathonSearchDtoList != null) {
+                        _registList.value = userMarathonResponse.userMarathonSearchDtoList
                         println( "✅ 사용자 마라톤 리스트 업데이트 성공")
                     } else {
                         _registList.value = emptyList()

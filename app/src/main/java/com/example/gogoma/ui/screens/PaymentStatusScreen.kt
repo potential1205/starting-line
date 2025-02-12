@@ -104,7 +104,7 @@ fun SuccessContent(onConfirm: () -> Unit, registInfo: UserMarathonSearchDto?) {
                     raceStartDateTime = it.raceStartDateTime,
                     marathonType = it.marathonType,
                     userMarathonId = null,
-                    dDay = null
+                    dday = null
                 ),
                 onClick = {}
             )
