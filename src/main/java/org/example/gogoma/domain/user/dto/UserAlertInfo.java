@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class FriendToken {
-
-    private String fcmToken;
+@AllArgsConstructor
+public class UserAlertInfo {
+    private int id;
+    private String name;
 }
