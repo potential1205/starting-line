@@ -22,23 +22,19 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.gogoma.BuildConfig
+import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.MarathonReadyDto
 import com.example.gogoma.data.dto.MyData
 import com.example.gogoma.data.repository.UserDistanceRepository
-import com.example.gogoma.services.MarathonApiService
 import com.google.android.gms.location.*
 import com.google.android.gms.wearable.*
 import kotlinx.coroutines.delay
 import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener {
-
-    private var serverBaseUrl = "http://${BuildConfig.SERVER_IP}:8080/api/v1/watch/"
     private var receivedState = mutableStateOf("Waiting for data...")
     private var marathonReadyData = mutableStateOf<MarathonReadyDto?>(null)
     private val isAutoSending = mutableStateOf(false)
@@ -94,40 +90,37 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
     }
 
     // --------------- [초기 데이터 불러오기 / from 서버] ---------------
-    @SuppressLint("VisibleForTests")
+    //@SuppressLint("VisibleForTests")
     private fun marathonReady() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(serverBaseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(MarathonApiService::class.java)
+        Log.e("MarathonRunService", "marathonReady 호출")
 
         val userId = 5
         val marathonId = 25
-        val token = "kakao access token" // 모바일 로그인시 받는 토큰
+        val token = "kakao access token" // 만약 Authorization 헤더가 필요하면, 인터페이스에서 주석 해제 후 사용
 
-        apiService.startMarathon(marathonId, userId).enqueue(object : Callback<MarathonReadyDto> {
-            override fun onResponse(
-                call: Call<MarathonReadyDto>,
-                response: Response<MarathonReadyDto>
-            ) {
-                if (response.isSuccessful) {
-                    Log.d("MarathonRunService", "Marathon Ready 성공: ${response.body()}")
-                    marathonReadyData.value = response.body()
-                    isMarathonReady.value = true
-//                    sendMarathonReady();
-                } else {
-                    Log.e("MarathonRunService", "Marathon Ready 응답 에러 ${response.errorBody()?.string()}")
+        // RetrofitInstance를 사용하여 API 호출
+        RetrofitInstance.marathonRunApiService.startMarathon(marathonId, userId)
+            .enqueue(object : Callback<MarathonReadyDto> {
+                override fun onResponse(
+                    call: Call<MarathonReadyDto>,
+                    response: Response<MarathonReadyDto>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("MarathonRunService", "Marathon Ready 성공: ${response.body()}")
+                        marathonReadyData.value = response.body()
+                        isMarathonReady.value = true
+                        // 필요시 sendMarathonReady() 호출
+                    } else {
+                        Log.e("MarathonRunService", "Marathon Ready 응답 에러 ${response.errorBody()?.string()}")
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<MarathonReadyDto>, t: Throwable) {
-                Log.e("MarathonRunService", "Marathon Ready 호출 실패", t)
-            }
-        })
+                override fun onFailure(call: Call<MarathonReadyDto>, t: Throwable) {
+                    val errorMessage = t.localizedMessage ?: "알 수 없는 에러"
+                    Log.e("MarathonRunService", "Marathon Ready 호출 실패: $errorMessage\n${Log.getStackTraceString(t)}")
+                }
+            })
     }
-
     // --------------- [Start 버튼 클릭 시 실행되는 로직] ---------------
     @SuppressLint("VisibleForTests")
     private fun startMarathonRun() {
