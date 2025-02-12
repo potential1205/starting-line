@@ -42,7 +42,7 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
 
     // 유저 마라톤 상세 정보 로드
     LaunchedEffect(registId) {
-        val token = TokenManager.getAccessToken(context)
+        val token = "Z5aPYB6Lacw6EGCwHYuTWQUv4lDNfI5rAAAAAQorDNMAAAGU-hseEuZNgpjs3oAL"
         token?.let { registDetailViewModel.getUserMarathonById(it, registId) }
     }
 

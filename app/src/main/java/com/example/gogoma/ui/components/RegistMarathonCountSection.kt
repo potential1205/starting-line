@@ -13,22 +13,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gogoma.ui.components.Regist
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 // 뛴 마라톤, 뛸 마라톤
 @Composable
-fun RegistMarathonCountSection(registList: List<Regist>) {
-    // 오늘 날짜
-    val today = Calendar.getInstance()
-
+fun RegistMarathonCountSection(registList: List<UserMarathonSearchDto>) {
     // 지난 마라톤과 앞으로 뛸 마라톤 개수 계산
-    val (pastCount, upcomingCount) = registList.partition { regist ->
-        val targetDate = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA).parse(regist.date)
-        targetDate.before(today.time) // 지난 마라톤이면 true
-    }.let { (past, upcoming) -> past.size to upcoming.size }
+    val (pastCount, upcomingCount) = if (registList.isEmpty()) {
+        // 리스트가 비었을 때 0으로 설정
+        0 to 0
+    } else {
+        registList.partition { regist ->
+            regist.dDay?.equals("D-?") == true
+        }.let { (past, upcoming) -> past.size to upcoming.size }
+    }
 
     Row(
         modifier = Modifier

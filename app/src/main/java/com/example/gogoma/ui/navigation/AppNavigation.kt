@@ -190,7 +190,7 @@ fun AppNavigation(userViewModel: UserViewModel){
                     .padding(paddingValues)){
                     RegistListScreen(
                         navController,
-                        viewModel = registViewModel,
+                        registViewModel = registViewModel,
                         onRegistClick = { registId ->
                             navController.navigate("registDetail/$registId")
                         }
