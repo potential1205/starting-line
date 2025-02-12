@@ -20,7 +20,6 @@ import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.marathon.entity.MarathonType;
 import org.example.gogoma.domain.marathon.enums.MarathonStatus;
 import org.example.gogoma.domain.marathon.repository.MarathonCustomRepository;
-import org.example.gogoma.domain.marathon.repository.MarathonCustomRepositoryImpl;
 import org.example.gogoma.domain.marathon.repository.MarathonRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonTypeRepository;
 import org.example.gogoma.domain.user.entity.User;
