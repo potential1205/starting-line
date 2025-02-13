@@ -30,7 +30,7 @@ fun RegistListScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        val token = "Z5aPYB6Lacw6EGCwHYuTWQUv4lDNfI5rAAAAAQorDNMAAAGU-hseEuZNgpjs3oAL"
+        val token = TokenManager.getAccessToken(context)
         token?.let { registViewModel.getUserMarathonList(it) }
     }
 
