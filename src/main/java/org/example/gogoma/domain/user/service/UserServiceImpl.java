@@ -75,16 +75,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateFriend(int userId, KakaoFriendListResponse kakaoFriendListResponse) {
         for (KakaoFriendResponse kakaoFriendResponse : kakaoFriendListResponse.getFriends()){
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
             Optional<User> friendOptional = userRepository.findByKakaoId(kakaoFriendResponse.getId());
 
             if(friendOptional.isPresent()){
                 User friend = friendOptional.get();
 
                 if (!friendRepository.existsByUserIdAndFriendId(userId, friend.getId()))
-                    friendRepository.save(Friend.of(userId,friend.getId()));
+                    friendRepository.save(Friend.of(userId,friend.getId(),friend.getName()));
 
                 if (!friendRepository.existsByUserIdAndFriendId(friend.getId(),userId))
-                    friendRepository.save(Friend.of(friend.getId(),userId));
+                    friendRepository.save(Friend.of(friend.getId(),userId,user.getName()));
 
             }
         }
