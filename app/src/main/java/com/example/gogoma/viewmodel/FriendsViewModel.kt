@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.network.HttpException
 import com.example.gogoma.data.api.RetrofitInstance
-import com.example.gogoma.data.model.Friend
+import com.example.gogoma.data.model.FriendResponse
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import okio.IOException
 
 class FriendsViewModel : ViewModel() {
-    private val _friends = MutableStateFlow<List<Friend>>(emptyList())
-    val friends: StateFlow<List<Friend>> = _friends
+    private val _friends = MutableStateFlow<List<FriendResponse>>(emptyList())
+    val friends: StateFlow<List<FriendResponse>> = _friends
 
     private val _errorMessage = MutableSharedFlow<String?>()
     val errorMessage: SharedFlow<String?> = _errorMessage
@@ -49,7 +49,7 @@ class FriendsViewModel : ViewModel() {
     }
 
     // m → km 변환
-    private fun Friend.toKm(): Friend {
+    private fun FriendResponse.toKm(): FriendResponse {
         return this.copy(totalDistance = this.totalDistance / 1000)
     }
 }

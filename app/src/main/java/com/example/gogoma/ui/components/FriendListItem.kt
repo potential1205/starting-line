@@ -31,11 +31,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.gogoma.R
-import com.example.gogoma.data.model.Friend
+import com.example.gogoma.data.model.FriendResponse
 import com.example.gogoma.theme.GogomaTheme
 
 @Composable
-fun FriendListItem(friend: Friend) {
+fun FriendListItem(friendResponse: FriendResponse) {
     Row (
         modifier = Modifier
             .width(382.dp)
@@ -53,7 +53,7 @@ fun FriendListItem(friend: Friend) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "${friend.rank}",
+                text = "${friendResponse.rank}",
                 style = TextStyle(
                     fontSize = 26.sp,
                     fontFamily = FontFamily(Font(R.font.nanum_square_round_eb)),
@@ -62,10 +62,10 @@ fun FriendListItem(friend: Friend) {
                 )
             )
 
-            val painter = if (friend.profileImage.isNullOrEmpty()) {
+            val painter = if (friendResponse.profileImage.isNullOrEmpty()) {
                 painterResource(id = R.drawable.logo_image)
             } else {
-                val secureProfileImage = friend.profileImage?.replaceFirst("http://", "https://")
+                val secureProfileImage = friendResponse.profileImage?.replaceFirst("http://", "https://")
                 rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
                         .data(data = secureProfileImage)
@@ -86,7 +86,7 @@ fun FriendListItem(friend: Friend) {
                     .clip(CircleShape)
             )
             Text(
-                text = friend.name,
+                text = friendResponse.name,
                 style = TextStyle(
                     fontSize = 17.5.sp,
                     fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
@@ -106,7 +106,7 @@ fun FriendListItem(friend: Friend) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "${friend.totalDistance} km",
+                text = "${friendResponse.totalDistance} km",
                 style = TextStyle(
                     fontSize = 15.sp,
                     fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
@@ -121,11 +121,11 @@ fun FriendListItem(friend: Friend) {
 @Composable
 fun FriendListItemPreview() {
     GogomaTheme {
-        FriendListItem(sampleFriend)
+        FriendListItem(sampleFriendResponse)
     }
 }
 
-val sampleFriend = Friend(
+val sampleFriendResponse = FriendResponse(
     rank = 1,
     friendId = 101,
     name = "김지훈",
