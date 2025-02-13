@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gogoma.data.dto.KakaoPayReadyRequest
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.ui.components.*
 import com.example.gogoma.viewmodel.PaymentViewModel
@@ -60,11 +61,11 @@ fun PaymentScreen(
 
         val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
 
-        Regist(
-            registrationDate = currentDate,
-            title = detail.marathon.title,
-            date = formattedDate,
-            distance = distanceOnly
+        UserMarathonSearchDto (
+            paymentDateTime = currentDate,
+            marathonTitle = detail.marathon.title,
+            raceStartDateTime = formattedDate,
+            marathonType = distanceOnly
         )
     }
 
@@ -99,11 +100,11 @@ fun PaymentScreen(
                                 }
                                 val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
 
-                                Regist(
-                                    registrationDate = currentDate,
-                                    title = detail.marathon.title,
-                                    date = formattedDate,
-                                    distance = distanceOnly
+                                UserMarathonSearchDto (
+                                    paymentDateTime = currentDate,
+                                    marathonTitle = detail.marathon.title,
+                                    raceStartDateTime = formattedDate,
+                                    marathonType = distanceOnly
                                 )
                             }
 

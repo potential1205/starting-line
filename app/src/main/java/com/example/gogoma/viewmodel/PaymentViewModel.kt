@@ -15,9 +15,8 @@ import com.example.gogoma.data.dto.KakaoPayApproveRequest
 import com.example.gogoma.data.dto.KakaoPayApproveResponse
 import com.example.gogoma.data.dto.KakaoPayReadyRequest
 import com.example.gogoma.data.dto.KakaoPayReadyResponse
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.data.model.Address
-import com.example.gogoma.ui.components.Regist
-import com.example.gogoma.utils.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,8 +49,8 @@ class PaymentViewModel : ViewModel() {
     private val _isAgreementChecked = MutableStateFlow(false)
     val isAgreementChecked: StateFlow<Boolean> = _isAgreementChecked
 
-    private val _registInfo = MutableStateFlow<Regist?>(null)
-    val registInfo: StateFlow<Regist?> = _registInfo.asStateFlow()
+    private val _registInfo = MutableStateFlow<UserMarathonSearchDto?>(null)
+    val registInfo: StateFlow<UserMarathonSearchDto?> = _registInfo.asStateFlow()
 
     private val paymentApi = RetrofitInstance.paymentApiService
 
@@ -105,7 +104,7 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
-    fun saveRegistInfo(regist: Regist) {
+    fun saveRegistInfo(regist: UserMarathonSearchDto) {
         _registInfo.value = regist
     }
 

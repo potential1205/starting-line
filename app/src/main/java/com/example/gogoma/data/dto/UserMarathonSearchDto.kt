@@ -5,13 +5,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class UserMarathonSearchDto (
-        val userMarathonId: Int,
+        val userMarathonId: Int? = null,
 
         val marathonTitle: String,
 
         val marathonType: String,
 
-        val dDay: String,
+        val dday: String? = null,
 
         val raceStartDateTime: String,
 

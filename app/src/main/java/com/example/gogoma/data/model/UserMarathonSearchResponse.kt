@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class UserMarathonSearchResponse(
-    val userMarathons: List<UserMarathonSearchDto>
+    val userMarathonSearchDtoList: List<UserMarathonSearchDto>
 ) : Parcelable
