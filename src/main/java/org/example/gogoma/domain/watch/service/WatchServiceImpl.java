@@ -1,6 +1,7 @@
 package org.example.gogoma.domain.watch.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.gogoma.controller.request.MarathonEndInitDataRequest;
 import org.example.gogoma.controller.response.MarathonStartInitDataResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.marathon.repository.MarathonRepository;
@@ -18,6 +19,7 @@ import org.example.gogoma.external.kakao.oauth.KakaoUserInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,5 +68,25 @@ public class WatchServiceImpl implements WatchService {
         return MarathonReadyDto.of(
                 user.getId(), user.getName(), userMarathon.getTargetPace(),
                 marathon.getId(), marathon.getTitle(), friendList, marathon.getRaceStartTime());
+    }
+
+    @Override
+    public void updateMarathonEndData(String accessToken, int marathonId, MarathonEndInitDataRequest marathonEndInitDataRequest) {
+        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+
+        UserMarathon userMarathon = userMarathonRepository.findByUserIdAndMarathonId(user.getId(), marathonId)
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_MARATHON_NOT_FOUND));
+
+        userMarathon.updateMarathonEndData(
+                marathonEndInitDataRequest.getCurrentPace(),
+                marathonEndInitDataRequest.getRunningTime(),
+                marathonEndInitDataRequest.getTotalMemberCount(),
+                marathonEndInitDataRequest.getMyRank()
+        );
+
+        userMarathonRepository.save(userMarathon);
     }
 }
