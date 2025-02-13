@@ -8,8 +8,8 @@ import com.example.gogoma.data.roomdb.entity.Marathon
 @Dao
 interface MarathonDao {
     @Insert
-    suspend fun insertMarathon(marathon: Marathon)
+    fun insertMarathon(marathon: Marathon)
 
     @Query("SELECT * FROM Marathon limit 1")
-    suspend fun getMarathon(): Marathon?
+    fun getMarathon(): Marathon?
 }

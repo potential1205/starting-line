@@ -8,8 +8,8 @@ import com.example.gogoma.data.roomdb.entity.Friend
 @Dao
 interface FriendDao {
     @Insert
-    suspend fun insertFriend(friend: Friend)
+    fun insertFriend(friend: Friend)
 
     @Query("SELECT * FROM Friend")
-    suspend fun getAllFriends(): List<Friend>
+    fun getAllFriends(): List<Friend>
 }

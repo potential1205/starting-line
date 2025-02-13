@@ -30,7 +30,7 @@ securityCrypto = "1.1.0-alpha06"
 coil = "2.5.0"
 gson = "2.8.9"
 androidx-browser = "1.5.0"
-room = "2.6.1"
+room = "2.4.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

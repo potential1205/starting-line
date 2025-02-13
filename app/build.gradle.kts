@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
-    kotlin("kapt")
+    id("com.google.devtools.ksp") version "2.0.0-1.0.24"
 
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
@@ -99,7 +99,7 @@ dependencies {
     // Room 관련 의존성
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     // Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
