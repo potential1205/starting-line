@@ -1,8 +1,12 @@
 package com.example.gogoma.ui.screens
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.gogoma.BuildConfig
 import com.example.gogoma.R
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.ButtonBasic
@@ -37,10 +43,22 @@ import com.example.gogoma.ui.components.ButtonKakao
 import com.example.gogoma.ui.components.TopBarArrow
 import com.example.gogoma.viewmodel.UserViewModel
 import com.kakao.sdk.user.UserApiClient
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
 @Composable
 fun SignScreen(navController: NavController, userViewModel: UserViewModel) {
     val context = LocalContext.current
+    val authUrl = "https://kauth.kakao.com/oauth/authorize" +
+            "?response_type=code" +
+            "&client_id=${BuildConfig.CLIENT_ID}" +
+            "&redirect_uri=${BuildConfig.REDIRECT_URI}" +
+            "&scope=friends"
 
     Scaffold (
         topBar = { TopBarArrow (
@@ -50,7 +68,9 @@ fun SignScreen(navController: NavController, userViewModel: UserViewModel) {
         },
         bottomBar = { BottomBar(navController = navController, userViewModel) }
     ){ paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)){
             Column (
                 modifier = Modifier
                     .fillMaxSize()
@@ -81,17 +101,8 @@ fun SignScreen(navController: NavController, userViewModel: UserViewModel) {
                 ButtonKakao(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        userViewModel.loginWithKakao(context) { success ->
-                            if (success) {
-                                Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
-                                Log.i("SignScreen", "로그인 성공")
-//                                navController.navigate("mypage")
-                                navController.popBackStack() // 이전 화면으로 돌아감
-                            } else {
-                                Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT).show()
-                                Log.e("SignScreen", "로그인 실패")
-                            }
-                        }
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
+                        context.startActivity(intent)
                     }
                 )
 
@@ -99,8 +110,6 @@ fun SignScreen(navController: NavController, userViewModel: UserViewModel) {
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

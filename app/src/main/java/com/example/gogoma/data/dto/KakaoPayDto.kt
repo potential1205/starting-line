@@ -1,7 +1,6 @@
 package com.example.gogoma.data.dto
 
 data class KakaoPayReadyRequest(
-    val userId: String,
     val orderId: String,
     val itemName: String,
     val totalAmount: String
@@ -15,7 +14,6 @@ data class KakaoPayReadyResponse(
 )
 
 data class KakaoPayApproveRequest(
-    val userId: String,
     val orderId: String,
     val tid: String,
     val pgToken: String

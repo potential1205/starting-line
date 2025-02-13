@@ -56,6 +56,7 @@ import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.example.gogoma.ui.screens.FriendListScreen
 import com.example.gogoma.ui.screens.PaceScreen
 import com.example.gogoma.ui.screens.PaymentWebViewScreen
@@ -73,6 +74,7 @@ fun AppNavigation(userViewModel: UserViewModel){
     val paymentViewModel: PaymentViewModel = viewModel()
     val friendsViewModel: FriendsViewModel = viewModel()
     val registViewModel: RegistViewModel = viewModel()
+    val context = LocalContext.current
 
     val protectedRouted = listOf("mypage", "friendList")
 
@@ -97,12 +99,8 @@ fun AppNavigation(userViewModel: UserViewModel){
 
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = "main"
     ){
-        composable("splash") {
-            //스플래시 화면
-            SplashScreen(navController = navController)
-        }
 
         composable("signpage") {
             SignScreen(navController, userViewModel)
@@ -268,7 +266,7 @@ fun AppNavigation(userViewModel: UserViewModel){
             )
             val pgToken = Uri.parse(paymentUrl).getQueryParameter("pg_token") ?: ""
             if (pgToken.isNotEmpty()) {
-                paymentViewModel.handlePaymentRedirect(pgToken)
+                paymentViewModel.handlePaymentRedirect(pgToken, context)
             }
 
         }
