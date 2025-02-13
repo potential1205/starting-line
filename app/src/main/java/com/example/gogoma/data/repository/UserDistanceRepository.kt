@@ -12,20 +12,20 @@ object UserDistanceRepository {
 
     // 사용자의 초기 데이터를 생성하는 메서드 (예: 누적거리 0, 시작 시간 등)
     fun createInitialUserData(
-        userId: String,
+        userId: Int,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
         // 예시 데이터: 누적거리 0
         val initialData = UserData(distance = 0)
-        marathonRef.child(userId).setValue(initialData)
+        marathonRef.child(userId.toString()).setValue(initialData)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
     // 누적 거리를 조회하는 메서드
-    fun getUserCumulativeDistance(userId: String, onResult: (Int?) -> Unit) {
-        marathonRef.child(userId).child("distance").get()
+    fun getUserCumulativeDistance(userId: Int, onResult: (Int?) -> Unit) {
+        marathonRef.child(userId.toString()).child("distance").get()
             .addOnSuccessListener { snapshot ->
                 val distance = snapshot.getValue(Int::class.java)
                 onResult(distance)
@@ -35,23 +35,23 @@ object UserDistanceRepository {
 
     // 누적 거리를 업데이트하는 메서드
     fun updateUserCumulativeDistance(
-        userId: String,
+        userId: Int,
         newCumulativeDistance: Int,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        marathonRef.child(userId).child("distance").setValue(newCumulativeDistance)
+        marathonRef.child(userId.toString()).child("distance").setValue(newCumulativeDistance)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
     // (선택사항) 사용자의 전체 데이터를 삭제하는 메서드
     fun deleteUserData(
-        userId: String,
+        userId: Int,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        marathonRef.child(userId).removeValue()
+        marathonRef.child(userId.toString()).removeValue()
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }

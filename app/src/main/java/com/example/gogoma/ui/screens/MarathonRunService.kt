@@ -9,8 +9,6 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,12 +38,13 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
     private val isAutoSending = mutableStateOf(false)
     private val isMarathonReady = mutableStateOf(false)
 
+    private var currentUserId: Int = 0
+    private var currentMarathonId: Int = 0
+    private var currentTargetFace: Int = 0
+
     // 계산 관련 (누적 거리를 cm 단위로 저장)
     private var cumulativeDistance: Int = 0
     private var previousLocation: Location? = null
-
-    // 예시 사용자 ID
-    private val userId = "1"
 
     // UI 상태: 화면에는 누적 거리와 최근 이동 거리를 km 단위(소수 둘째자리)로 표시
     private val displayedCumulative = mutableStateOf("0.00")
@@ -56,22 +55,8 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
 
-    // ** ActivityResultLauncher는 onCreate에서 미리 등록 **
-    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ActivityResultLauncher를 onCreate에서 미리 등록해야 함
-        permissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-                if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
-                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
-                    startLocationUpdates()
-                } else {
-                    Log.e("MarathonRunService", "위치 권한이 거부되었습니다.")
-                }
-            }
 
         Wearable.getDataClient(this).addListener(this)
 
@@ -94,22 +79,28 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
     private fun marathonReady() {
         Log.e("MarathonRunService", "marathonReady 호출")
 
-        val userId = 5
-        val marathonId = 25
+        currentUserId = 5
+        currentMarathonId = 25
         val token = "kakao access token" // 만약 Authorization 헤더가 필요하면, 인터페이스에서 주석 해제 후 사용
 
         // RetrofitInstance를 사용하여 API 호출
-        RetrofitInstance.marathonRunApiService.startMarathon(marathonId, userId)
+        RetrofitInstance.marathonRunApiService.startMarathon(currentMarathonId, currentUserId)
             .enqueue(object : Callback<MarathonReadyDto> {
                 override fun onResponse(
                     call: Call<MarathonReadyDto>,
                     response: Response<MarathonReadyDto>
                 ) {
                     if (response.isSuccessful) {
-                        Log.d("MarathonRunService", "Marathon Ready 성공: ${response.body()}")
-                        marathonReadyData.value = response.body()
-                        isMarathonReady.value = true
-                        // 필요시 sendMarathonReady() 호출
+                        response.body()?.let { readyData ->
+                            Log.d("MarathonRunService", "Marathon Ready 성공: $readyData")
+                            marathonReadyData.value = readyData
+                            isMarathonReady.value = true
+
+                            // 추후 readyData를 roomDB로 저장!
+                            currentUserId = readyData.userId
+                            currentMarathonId = readyData.marathonId
+                            currentTargetFace = readyData.targetPace
+                        }
                     } else {
                         Log.e("MarathonRunService", "Marathon Ready 응답 에러 ${response.errorBody()?.string()}")
                     }
@@ -126,7 +117,7 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
     private fun startMarathonRun() {
         // 1. 초기 데이터 생성: 누적 거리를 0 (cm 단위)로 DB에 저장
         UserDistanceRepository.createInitialUserData(
-            userId,
+            currentUserId,
             onSuccess = { Log.d("MarathonRunService", "초기 데이터 생성 성공") },
             onFailure = { exception ->
                 Log.e("MarathonRunService", "초기 데이터 생성 실패: ${exception.message}")
@@ -144,6 +135,7 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
             .build()
 
         locationCallback = object : LocationCallback() {
+            @SuppressLint("DefaultLocale")
             override fun onLocationResult(locationResult: LocationResult) {
                 for (currentLocation in locationResult.locations) {
                     Log.d("MarathonRunService", "현재 위치 -> 위도: ${currentLocation.latitude}, 경도: ${currentLocation.longitude}")
@@ -165,7 +157,7 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
 
                         // DB 업데이트: 누적 거리를 cm 단위로 업데이트
                         UserDistanceRepository.updateUserCumulativeDistance(
-                            userId,
+                            currentUserId,
                             cumulativeDistance,
                             onSuccess = {
                                 Log.d("MarathonRunService", "Firebase 업데이트 성공: ${cumulativeDistance} cm")
@@ -182,17 +174,8 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
                 }
             }
         }
-        requestLocationPermissions()
-    }
 
-    // ActivityResultLauncher를 onCreate에서 등록했으므로 여기서는 launch만 호출
-    private fun requestLocationPermissions() {
-        permissionLauncher.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
+        startLocationUpdates()
     }
 
     private fun startLocationUpdates() {

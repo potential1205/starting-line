@@ -28,7 +28,7 @@ class LocationForegroundService : Service() {
     private var previousLocation: Location? = null
 
     // 예시 사용자 ID (백엔드에서 auto PK로 생성된 ID; 여기서는 "1" 사용)
-    private val userId = "1"
+    private val userId = 0
 
     override fun onCreate() {
         super.onCreate()
