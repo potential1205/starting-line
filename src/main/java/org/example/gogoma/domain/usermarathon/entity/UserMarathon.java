@@ -44,7 +44,22 @@ public class UserMarathon {
 
     private int targetPace;
 
+    private int endPace;
+
+    private int runningTime;
+
+    private int totalMemberCount;
+
+    private int myRank;
+
     public void updateTargetPace(int targetPace) {
         this.targetPace = targetPace;
+    }
+
+    public void updateMarathonEndData(int currentPace, int runningTime, int totalMemberCount, int myRank) {
+        this.endPace = currentPace;
+        this.runningTime = runningTime;
+        this.totalMemberCount = totalMemberCount;
+        this.myRank = myRank;
     }
 }
