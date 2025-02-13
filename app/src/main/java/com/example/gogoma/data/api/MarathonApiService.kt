@@ -2,8 +2,10 @@ package com.example.gogoma.data.api
 
 import com.example.gogoma.data.model.MarathonDetailResponse
 import com.example.gogoma.data.model.MarathonSearchResponse
+import com.example.gogoma.data.model.UpcomingMarathonInfoResponse
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -23,5 +25,10 @@ interface MarathonApiService {
     suspend fun getMarathonById(
         @Path("id") marathonId: Int,
     ): Response<MarathonDetailResponse>
+
+    @GET("api/v1/marathons/upcoming/1")
+    suspend fun getUpcomingMarathonInfo(
+        @Header("Authorization") accessToken: String
+    ): Response<UpcomingMarathonInfoResponse>
 
 }
