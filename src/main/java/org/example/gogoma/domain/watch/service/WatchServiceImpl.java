@@ -7,9 +7,7 @@ import org.example.gogoma.domain.marathon.repository.MarathonRepository;
 import org.example.gogoma.domain.user.entity.Friend;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.FriendCustomRepository;
-import org.example.gogoma.domain.user.repository.FriendRepository;
 import org.example.gogoma.domain.user.repository.UserRepository;
-import org.example.gogoma.domain.user.service.UserService;
 import org.example.gogoma.domain.usermarathon.entity.UserMarathon;
 import org.example.gogoma.domain.usermarathon.repository.UserMarathonRepository;
 import org.example.gogoma.domain.watch.dto.MarathonReadyDto;
@@ -27,7 +25,6 @@ public class WatchServiceImpl implements WatchService {
 
     private final KakaoOauthClient kakaoOauthClient;
     private final UserRepository userRepository;
-    private final FriendRepository friendRepository;
     private final FriendCustomRepository friendCustomRepository;
     private final MarathonRepository marathonRepository;
     private final UserMarathonRepository userMarathonRepository;
@@ -46,7 +43,7 @@ public class WatchServiceImpl implements WatchService {
         UserMarathon userMarathon = userMarathonRepository.findByUserIdAndMarathonId(user.getId(), marathonId)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_MARATHON_NOT_FOUND));
 
-        List<Friend> friendList = friendRepository.findAllByUserId(user.getId());
+        List<Friend> friendList = friendCustomRepository.findAllByUserIdAndMarathonId(user.getId(), marathon.getId());
 
         return MarathonStartInitDataResponse.of(
                 user.getId(), user.getName(), userMarathon.getTargetPace(),

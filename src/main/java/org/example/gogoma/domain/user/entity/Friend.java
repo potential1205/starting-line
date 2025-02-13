@@ -32,10 +32,11 @@ public class Friend {
 
     private String friendName;
 
-    public static Friend of(int userId, int friendId) {
+    public static Friend of(int userId, int friendId, String friendName) {
         return Friend.builder()
                 .userId(userId)
                 .friendId(friendId)
+                .friendName(friendName)
                 .build();
     }
 }
