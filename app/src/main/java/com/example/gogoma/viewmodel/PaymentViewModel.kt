@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.KakaoPayApproveRequest
 import com.example.gogoma.data.dto.KakaoPayApproveResponse
