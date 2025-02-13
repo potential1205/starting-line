@@ -50,7 +50,7 @@ public class WatchServiceImpl implements WatchService {
 
         return MarathonStartInitDataResponse.of(
                 user.getId(), user.getName(), userMarathon.getTargetPace(),
-                marathon.getId(), marathon.getTitle(), friendList);
+                marathon.getId(), marathon.getTitle(), friendList, marathon.getRaceStartTime());
     }
 
     @Override
@@ -68,6 +68,6 @@ public class WatchServiceImpl implements WatchService {
 
         return MarathonReadyDto.of(
                 user.getId(), user.getName(), userMarathon.getTargetPace(),
-                marathon.getId(), marathon.getTitle(), friendList);
+                marathon.getId(), marathon.getTitle(), friendList, marathon.getRaceStartTime());
     }
 }
