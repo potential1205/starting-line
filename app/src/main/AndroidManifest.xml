@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.gogoma"> <!-- 여기에 패키지 이름 추가 -->
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    package="com.example.gogoma">
+    <!-- 여기에 패키지 이름 추가 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND"/>
@@ -34,34 +34,59 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Gogoma"
         tools:targetApi="31">
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/Theme.Splash"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Gogoma">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="gogoma" android:host="payment" android:pathPrefix="/result/success" />
-                <data android:scheme="gogoma" android:host="payment" android:pathPrefix="/result/fail" />
-                <data android:scheme="gogoma" android:host="payment" android:pathPrefix="/result/cancel" />
+
+                <data
+                    android:host="oauth"
+                    android:scheme="gogoma" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="payment"
+                    android:pathPrefix="/result/success"
+                    android:scheme="gogoma" />
+                <data
+                    android:host="payment"
+                    android:pathPrefix="/result/fail"
+                    android:scheme="gogoma" />
+                <data
+                    android:host="payment"
+                    android:pathPrefix="/result/cancel"
+                    android:scheme="gogoma" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.gogoma.ui.screens.AddressApiActivity"
+            android:name=".ui.screens.AddressApiActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
         <activity
             android:name=".ui.screens.MarathonDistanceGPSTestActivity"
             android:exported="true" />

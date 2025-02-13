@@ -24,16 +24,19 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Kakao API Key를 BuildConfig에 추가
+        // local.properties의 KEY들을 BuildConfig에 추가
         val localProperties = rootProject.file("local.properties")
         val properties = Properties()
         properties.load(localProperties.inputStream())
+
         val kakaoApiKey = properties.getProperty("KAKAO_APP_KEY")
-        val serverIP = properties.getProperty("SERVER_IP")
+        val clientID = properties.getProperty("CLIENT_ID")
+        val redirectURI = properties.getProperty("REDIRECT_URI")
 
         // BuildConfig에 키 추가
         buildConfigField("String", "KAKAO_APP_KEY", "\"${kakaoApiKey}\"")
-        buildConfigField("String", "SERVER_IP", "\"${serverIP}\"")
+        buildConfigField("String", "CLIENT_ID", "\"${clientID}\"")
+        buildConfigField("String", "REDIRECT_URI", "\"${redirectURI}\"")
     }
 
     buildTypes {
@@ -72,7 +75,11 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-    
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
