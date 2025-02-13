@@ -24,14 +24,19 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Kakao API Key를 BuildConfig에 추가
+        // local.properties의 KEY들을 BuildConfig에 추가
         val localProperties = rootProject.file("local.properties")
         val properties = Properties()
         properties.load(localProperties.inputStream())
+
         val kakaoApiKey = properties.getProperty("KAKAO_APP_KEY")
+        val clientID = properties.getProperty("CLIENT_ID")
+        val redirectURI = properties.getProperty("REDIRECT_URI")
 
         // BuildConfig에 키 추가
         buildConfigField("String", "KAKAO_APP_KEY", "\"${kakaoApiKey}\"")
+        buildConfigField("String", "CLIENT_ID", "\"${clientID}\"")
+        buildConfigField("String", "REDIRECT_URI", "\"${redirectURI}\"")
     }
 
     buildTypes {
@@ -70,7 +75,11 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-    
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -107,6 +116,18 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     // GPS 라이브러리
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // 모바일 - 워치 통신 관련(data client)
+    implementation("com.google.android.gms:play-services-wearable:18.0.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+    // retrofit, restapi 관련
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // gson
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
 }
 
 apply(plugin = "com.google.gms.google-services")

@@ -8,6 +8,7 @@ import com.example.gogoma.data.model.StatusResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -55,5 +56,17 @@ interface UserApiService {
     suspend fun getKakaoUserInfo(
         @Header("Authorization") accessToken: String
     ): Response<KakaoUserInfo>
+
+    // 회원 삭제
+    @DELETE("api/v1/users")
+    suspend fun deleteUserByID(
+        @Header("Authorization") accessToken: String
+    ): Response<BooleanResponse>
+
+    // 카카오 연결 해제
+    @DELETE("api/v1/users/kakao/unlink")
+    suspend fun unlinkKakao(
+        @Header("Authorization") accessToken: String
+    ): Response<BooleanResponse>
 
 }

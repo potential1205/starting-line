@@ -61,15 +61,9 @@ object TokenManager {
         return getSharedPreferences(context).getLong(KEY_EXPIRATION_TIME, -1L)
     }
 
-    // Token이 만료되었는지 확인
+    // Token이 만료되었는지 확인 : 유효하면 false, 만료됐으면 true 반환
     fun isTokenExpired(context: Context): Boolean {
-        println("익스파이얼드는 실행됨")
-        
         val expirationTime = getExpirationTime(context)
-        println("왜 false일까"+(expirationTime == -1L))
-        println("왜 false일까2"+(System.currentTimeMillis() > expirationTime))
-        println("얘는 밀리 타임이구요"+System.currentTimeMillis())
-        println("얘는 익스어쩌고 타임이에요~"+expirationTime)
         return expirationTime == -1L || System.currentTimeMillis() > expirationTime // 만료 시간이 없거나 현재 시간이 더 크면 만료된 것으로 판단
     }
 

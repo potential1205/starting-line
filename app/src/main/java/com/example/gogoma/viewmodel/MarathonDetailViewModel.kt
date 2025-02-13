@@ -17,7 +17,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class MarathonDetailViewModel : ViewModel() {
-    var marathonDetail by mutableStateOf<MarathonDetailResponse?>(null)
+    var  marathonDetail by mutableStateOf<MarathonDetailResponse?>(null)
         private set
 
     fun loadMarathonDetail(marathonId: Int) {

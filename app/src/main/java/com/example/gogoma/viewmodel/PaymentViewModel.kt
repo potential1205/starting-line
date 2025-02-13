@@ -1,5 +1,7 @@
 package com.example.gogoma.viewmodel
 
+import android.content.Context
+import android.media.session.MediaSession.Token
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
@@ -8,13 +10,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.KakaoPayApproveRequest
 import com.example.gogoma.data.dto.KakaoPayApproveResponse
 import com.example.gogoma.data.dto.KakaoPayReadyRequest
 import com.example.gogoma.data.dto.KakaoPayReadyResponse
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.data.model.Address
-import com.example.gogoma.ui.components.Regist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,8 +50,8 @@ class PaymentViewModel : ViewModel() {
     private val _isAgreementChecked = MutableStateFlow(false)
     val isAgreementChecked: StateFlow<Boolean> = _isAgreementChecked
 
-    private val _registInfo = MutableStateFlow<Regist?>(null)
-    val registInfo: StateFlow<Regist?> = _registInfo.asStateFlow()
+    private val _registInfo = MutableStateFlow<UserMarathonSearchDto?>(null)
+    val registInfo: StateFlow<UserMarathonSearchDto?> = _registInfo.asStateFlow()
 
     private val paymentApi = RetrofitInstance.paymentApiService
 
@@ -102,20 +105,26 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
-    fun saveRegistInfo(regist: Regist) {
+    fun saveRegistInfo(regist: UserMarathonSearchDto) {
         _registInfo.value = regist
     }
 
-    fun requestKakaoPayReady(request: KakaoPayReadyRequest) {
+    fun requestKakaoPayReady(request: KakaoPayReadyRequest, context: Context) {
         viewModelScope.launch {
             try {
+                val token = TokenManager.getAccessToken(context)
+                if(token.isNullOrEmpty()) {
+                    Log.e("PaymentViewModel", "❌ Access Token이 존재하지 않습니다.")
+                    return@launch
+                }
                 _kakaoPayReadyRequest.value = request  // 요청 데이터 저장
                 Log.d("PaymentViewModel", "📌 카카오페이 결제 준비 요청 시작: $request")
-                val response = paymentApi.requestKakaoPayReady(request)
+
+                val response = paymentApi.requestKakaoPayReady(token, request)
 
                 if (response.isSuccessful) {
                     _kakaoPayReadyResponse.value = response.body()
-                    _kakaoPayReadyRequest.value = request  // ✅ 요청 정보 저장
+                    _kakaoPayReadyRequest.value = request  // 요청 정보 저장
                     Log.d("PaymentViewModel", "✅ 결제 준비 성공: ${response.body()}")
                 } else {
                     Log.e("PaymentViewModel", "❌ 결제 준비 실패: HTTP ${response.code()} - ${response.errorBody()?.string()}")
@@ -130,21 +139,25 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
-    fun requestKakaoPayApprove(pgToken: String) {
+    fun requestKakaoPayApprove(pgToken: String, context: Context) {
         viewModelScope.launch {
+            val token = TokenManager.getAccessToken(context)
+            if (token.isNullOrEmpty()) {
+                Log.e("PaymentViewModel", "❌ Access Token이 존재하지 않습니다.")
+                return@launch
+            }
             val tid = _kakaoPayReadyResponse.value?.tid ?: return@launch
-            val readyRequest = _kakaoPayReadyRequest.value ?: return@launch  // ✅ 저장된 요청 정보 가져오기
+            val readyRequest = _kakaoPayReadyRequest.value ?: return@launch  // 저장된 요청 정보 가져오기
 
             val request = KakaoPayApproveRequest(
-                userId = readyRequest.userId,  // ✅ 저장된 userId 사용
-                orderId = readyRequest.orderId,  // ✅ 저장된 orderId 사용
+                orderId = readyRequest.orderId,  // 저장된 orderId 사용
                 tid = tid,
                 pgToken = pgToken
             )
 
             try {
                 Log.d("PaymentViewModel", "📌 카카오페이 결제 승인 요청 시작: $request")
-                val response = paymentApi.requestKakaoPayApprove(request)
+                val response = paymentApi.requestKakaoPayApprove(token, request)
 
                 if (response.isSuccessful) {
                     _kakaoPayApproveResponse.value = response.body()
@@ -159,15 +172,15 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
-    fun handlePaymentRedirect(url: String) {
+    fun handlePaymentRedirect(url: String, context: Context) {
         val pgToken = Uri.parse(url).getQueryParameter("pg_token")
         if (!pgToken.isNullOrEmpty()) {
-            requestKakaoPayApprove(pgToken)
+            requestKakaoPayApprove(pgToken, context)
         } else {
             Log.e("PaymentViewModel", "❌ pg_token이 URL에 포함되어 있지 않습니다.")
         }
     }
-    fun redirectAfterPayment(pgToken: String, redirect: String, onResult: (Boolean) -> Unit) {
+    fun redirectAfterPayment(pgToken: String, redirect: String, context: Context, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
                 Log.d("PaymentViewModel", "📌 리다이렉트 요청 시작: pgToken=$pgToken, redirect=$redirect")
@@ -185,7 +198,7 @@ class PaymentViewModel : ViewModel() {
                         // 직접 결제 승인 처리
                         val newPgToken = Uri.parse(redirectUrl).getQueryParameter("pg_token")
                         if (!newPgToken.isNullOrEmpty()) {
-                            requestKakaoPayApprove(newPgToken)
+                            requestKakaoPayApprove(newPgToken, context)
                             onResult(true)
                         } else {
                             onResult(false)

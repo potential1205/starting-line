@@ -14,51 +14,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gogoma.theme.GogomaTheme
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-
-// 데이터 클래스
-data class Regist (
-    val registrationDate: String, // 등록일 (예: "24.06.18")
-    val title: String, // 마라톤 제목 (예: "2025 서울마라톤")
-    val date: String, // 마라톤 날짜 (예: "2025.03.16")
-    val distance: String, // 거리 (예: "10km")
-//    val statusText: String // 배지 텍스트 (예: "D-50")
-)
+import com.example.gogoma.R
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 
 @Composable
-fun RegistListItem(regist: Regist, onClick: () -> Unit) {
-    var statusText by remember { mutableStateOf("") }
-
-    // 오늘 날짜와 마라톤 날짜 비교해서 D-day 갱신
-    LaunchedEffect (Unit) {
-        val today = Calendar.getInstance()
-        val targetDate = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA).parse(regist.date)
-        val diffInMillis = targetDate.time - today.timeInMillis
-        val daysLeft = (diffInMillis / (1000 * 60 * 60 * 24)).toInt()
-
-        statusText = if (daysLeft >= 0) {
-            "D-$daysLeft"
-        } else {
-            "지난 마라톤"
-        }
-    }
-
+fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
     Row (
         modifier = Modifier
             .clickable(onClick = onClick)
@@ -80,7 +48,7 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
             ) {
                 // 연한 회색 날짜 (예: 24.06.18)
                 Text(
-                    text = regist.registrationDate,
+                    text = regist.paymentDateTime,
                     fontSize = 12.sp,
                     color = Color.Gray.copy(alpha = 0.5f)
                 )
@@ -90,7 +58,6 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                     text = "상세보기 >",
                     fontSize = 12.sp,
                     color = Color.Gray.copy(alpha = 0.7f),
-//                    modifier = Modifier.clickable { /* 상세보기 기능 추가 */ }
                 )
             }
 
@@ -107,9 +74,12 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                 ) {
                     // 마라톤 제목
                     Text(
-                        text = regist.title,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        text = regist.marathonTitle,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -119,24 +89,22 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                         .width(214.dp)
                         .height(16.dp)) {
                         Text(
-                            text = "${regist.date}",
+                            text = regist.raceStartDateTime,
                             style = TextStyle(
                                 fontSize = 14.sp,
-//                                fontFamily = FontFamily(Font(R.font.nanum_square_round)),
-                                fontWeight = FontWeight(300),
-                                color = Color(0xFF000000),
+                                fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         )
 
                         Spacer(Modifier.width(10.dp))
 
                         Text(
-                            text = "# ${regist.distance}",
+                            text = regist.marathonType,
                             style = TextStyle(
                                 fontSize = 14.sp,
-//                                fontFamily = FontFamily(Font(R.font.nanum_square_round)),
-                                fontWeight = FontWeight(700),
-                                color = Color(0xFF606060),
+                                fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                         )
                     }
@@ -146,18 +114,23 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = statusText,
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .background(
-                                // 지난 마라톤이면 회색, 아니면 초록색
-                                color = if (statusText == "지난 마라톤") Color.Gray.copy(alpha = 0.5f) else Color(0xFF4CAF50),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
-                    )
+                    regist.dday?.let {
+                        Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                                color = Color.White
+                            ),
+                            modifier = Modifier
+                                .background(
+                                    // 지난 마라톤이면 회색, 아니면 초록색
+                                    color = if (regist.dday.equals("D-?")) Color.Gray.copy(alpha = 0.5f) else Color(0xFF4CAF50),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
+                    }
 
                 }
             }
@@ -166,19 +139,3 @@ fun RegistListItem(regist: Regist, onClick: () -> Unit) {
 
     }
 }
-
-@Preview
-@Composable
-fun RegistPreview() {
-    GogomaTheme {
-        RegistListItem(sampleRegist, onClick = {})
-    }
-}
-
-// 샘플 데이터
-val sampleRegist = Regist(
-    registrationDate = "24.06.18",
-    title = "2025 서울마라톤",
-    date = "2025.03.16",
-    distance = "10km"
-)

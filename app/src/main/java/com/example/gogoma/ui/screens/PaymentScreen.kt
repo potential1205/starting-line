@@ -8,9 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gogoma.data.dto.KakaoPayReadyRequest
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.ui.components.*
 import com.example.gogoma.viewmodel.PaymentViewModel
@@ -28,6 +30,7 @@ fun PaymentScreen(
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     var marathonDetail by remember { mutableStateOf<MarathonDetailResponse?>(null) }
     val gson = remember { Gson() }
+    val context = LocalContext.current
 
     LaunchedEffect(marathonId) {
         marathonDetail = savedStateHandle?.get<MarathonDetailResponse>("marathonDetail_$marathonId")
@@ -58,11 +61,11 @@ fun PaymentScreen(
 
         val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
 
-        Regist(
-            registrationDate = currentDate,
-            title = detail.marathon.title,
-            date = formattedDate,
-            distance = distanceOnly
+        UserMarathonSearchDto (
+            paymentDateTime = currentDate,
+            marathonTitle = detail.marathon.title,
+            raceStartDateTime = formattedDate,
+            marathonType = distanceOnly
         )
     }
 
@@ -97,11 +100,11 @@ fun PaymentScreen(
                                 }
                                 val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
 
-                                Regist(
-                                    registrationDate = currentDate,
-                                    title = detail.marathon.title,
-                                    date = formattedDate,
-                                    distance = distanceOnly
+                                UserMarathonSearchDto (
+                                    paymentDateTime = currentDate,
+                                    marathonTitle = detail.marathon.title,
+                                    raceStartDateTime = formattedDate,
+                                    marathonType = distanceOnly
                                 )
                             }
 
@@ -112,11 +115,11 @@ fun PaymentScreen(
                                 "카카오페이" -> {
                                     viewModel.requestKakaoPayReady(
                                         KakaoPayReadyRequest(
-                                            userId = "1", // 추후 실제 아이디 받아오게끔 수정해야 함
                                             orderId = marathonId.toString(),
                                             itemName = marathonDetail?.marathon?.title ?: "마라톤 참가권",
                                             totalAmount = selectedPrice.toString()
-                                        )
+                                        ),
+                                        context
                                     )
                                 }
                                 "토스" -> navController.navigate("paymentFailure")

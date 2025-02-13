@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.BrandColor2
 import com.example.gogoma.ui.components.*
@@ -27,9 +28,9 @@ fun PaymentStatusScreen(
     onNavigateToMain: (() -> Unit)? = null
 ) {
     val gson = remember { Gson() }
-    val regist: Regist? = registJson?.let {
+    val regist: UserMarathonSearchDto? = registJson?.let {
         try {
-            gson.fromJson(it, Regist::class.java).apply {
+            gson.fromJson(it, UserMarathonSearchDto::class.java).apply {
                 Log.d("PaymentStatusScreen", "✅ JSON 변환 성공: $this")
             }
         } catch (e: Exception) {
@@ -80,7 +81,7 @@ fun PaymentStatusScreen(
 }
 
 @Composable
-fun SuccessContent(onConfirm: () -> Unit, registInfo: Regist?) {
+fun SuccessContent(onConfirm: () -> Unit, registInfo: UserMarathonSearchDto?) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -97,11 +98,13 @@ fun SuccessContent(onConfirm: () -> Unit, registInfo: Regist?) {
 
         registInfo?.let {
             RegistListItem(
-                Regist(
-                    registrationDate = it.registrationDate,
-                    title = it.title,
-                    date = it.date,
-                    distance = it.distance
+                UserMarathonSearchDto(
+                    paymentDateTime = it.paymentDateTime,
+                    marathonTitle = it.marathonTitle,
+                    raceStartDateTime = it.raceStartDateTime,
+                    marathonType = it.marathonType,
+                    userMarathonId = null,
+                    dday = null
                 ),
                 onClick = {}
             )
