@@ -24,6 +24,7 @@ public class UserMarathonSearchDto {
             LocalDateTime raceStartDateTime, LocalDateTime paymentDateTime) {
 
         return UserMarathonSearchDto.builder()
+                .userMarathonId(userMarathonId)
                 .marathonTitle(marathonTitle)
                 .marathonType(marathonType)
                 .dDay(dDay)
