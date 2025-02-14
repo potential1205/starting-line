@@ -8,34 +8,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -51,9 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
-import coil.size.OriginalSize
 import coil.size.Size
 import com.example.gogoma.R
 import com.example.gogoma.theme.BrandColor1
@@ -68,7 +61,7 @@ import com.example.gogoma.viewmodel.MarathonDetailViewModel
 @Composable
 fun MarathonDetailScreen(marathonId: Int, navController: NavController){
     val marathonDetailViewModel: MarathonDetailViewModel = viewModel()
-    val marathonDetail = marathonDetailViewModel.marathonDetail
+    val marathonDetail by marathonDetailViewModel.marathonDetail.collectAsState()
 
     // 네비게이션 상태 저장 핸들
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
@@ -102,7 +95,7 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                 )
             },
             bottomBar = {
-                val isOpen = marathonDetail.marathon.marathonStatus == "OPEN"
+                val isOpen = marathonDetail!!.marathon.marathonStatus == "OPEN"
                 BottomBarButtonFull(
                     text = "신청하기",
                     backgroundColor = if (isOpen) BrandColor1 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
@@ -122,7 +115,7 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                 // 마라톤 상세 정보
                 LazyColumn {
                     item {
-                        ImageOrPlaceholder(marathonDetail.marathon.thumbnailImage, true)
+                        ImageOrPlaceholder(marathonDetail!!.marathon.thumbnailImage, true)
                     }
                     item {
                         Column(
@@ -140,7 +133,7 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                                 horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                                 verticalAlignment = Alignment.Top,
                             ) {
-                                val marathonStatus = marathonDetail.marathon.marathonStatus
+                                val marathonStatus = marathonDetail!!.marathon.marathonStatus
                                 val marathonStatusText = when (marathonStatus) {
                                     "OPEN" -> "접수중"
                                     "CLOSED" -> "접수 종료"
@@ -170,7 +163,7 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
-                                    text = marathonDetail.marathon.title,
+                                    text = marathonDetail!!.marathon.title,
                                     style = TextStyle(
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold
@@ -183,7 +176,7 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                                 horizontalArrangement = Arrangement.spacedBy(6.0371174812316895.dp, Alignment.Start),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                 marathonDetail.marathonTypeList.forEach { type ->
+                                 marathonDetail!!.marathonTypeList.forEach { type ->
                                     HashTag(type.courseType)
                                 }
                             }
@@ -197,20 +190,20 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                             )
 
                             //대회 정보
-                            val formattedRaceStartTime = FormattedDate(marathonDetail.marathon.raceStartTime)
+                            val formattedRaceStartTime = FormattedDate(marathonDetail!!.marathon.raceStartTime)
                             InfoTableRow(label = "대회일시", value = formattedRaceStartTime)
-                            InfoTableRow(label = "대회장소", value = marathonDetail.marathon.location)
-                            InfoTableRow(label = "대회종목", value = marathonDetail.marathonTypeList.joinToString("/") { "${it.courseType}" })
+                            InfoTableRow(label = "대회장소", value = marathonDetail!!.marathon.location)
+                            InfoTableRow(label = "대회종목", value = marathonDetail!!.marathonTypeList.joinToString("/") { "${it.courseType}" })
                             InfoTableRow(
                                 label = "접수기간",
-                                value = if (marathonDetail.marathon.registrationStartDateTime == null && marathonDetail.marathon.registrationEndDateTime == null) {
+                                value = if (marathonDetail!!.marathon.registrationStartDateTime == null && marathonDetail!!.marathon.registrationEndDateTime == null) {
                                     "접수 선착순"
                                 } else {
-                                    "접수 ${marathonDetail.marathon.registrationStartDateTime ?: ""}~${marathonDetail.marathon.registrationEndDateTime ?: ""}"
+                                    "접수 ${marathonDetail!!.marathon.registrationStartDateTime ?: ""}~${marathonDetail!!.marathon.registrationEndDateTime ?: ""}"
                                 },
                             )
                             // marathonTypeList 그룹화 및 매니아 처리
-                            val groupedCourseTypes = marathonDetail.marathonTypeList
+                            val groupedCourseTypes = marathonDetail!!.marathonTypeList
                                 .groupBy { it.courseType } // courseType 기준으로 그룹화
                                 .mapValues { (_, types) ->
                                     // 각 courseType에 대해 "매니아"가 있는지 확인
@@ -227,9 +220,9 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                             InfoTableRow(label = "대회가격", value = groupedCourseTypes.entries.joinToString("\n") {
                                 "${it.key}: ${it.value}"
                             })
-                            InfoTableRow(label = "대회주최", value = marathonDetail.marathon.hostList.joinToString(", ") { "${it}" })
-                            InfoTableRow(label = "대회주관", value = marathonDetail.marathon.organizerList.joinToString(", ") { "${it}" })
-                            InfoTableRow(label = "대회후원", value = marathonDetail.marathon.sponsorList.joinToString(", ") { "${it}" })
+                            InfoTableRow(label = "대회주최", value = marathonDetail!!.marathon.hostList.joinToString(", ") { "${it}" })
+                            InfoTableRow(label = "대회주관", value = marathonDetail!!.marathon.organizerList.joinToString(", ") { "${it}" })
+                            InfoTableRow(label = "대회후원", value = marathonDetail!!.marathon.sponsorList.joinToString(", ") { "${it}" })
                             HorizontalDivider(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -239,7 +232,7 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                             )
                         }
                     }
-                    
+
                     //대회 이미지
                     item {
                         Column(
@@ -250,13 +243,13 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                             verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Top),
                             horizontalAlignment = Alignment.Start,
                         ) {
-                            if(!marathonDetail.marathon.infoImage.isNullOrEmpty()){
+                            if(!marathonDetail!!.marathon.infoImage.isNullOrEmpty()){
                                 ContentTitle("대회 설명")
-                                ImageOrPlaceholder(marathonDetail.marathon.infoImage)
+                                ImageOrPlaceholder(marathonDetail!!.marathon.infoImage)
                             }
-                            if(!marathonDetail.marathon.courseImage.isNullOrEmpty()){
+                            if(!marathonDetail!!.marathon.courseImage.isNullOrEmpty()){
                                 ContentTitle("대회 코스")
-                                ImageOrPlaceholder(marathonDetail.marathon.courseImage)
+                                ImageOrPlaceholder(marathonDetail!!.marathon.courseImage)
                             }
                         }
                     }

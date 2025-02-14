@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class UserMarathonDetailResponse (
-    var userMarathonDetail: UserMarathonDetailDto
+    var userMarathonDetailDto: UserMarathonDetailDto
 ) : Parcelable

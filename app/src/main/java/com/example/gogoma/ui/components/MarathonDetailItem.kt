@@ -1,6 +1,5 @@
 package com.example.gogoma.ui.components
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +11,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -115,16 +116,19 @@ fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
 
 @Preview
 @Composable
-fun MarathonDetailScreenPreview(){
+fun MarathonDetailScreenPreview() {
     GogomaTheme {
         val marathonDetailViewModel: MarathonDetailViewModel = viewModel()
 
-        LaunchedEffect(25) {
+        val marathonDetail by marathonDetailViewModel.marathonDetail.collectAsState()
+
+        LaunchedEffect(Unit) {
             marathonDetailViewModel.loadMarathonDetail(25)
         }
 
-        val marathonDetail = marathonDetailViewModel.marathonDetail
-
-        marathonDetail?.let { MarathonDetailItem(it) }
+        marathonDetail?.let {
+            MarathonDetailItem(it)
+        }
     }
 }
+

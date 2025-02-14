@@ -9,10 +9,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -20,8 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.gogoma.data.dto.UserMarathonDetailDto
-import com.example.gogoma.data.model.MarathonDetailResponse
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.MarathonDetailItem
 import com.example.gogoma.ui.components.PaymentDetails
@@ -37,8 +33,8 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
     val marathonDetailViewModel: MarathonDetailViewModel = viewModel()
 
     val context = LocalContext.current
-    var userMarathonDetail by remember { mutableStateOf<UserMarathonDetailDto?>(null) }
-    var marathonDetail by remember { mutableStateOf<MarathonDetailResponse?>(null) }
+    val userMarathonDetail by registDetailViewModel.userMarathonDetail.collectAsState()
+    val marathonDetail by marathonDetailViewModel.marathonDetail.collectAsState()
 
     // 유저 마라톤 상세 정보 로드
     LaunchedEffect(registId) {
