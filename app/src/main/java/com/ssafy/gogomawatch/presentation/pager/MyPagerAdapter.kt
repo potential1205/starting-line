@@ -12,7 +12,7 @@ class MyPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity
         return when (position) {
             0 -> PersonalFragment()
             1 -> TeamFragment()
-            1 -> TeamRoadFragment()
+            2 -> TeamRoadFragment()
             else -> throw IllegalStateException("Invalid position: $position")
         }
     }
