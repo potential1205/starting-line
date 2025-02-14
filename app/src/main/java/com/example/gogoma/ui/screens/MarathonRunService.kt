@@ -294,7 +294,7 @@ fun PhoneScreen(
     LaunchedEffect(isAutoSending.value) {
         while (isAutoSending.value) {
             onSendData()
-            delay(1000)
+            delay(500)
         }
     }
 

@@ -8,9 +8,13 @@ data class MarathonRealTimeData (
     var targetPace: Int,            // 목표 페이스 (초)
     var currentPace: Int,           // 현재 페이스 (초)
     var targetTime: Int,            // 목표 시간 (초)
-    var currentTime: Int,           // 현재 시간 (초)
+    var currentTime: Long,           // 현재 시간 (초)
     var state: String,              // 상태: 목표페이스 이상 "G", 1분이하 미달 "Y", 그외 "R"
     var myRank: Int,                // 내 순위
     var totalMemberCount: Int,      // 전체 멤버 수
-    var friendInfoList: List<FriendDto>
+    var friendInfoList: List<FriendDto>,
+    var userId: Int = 0,
+    var marathonId: Int = 0,
+    var userName: String = "",
+    var marathonTitle: String = "",
 )
