@@ -52,7 +52,7 @@ public class UserMarathonController {
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
-    @GetMapping("/{marathonId}")
+    @GetMapping("/duplicate/{marathonId}")
     @Operation(summary = "유저 마라톤 중복 확인", description = "해당 마라톤에 유저가 이미 등록되어 있는지 중복 여부를 확인합니다.")
     public ResponseEntity<BooleanResponse> checkDuplicateUserMarathon(
             @RequestHeader("Authorization") String accessToken,
