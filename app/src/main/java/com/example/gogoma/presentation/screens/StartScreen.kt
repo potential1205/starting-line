@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.screens
+package com.example.gogoma.presentation.screens
 
 import android.app.Activity
 import android.util.Log

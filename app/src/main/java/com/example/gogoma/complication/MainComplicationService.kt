@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.complication
+package com.example.gogoma.complication
 
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType

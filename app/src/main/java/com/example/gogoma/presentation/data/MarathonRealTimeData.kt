@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.data
+package com.example.gogoma.presentation.data
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

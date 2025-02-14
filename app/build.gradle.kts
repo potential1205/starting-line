@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ssafy.gogomawatch"
+    namespace = "com.example.gogoma"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.ssafy.gogomawatch"
+        applicationId = "com.example.gogoma"
         minSdk = 30
         targetSdk = 35
         versionCode = 1

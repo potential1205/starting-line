@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.components
+package com.example.gogoma.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

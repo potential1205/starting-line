@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.components
+package com.example.gogoma.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.ssafy.gogomawatch.presentation.theme.GogomaWatchTheme
+import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
