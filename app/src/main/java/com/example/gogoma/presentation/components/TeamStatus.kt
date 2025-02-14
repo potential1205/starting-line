@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.components
+package com.example.gogoma.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
-import com.ssafy.gogomawatch.presentation.data.FriendInfo
+import com.example.gogoma.presentation.data.FriendInfo
 import kotlin.math.floor
 
 @Composable

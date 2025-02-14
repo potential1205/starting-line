@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.screens
+package com.example.gogoma.presentation.screens
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
@@ -30,6 +30,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.gogoma.presentation.components.TeamProgressBar
+import com.example.gogoma.presentation.components.TeamStatus
 import com.example.gogoma.presentation.data.FriendInfo
 
 @Composable
