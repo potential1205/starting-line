@@ -18,6 +18,6 @@ interface UserMarathonApiService {
     @GET("api/v1/usermarthons/{id}")
     suspend fun getUserMarathonById(
         @Header("Authorization") accessToken: String,
-        @Path("id") marathonId: Int
+        @Path("id") id: Int
     ): Response<UserMarathonDetailResponse>
 }

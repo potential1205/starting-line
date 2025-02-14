@@ -1,5 +1,6 @@
 package com.example.gogoma.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +44,7 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
     // 유저 마라톤 상세 정보 로드
     LaunchedEffect(registId) {
         val token = TokenManager.getAccessToken(context)
+        Log.d("nowId",registId.toString())
         token?.let { registDetailViewModel.getUserMarathonById(it, registId) }
     }
 

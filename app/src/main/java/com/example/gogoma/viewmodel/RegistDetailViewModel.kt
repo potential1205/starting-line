@@ -1,5 +1,6 @@
 package com.example.gogoma.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,14 +15,16 @@ class RegistDetailViewModel: ViewModel() {
     var userMarathonDetail by mutableStateOf<UserMarathonDetailDto?>(null)
         private set
 
-    fun getUserMarathonById(accessToken: String, marathonId: Int) {
+    fun getUserMarathonById(accessToken: String,  id: Int) {
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.userMarathonApiService.getUserMarathonById(accessToken, marathonId)
+                Log.d("token",accessToken)
+                Log.d("id", id.toString())
+                val response = RetrofitInstance.userMarathonApiService.getUserMarathonById(accessToken, id)
 
                 if (response.isSuccessful) {
                     response.body()?.let { userMarathonDetailResponse ->
-                        userMarathonDetail = userMarathonDetailResponse.userMarathonDetail
+                        userMarathonDetail = userMarathonDetailResponse.userMarathonDetailDto
                     } ?: run {
                         println("응답 본문이 null입니다.")
                     }
