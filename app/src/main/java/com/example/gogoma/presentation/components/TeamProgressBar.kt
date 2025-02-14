@@ -12,8 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.ssafy.gogomawatch.presentation.data.FriendInfo
-import com.ssafy.gogomawatch.presentation.theme.GogomaWatchTheme
+import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -45,7 +44,7 @@ fun TeamProgressBar(
                     val radius = size.width / 2
                     val centerX = size.width / 2
                     val centerY = size.height / 2
-                    val dotRadius = 4.dp.toPx() // 점 크기
+                    val dotRadius = 5.dp.toPx() // 점 크기
 
                     friendInfoList.forEach { friend ->
                         val angle =

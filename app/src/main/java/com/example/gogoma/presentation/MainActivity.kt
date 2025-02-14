@@ -3,7 +3,7 @@
  * most up to date changes to the libraries and their usages.
  */
 
-package com.ssafy.gogomawatch.presentation
+package com.example.gogoma.presentation
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.ssafy.gogomawatch.presentation.navigation.AppNavigation
+import com.example.gogoma.presentation.navigation.AppNavigation
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
