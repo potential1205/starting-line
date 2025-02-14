@@ -22,8 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.MarathonReadyDto
+import com.example.gogoma.data.dto.MarathonRealTimeData
 import com.example.gogoma.data.dto.MyData
 import com.example.gogoma.data.repository.UserDistanceRepository
+import com.example.gogoma.data.util.MarathonRealTimeDataUtil
 import com.google.android.gms.location.*
 import com.google.android.gms.wearable.*
 import kotlinx.coroutines.delay
@@ -54,6 +56,9 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
+
+    // MarathonRealTimeData
+    private var marathonRealTimeDataUtil: MarathonRealTimeDataUtil? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +105,9 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
                             currentUserId = readyData.userId
                             currentMarathonId = readyData.marathonId
                             currentTargetFace = readyData.targetPace
+
+                            // 마라톤 준비 데이터 저장 -> roomDB에서 꺼내오도록 변경해야함
+                            marathonRealTimeDataUtil = MarathonRealTimeDataUtil(readyData)
                         }
                     } else {
                         Log.e("MarathonRunService", "Marathon Ready 응답 에러 ${response.errorBody()?.string()}")
@@ -204,6 +212,8 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
                         val dataMapItem = DataMapItem.fromDataItem(dataItem)
                         val timestamp = dataMapItem.dataMap.getLong("time")
                         isAutoSending.value = true
+                        marathonRealTimeDataUtil?.startUpdating()
+
                         runOnUiThread {
                             receivedState.value = "start time : $timestamp"
                         }
@@ -211,6 +221,7 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
                     }
                     "/end" -> { // 워치로부터 /end 요청이 오면
                         isAutoSending.value = false
+                        marathonRealTimeDataUtil?.endUpdating()
                         runOnUiThread {
                             Log.d("MarathonRunService", "Marathon End 성공")
                         }
@@ -223,9 +234,14 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
     // --------------- [데이터 송신 / to 워치] ---------------
     @SuppressLint("VisibleForTests")
     private fun sendDataToWearable(data: MyData) {
+
+        val marathonReadTimeData = marathonRealTimeDataUtil?.getMarathonRealTimeData()
+
         val putDataMapRequest = PutDataMapRequest.create("/update").apply {
-            dataMap.putInt("age", data.age)
-            dataMap.putString("name", data.name)
+            if (marathonReadTimeData != null) {
+                dataMap.putInt("myRank", marathonReadTimeData.myRank)
+
+            }
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }
 
