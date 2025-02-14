@@ -27,11 +27,21 @@ fun TeamStatus( friendInfo: FriendInfo, screenHeight30: Int, scale: Float, myCur
         contentAlignment = Alignment.Center
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
+
+            Text(
+                text = "${friendInfo.rank}등",
+                fontSize = (15 * scale).sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .scale(scale)
+                    .align(Alignment.CenterVertically)
+            )
+
             Text(
                 text = friendInfo.friendName,
-                fontSize = (30 * scale).sp,
+                fontSize = (25 * scale).sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .scale(scale)
