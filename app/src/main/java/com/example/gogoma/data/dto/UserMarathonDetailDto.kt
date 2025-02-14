@@ -19,5 +19,7 @@ data class UserMarathonDetailDto (
 
     val address: String,
 
-    val selectedCourseType: String
+    val selectedCourseType: String,
+
+    val targetPace: Int
 ) : Parcelable

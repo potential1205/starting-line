@@ -274,11 +274,11 @@ fun PaceScreen(
 @Preview(showBackground = true, widthDp = 320)
 @Composable
 fun PaceScreenSmallPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel(), paceViewModel = PaceViewModel(GlobalApplication()))
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PaceScreenPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel(), paceViewModel = PaceViewModel(GlobalApplication()))
 }
