@@ -84,7 +84,7 @@ class MarathonRunService : ComponentActivity(), DataClient.OnDataChangedListener
         val token = "kakao access token" // 만약 Authorization 헤더가 필요하면, 인터페이스에서 주석 해제 후 사용
 
         // RetrofitInstance를 사용하여 API 호출
-        RetrofitInstance.marathonRunApiService.startMarathon(currentMarathonId, currentUserId)
+        RetrofitInstance.watchApiService.getTestMarathonStartInitData(currentMarathonId, currentUserId)
             .enqueue(object : Callback<MarathonReadyDto> {
                 override fun onResponse(
                     call: Call<MarathonReadyDto>,
