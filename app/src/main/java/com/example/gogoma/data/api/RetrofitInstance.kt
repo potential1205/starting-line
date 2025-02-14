@@ -3,10 +3,15 @@ package com.example.gogoma.data.api
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * RetrofitInstance는 Retrofit을 사용하여 각 API 서비스 인터페이스를 생성하는 객체입니다.
+ * - 각 API 서비스는 Retrofit.Builder를 사용하여 GsonConverterFactory(JSON 파싱을 위한 컨버터)를 추가한 후, API 인터페이스를 생성합니다.
+ * - by lazy를 사용하여 실제 사용 시점에 인스턴스가 생성되도록 합니다.
+ */
+
 object RetrofitInstance {
     private const val BASE_URL = "https://i12a808.p.ssafy.io/"
 
-    // MarathonApiService 연결
     val marathonApiService: MarathonApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -15,16 +20,6 @@ object RetrofitInstance {
             .create(MarathonApiService::class.java)
     }
 
-    // MarathonRunApiService 연결
-    val marathonRunApiService: MarathonRunApiService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(MarathonRunApiService::class.java)
-    }
-
-    // UserApiService 연결
     val userApiService: UserApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -33,7 +28,6 @@ object RetrofitInstance {
             .create(UserApiService::class.java)
     }
 
-    // FriendApiService 연결
     val friendApiService: FriendApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
