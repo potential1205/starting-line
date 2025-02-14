@@ -1,5 +1,6 @@
 package com.example.gogoma.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,8 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.data.api.RetrofitInstance
+import com.example.gogoma.data.dto.UpdateUserMarathonRequest
 import com.example.gogoma.data.model.MarathonStartInitDataResponse
 import com.example.gogoma.data.model.UpcomingMarathonInfoResponse
+import com.example.gogoma.utils.TokenManager
 import kotlinx.coroutines.launch
 
 class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel() {
@@ -55,5 +58,24 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
             }
         }
     }
+
+    fun patchMarathonPace(accessToken: String, marathonId: Int, targetPace: Int) {
+        val request = UpdateUserMarathonRequest(targetPace)
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.userMarathonApiService.updateUserMarathon(accessToken, marathonId, request)
+                if (response.success) {
+                    // 성공 시 갱신
+                    getInitData(accessToken, marathonId)
+                } else {
+                    // 실패
+                }
+            } catch (e: Exception) {
+                // 네트워크 오류
+            }
+        }
+    }
+
 
 }

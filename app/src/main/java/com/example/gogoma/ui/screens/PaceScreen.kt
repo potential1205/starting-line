@@ -54,12 +54,13 @@ fun PaceScreen(
     navController: NavController,
     userViewModel: UserViewModel,
     bottomSheetViewModel: BottomSheetViewModel,
+    paceViewModel: PaceViewModel,
 ) {
     val context = LocalContext.current
 
-    val globalApplication = context.applicationContext as GlobalApplication
-    val paceViewModel: PaceViewModel = viewModel(factory = PaceViewModelFactory(globalApplication))
+
     val marathon = paceViewModel.upcomingMarathonInfoResponse
+    val marathonStartInitDataResponse = paceViewModel.marathonStartInitDataResponse
 
     var isColumn by remember { mutableStateOf(false) }
     var totalTextWidth by remember { mutableStateOf(0) }
@@ -158,7 +159,7 @@ fun PaceScreen(
                                         )
                                     )
                                     Text(
-                                        text = "240",
+                                        text = marathonStartInitDataResponse?.targetPace.toString(),
                                         style = TextStyle(
                                             fontSize = 35.sp,
                                             fontWeight = FontWeight(400),
@@ -273,11 +274,11 @@ fun PaceScreen(
 @Preview(showBackground = true, widthDp = 320)
 @Composable
 fun PaceScreenSmallPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel(), paceViewModel = PaceViewModel(GlobalApplication()))
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PaceScreenPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel(), paceViewModel = PaceViewModel(GlobalApplication()))
 }

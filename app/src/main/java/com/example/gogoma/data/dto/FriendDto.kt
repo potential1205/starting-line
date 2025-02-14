@@ -1,8 +1,10 @@
 package com.example.gogoma.data.dto
 
 data class FriendDto(
-    var id: Int = 0,
-    var userId: Int = 0,
-    var friendId: Int = 0,
-    var friendName: String? = null
+    val userId: Int,
+    val friendName: String,
+    var currentDistance: Int,       // cm 단위
+    var currentDistanceRate: Float,
+    var isMe: Boolean,
+    var rank: Int
 )
