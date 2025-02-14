@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.MaterialTheme
 import com.example.gogoma.presentation.components.ProgressBar
-import com.example.gogoma.presentation.viewmodel.PersonalStateViewModel
+import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.PersonalStatus
@@ -18,22 +18,22 @@ import kotlin.math.floor
 
 @Composable
 fun PersonalScreen () {
-    val personalStateViewModel: PersonalStateViewModel = viewModel() // ViewModel 주입
+    val marathonDataViewModel: MarathonDataViewModel = viewModel() // ViewModel 주입
 
     // ViewModel에서 상태를 가져오기
-    val personalState = personalStateViewModel.personalState.value
+    val personalState = marathonDataViewModel.marathonDataState.value
 
     // ChangeColor 함수로 색상 계산
-    val currentColor = personalStateViewModel.currentColor.value
+    val currentColor = marathonDataViewModel.currentColor.value
 
     // ViewModel에서 currentIndex 가져오기
-    val currentIndex = personalStateViewModel.currentIndex.value
+    val currentIndex = marathonDataViewModel.currentIndex.value
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
-            .clickable { personalStateViewModel.nextStatus(3) }, // 상태가 3개이므로 3 전달
+            .clickable { marathonDataViewModel.nextStatus(3) }, // 상태가 3개이므로 3 전달
         contentAlignment = Alignment.Center
     ) {
         // 프로그레스바
@@ -43,7 +43,7 @@ fun PersonalScreen () {
         when (currentIndex) {
             0 -> PersonalStatus(title = "페이스", current = formatPace(personalState.currentPace), goal = formatPace(personalState.targetPace), currentColor = currentColor, unit = "/km")
             1 -> PersonalStatus("이동 거리", formatDistance(personalState.distance), personalState.totalDistance.toString(), currentColor, "km")
-            2 -> PersonalStatus("달린 시간", formatTime(personalStateViewModel.elapsedTime.value), formatTime(personalStateViewModel.targetTime.value), currentColor)
+            2 -> PersonalStatus("달린 시간", formatTime(marathonDataViewModel.elapsedTime.value), formatTime(marathonDataViewModel.targetTime.value), currentColor)
         }
     }
 }
