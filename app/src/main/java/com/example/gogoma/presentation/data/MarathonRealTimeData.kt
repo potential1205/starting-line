@@ -15,7 +15,7 @@ data class MarathonData(
     val time: Long,
     val totalDistance: Int,
     val currentDistance: Int,
-    val currentDistanceRate: Double,
+    val currentDistanceRate: Float,
     val targetPace: Int,
     val currentPace: Int,
     val targetTime: Int,
@@ -31,6 +31,7 @@ data class FriendInfo(
     val userId: Int,
     val friendName: String,
     val currentDistance: Int,
-    val currentDistanceRate: Double,
-    val isMe: Boolean
+    val currentDistanceRate: Float,
+    val isMe: Boolean,
+    val rank: Int
 ) : Parcelable
