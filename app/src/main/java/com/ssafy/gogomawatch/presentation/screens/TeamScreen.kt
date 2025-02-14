@@ -21,7 +21,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,12 +43,32 @@ import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.ssafy.gogomawatch.R
+import com.ssafy.gogomawatch.presentation.components.TeamProgressBar
+import com.ssafy.gogomawatch.presentation.components.TeamStatus
 import com.ssafy.gogomawatch.presentation.data.FriendInfo
 
 @Composable
 fun TeamScreen() {
     val strokeWidth = 10
     val screenHeight30 = (LocalConfiguration.current.screenHeightDp - 26) / 3
+
+    // 위치 재정비 위해 LazyListState 초기화
+    val lazyListState = rememberLazyListState()
+
+
+    // 내가 달린 거리 값 저장 (isMe = true인 값 찾기)
+    val myCurrentDistance by remember {
+        mutableStateOf(friendInfoList.find { it.isMe }?.currentDistance ?: 0)
+    }
+
+    // 중앙에 위치한 친구의 rank 추출
+    val centerItemRank by remember {
+        derivedStateOf {
+            val centerIndex = lazyListState.firstVisibleItemIndex
+            friendInfoList.getOrNull(centerIndex)?.rank ?: 1
+        }
+    }
+
     Box() {
         Box(
             modifier = Modifier
@@ -59,78 +81,10 @@ fun TeamScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // 길 이미지
-                Box(
-                    Modifier
-                        .fillMaxWidth(.4f)
-                        .fillMaxHeight()
-                        .padding(start = 8.45.dp, end = 4.65.dp)
-                ) {
-                    Box(
-                        Modifier
-                            .fillMaxSize()
-                            .background(color = Color(0xFF3D3D3D))
-                            .align(Alignment.Center),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        //원
-                        Canvas (
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            val circleRadius = 4.dp.toPx()
-                            val centerX = size.width / 2
-                            val height20 = size.height / 4
-
-                            drawCircle(
-                                color = Color.White,
-                                radius = circleRadius,
-                                center = Offset(centerX, height20)
-                            )
-
-                            drawCircle(
-                                color = Color.White,
-                                radius = circleRadius,
-                                center = Offset(centerX, height20 * 3)
-                            )
-                        }
-                        //나의 위치가 가장 위에 옴
-                        Image(
-                            painter = painterResource(id = R.drawable.icon_navigation), // 로고 이미지 리소스
-                            contentDescription = "my location image",
-                            colorFilter = ColorFilter.tint(Color(0xFF62DA74)),
-                            modifier = Modifier
-                                .size(24.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
-                }
-                // 예시 데이터 리스트
-                val friendInfoList = listOf(
-                    FriendInfo(userId = 1, friendName = "김정민", currentDistance = 920000, currentDistanceRate = 0.92, isMe = false),
-                    FriendInfo(userId = 2, friendName = "서이수", currentDistance = 897760, currentDistanceRate = 0.897, isMe = true),
-                    FriendInfo(userId = 3, friendName = "신지호", currentDistance = 850000, currentDistanceRate = 0.85, isMe = false),
-                    FriendInfo(userId = 4, friendName = "박지현", currentDistance = 800000, currentDistanceRate = 0.8, isMe = false),
-                    FriendInfo(userId = 5, friendName = "이준수", currentDistance = 775500, currentDistanceRate = 0.775, isMe = false),
-                    FriendInfo(userId = 6, friendName = "강효민", currentDistance = 750000, currentDistanceRate = 0.75, isMe = false),
-                    FriendInfo(userId = 7, friendName = "서지수", currentDistance = 720000, currentDistanceRate = 0.72, isMe = false),
-                    FriendInfo(userId = 8, friendName = "남궁은성", currentDistance = 700000, currentDistanceRate = 0.7, isMe = false),
-                    FriendInfo(userId = 9, friendName = "김찬", currentDistance = 680000, currentDistanceRate = 0.68, isMe = false),
-                    FriendInfo(userId = 10, friendName = "김찬우", currentDistance = 650000, currentDistanceRate = 0.65, isMe = false),
-                    FriendInfo(userId = 11, friendName = "정다빈", currentDistance = 630000, currentDistanceRate = 0.63, isMe = false)
-                )
-
-                //이름 리스트
-                val friendRankNameList = friendInfoList.mapIndexed { index, friend ->
-                    "${index + 1}등 ${friend.friendName}"
-                }
-
                 // 등수 부분
-                // 위치 재정비
-                val lazyListState = rememberLazyListState()
-
                 val density = LocalDensity.current
 
+                // 위치 재정비
                 val snappingLayout = remember(lazyListState, density) {
                     val snapPosition = object : SnapPosition {
                         override fun position(
@@ -166,7 +120,7 @@ fun TeamScreen() {
 
                 // 앞 뒤로 빈 아이템 추가
                 val emptyItem = ""
-                val itemsWithPadding = listOf(emptyItem) + friendRankNameList + listOf(emptyItem) + listOf(emptyItem)
+                val itemsWithPadding = listOf(null) + friendInfoList + listOf(null)
 
                 LazyColumn (
                     state = lazyListState,
@@ -181,43 +135,42 @@ fun TeamScreen() {
                             targetValue = if (isCenterItem) 1f else .8f,
                             label = "itemScale"
                         )
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(screenHeight30.dp)
-                                .padding(end = 6.45.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = itemsWithPadding[index],
-                                fontSize = (20 * scale).sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .scale(scale)
+                        if (itemsWithPadding[index] != null) {
+                            TeamStatus(itemsWithPadding[index]!!, screenHeight30, scale, myCurrentDistance)
+                        } else {
+                            // 같은 크기의 빈 Box 삽입
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(screenHeight30.dp)
+                                    .padding(end = 6.45.dp)
                             )
-                        } // 리스트 아이템을 텍스트로 표시
+                        }
                     }
                 }
             }
         }
 
         // ProgressBar
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                progress = 0.5f,
-                modifier = Modifier.fillMaxSize(),
-                strokeWidth = strokeWidth.dp,
-                indicatorColor = Color.Green,
-                trackColor = Color.Green.copy(alpha = 0.2f)
-            )
-        }
+        TeamProgressBar(friendInfoList,  centerItemRank)
     }
 }
+
+// 예시 데이터 리스트
+val friendInfoList = listOf(
+    FriendInfo(userId = 1, friendName = "김정민", currentDistance = 920000, currentDistanceRate = 0.92f, isMe = false, rank = 1),
+    FriendInfo(userId = 2, friendName = "서이수", currentDistance = 897760, currentDistanceRate = 0.897f, isMe = true, rank = 2),
+    FriendInfo(userId = 3, friendName = "신지호", currentDistance = 850000, currentDistanceRate = 0.85f, isMe = false, rank = 3),
+    FriendInfo(userId = 4, friendName = "박지현", currentDistance = 800000, currentDistanceRate = 0.8f, isMe = false, rank = 4),
+    FriendInfo(userId = 5, friendName = "이준수", currentDistance = 775500, currentDistanceRate = 0.775f, isMe = false, rank = 5),
+    FriendInfo(userId = 6, friendName = "강효민", currentDistance = 750000, currentDistanceRate = 0.75f, isMe = false, rank = 6),
+    FriendInfo(userId = 7, friendName = "서지수", currentDistance = 720000, currentDistanceRate = 0.72f, isMe = false, rank = 7),
+    FriendInfo(userId = 8, friendName = "남궁은성", currentDistance = 700000, currentDistanceRate = 0.7f, isMe = false, rank = 8),
+    FriendInfo(userId = 9, friendName = "김찬", currentDistance = 680000, currentDistanceRate = 0.68f, isMe = false, rank = 9),
+    FriendInfo(userId = 10, friendName = "김찬우", currentDistance = 650000, currentDistanceRate = 0.65f, isMe = false, rank = 10),
+    FriendInfo(userId = 11, friendName = "정다빈", currentDistance = 630000, currentDistanceRate = 0.63f, isMe = false, rank = 11)
+)
+
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable

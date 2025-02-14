@@ -12,21 +12,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.ssafy.gogomawatch.presentation.data.FriendInfo
 import com.ssafy.gogomawatch.presentation.theme.GogomaWatchTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
-// 임시 친구 정보 데이터 클래스
-data class FriendInfo(
-    val userId: Int,
-    val friendName: String,
-    val currentDistanceRate: Float,
-    val isMe: Boolean
-)
-
 @Composable
 fun TeamProgressBar(
-    friendInfoList: List<FriendInfo> // 친구들의 진행도 리스트 (0.0 ~ 1.0)
+    friendInfoList: List<FriendInfo>,
+    rank: Int
 ) {
     val myProgress = friendInfoList.find { it.isMe }?.currentDistanceRate ?: 0f
 
@@ -51,7 +45,7 @@ fun TeamProgressBar(
                     val radius = size.width / 2
                     val centerX = size.width / 2
                     val centerY = size.height / 2
-                    val dotRadius = 5.dp.toPx() // 점 크기
+                    val dotRadius = 4.dp.toPx() // 점 크기
 
                     friendInfoList.forEach { friend ->
                         val angle =
@@ -67,6 +61,36 @@ fun TeamProgressBar(
                             center = Offset(x.toFloat(), y.toFloat())
                         )
                     }
+
+                    // '나'인 경우 초록색 점을 다시 위에 그림
+                    friendInfoList.find { it.isMe }?.let { friend ->
+                        val angle = 360 * friend.currentDistanceRate.coerceIn(0f, 1f) - 90
+                        val radian = Math.toRadians(angle.toDouble())
+
+                        val x = centerX + (radius - 5.dp.toPx()) * cos(radian)
+                        val y = centerY + (radius - 5.dp.toPx()) * sin(radian)
+
+                        drawCircle(
+                            color = Color.Green,
+                            radius = dotRadius,
+                            center = Offset(x.toFloat(), y.toFloat())
+                        )
+                    }
+
+                    // '랭크 대상'인 경우 노란색 점을 다시 위에 그림
+                    friendInfoList.find { it.rank == rank && !it.isMe }?.let { friend ->
+                        val angle = 360 * friend.currentDistanceRate.coerceIn(0f, 1f) - 90
+                        val radian = Math.toRadians(angle.toDouble())
+
+                        val x = centerX + (radius - 5.dp.toPx()) * cos(radian)
+                        val y = centerY + (radius - 5.dp.toPx()) * sin(radian)
+
+                        drawCircle(
+                            color = Color.Yellow,
+                            radius = dotRadius,
+                            center = Offset(x.toFloat(), y.toFloat())
+                        )
+                    }
                 }
         )
     }
@@ -78,11 +102,11 @@ fun TeamProgressBarPreview() {
     GogomaWatchTheme {
         TeamProgressBar(
             friendInfoList = listOf(
-                FriendInfo(userId = 1, friendName = "김철수", currentDistanceRate = 0.2f, isMe = false),
-                FriendInfo(userId = 2, friendName = "이영희", currentDistanceRate = 0.4f, isMe = true), // '나' (초록색)
-                FriendInfo(userId = 3, friendName = "박민수", currentDistanceRate = 0.4015643f, isMe = false),
-                FriendInfo(userId = 4, friendName = "최지훈", currentDistanceRate = 0.7f, isMe = false)
-            )
+                FriendInfo(userId = 1, friendName = "김철수", currentDistance = 5000, currentDistanceRate = 0.5f, isMe = false, rank = 1),
+                FriendInfo(userId = 2, friendName = "이영희", currentDistance = 4050, currentDistanceRate = 0.405f, isMe = true, rank = 2),
+                FriendInfo(userId = 3, friendName = "박민수", currentDistance = 4000, currentDistanceRate = 0.4f, isMe = false, rank = 3),
+                FriendInfo(userId = 4, friendName = "최지훈", currentDistance = 4000, currentDistanceRate = 0.4f, isMe = false, rank = 4)
+            ), rank = 3
         )
     }
 }
