@@ -1,7 +1,6 @@
 package com.example.gogoma.data.dto
 
 import android.os.Parcelable
-import com.example.gogoma.data.model.PaymentType
 import com.example.gogoma.data.model.Marathon
 import kotlinx.parcelize.Parcelize
 

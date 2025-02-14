@@ -1,6 +1,5 @@
 package com.example.gogoma.data.api
 
-import com.example.gogoma.data.model.MarathonDetailResponse
 import com.example.gogoma.data.model.UserMarathonDetailResponse
 import com.example.gogoma.data.model.UserMarathonSearchResponse
 import retrofit2.Response

@@ -1,14 +1,9 @@
 package com.example.gogoma.viewmodel
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.UserMarathonDetailDto
-import com.example.gogoma.data.model.UserMarathonDetailResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

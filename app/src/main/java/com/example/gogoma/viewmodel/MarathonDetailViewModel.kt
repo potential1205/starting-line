@@ -1,24 +1,13 @@
 package com.example.gogoma.viewmodel
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.data.api.RetrofitInstance
-import com.example.gogoma.data.model.FriendResponse
-import com.example.gogoma.data.model.Marathon
 import com.example.gogoma.data.model.MarathonDetailResponse
-import com.example.gogoma.data.model.MarathonSearchResponse
-import com.example.gogoma.data.model.MarathonType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 class MarathonDetailViewModel : ViewModel() {
     private val _marathonDetail = MutableStateFlow<MarathonDetailResponse?>(null)
