@@ -93,6 +93,7 @@ public class UserMarathonServiceImpl implements UserMarathonService {
                 .paymentType(userMarathon.getPaymentType())
                 .address(userMarathon.getAddress())
                 .selectedCourseType(marathonType.getCourseType())
+                .targetPace(userMarathon.getTargetPace())
                 .build();
 
         return UserMarathonDetailResponse.of(userMarathonDetailDto);

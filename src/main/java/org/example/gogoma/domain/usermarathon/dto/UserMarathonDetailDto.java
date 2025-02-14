@@ -23,4 +23,5 @@ public class UserMarathonDetailDto {
     private LocalDateTime paymentDateTime;
     private String address;
     private String selectedCourseType;
+    private int targetPace;
 }
