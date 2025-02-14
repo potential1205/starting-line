@@ -1,9 +1,6 @@
 package com.ssafy.gogomawatch.presentation.screens
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -28,21 +24,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material.CircularProgressIndicator
-import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.ssafy.gogomawatch.R
 import com.ssafy.gogomawatch.presentation.components.TeamProgressBar
 import com.ssafy.gogomawatch.presentation.components.TeamStatus
 import com.ssafy.gogomawatch.presentation.data.FriendInfo
@@ -119,8 +106,7 @@ fun TeamScreen() {
                 }
 
                 // 앞 뒤로 빈 아이템 추가
-                val emptyItem = ""
-                val itemsWithPadding = listOf(null) + friendInfoList + listOf(null)
+                val itemsWithPadding = listOf(null) + friendInfoList + listOf(null) + listOf(null)
 
                 LazyColumn (
                     state = lazyListState,
@@ -135,8 +121,16 @@ fun TeamScreen() {
                             targetValue = if (isCenterItem) 1f else .8f,
                             label = "itemScale"
                         )
+
+                        // 색상 결정 (isMe → 초록색, 중앙 아이템(단, isMe 아님) → 노란색, 기본 → 흰색)
+                        val color = when {
+                            itemsWithPadding[index]?.isMe == true -> Color.Green
+                            isCenterItem -> Color.Yellow
+                            else -> Color.White
+                        }
+
                         if (itemsWithPadding[index] != null) {
-                            TeamStatus(itemsWithPadding[index]!!, screenHeight30, scale, myCurrentDistance)
+                            TeamStatus(itemsWithPadding[index]!!, screenHeight30, scale, myCurrentDistance, color)
                         } else {
                             // 같은 크기의 빈 Box 삽입
                             Box(
