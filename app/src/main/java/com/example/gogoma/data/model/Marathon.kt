@@ -29,5 +29,6 @@ data class Marathon(
     val infoImage: String,
     val courseImage: String,
     val formType: Int,
-    val formUrl: String
+    val formUrl: String,
+    val homeUrl: String
 ) : Parcelable

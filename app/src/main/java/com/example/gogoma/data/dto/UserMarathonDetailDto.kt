@@ -11,7 +11,7 @@ data class UserMarathonDetailDto (
 
     val courseTypeList: List<String>,
 
-    val paymentType: PaymentType,
+    val paymentType: String,
 
     val paymentAmount: String,
 

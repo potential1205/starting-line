@@ -1,6 +1,5 @@
 package com.example.gogoma.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,7 @@ import com.example.gogoma.viewmodel.RegistViewModel
 fun RegistListScreen(
     navController: NavController,
     registViewModel: RegistViewModel,
-//    onRegistClick: (Int) -> Unit
+    onRegistClick: (Int) -> Unit
 ) {
     val registList = registViewModel.registList.collectAsState().value
 

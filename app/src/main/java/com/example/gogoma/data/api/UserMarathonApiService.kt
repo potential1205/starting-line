@@ -15,7 +15,7 @@ interface UserMarathonApiService {
         @Header("Authorization") accessToken: String
     ): Response<UserMarathonSearchResponse>
 
-    @GET("api/v1/usermarthons/{id}")
+    @GET("api/v1/usermarathons/{id}")
     suspend fun getUserMarathonById(
         @Header("Authorization") accessToken: String,
         @Path("id") id: Int

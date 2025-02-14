@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,13 +39,12 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
     val marathonDetailViewModel: MarathonDetailViewModel = viewModel()
 
     val context = LocalContext.current
-    var userMarathonDetail by remember { mutableStateOf<UserMarathonDetailDto?>(null) }
-    var marathonDetail by remember { mutableStateOf<MarathonDetailResponse?>(null) }
+    val userMarathonDetail by registDetailViewModel.userMarathonDetail.collectAsState()
+    val marathonDetail by marathonDetailViewModel.marathonDetail.collectAsState()
 
     // 유저 마라톤 상세 정보 로드
     LaunchedEffect(registId) {
         val token = TokenManager.getAccessToken(context)
-        Log.d("nowId",registId.toString())
         token?.let { registDetailViewModel.getUserMarathonById(it, registId) }
     }
 
