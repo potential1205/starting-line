@@ -40,11 +40,7 @@ public class UserMarathonServiceImpl implements UserMarathonService {
 
     @Override
     public UserMarathonSearchResponse searchUserMarathonList(String accessToken) {
-
-        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
-
-        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
-                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+        User user = getUserByAccessToken(accessToken);
 
         List<UserMarathon> userMarathonList = userMarathonRepository.findAllByUserId(user.getId());
 
@@ -105,10 +101,7 @@ public class UserMarathonServiceImpl implements UserMarathonService {
     @Override
     @Transactional
     public void updateUserMarathon(String accessToken, int marathonId, int targetPace) {
-        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
-
-        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
-                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+        User user = getUserByAccessToken(accessToken);
 
         Marathon marathon = marathonRepository.findById(marathonId)
                 .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
@@ -121,10 +114,7 @@ public class UserMarathonServiceImpl implements UserMarathonService {
 
     @Override
     public void checkDuplicateUserMarathon(String accessToken, int marathonId) {
-        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
-
-        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
-                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+        User user = getUserByAccessToken(accessToken);
 
         Marathon marathon = marathonRepository.findById(marathonId)
                 .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
@@ -137,10 +127,7 @@ public class UserMarathonServiceImpl implements UserMarathonService {
     @Override
     @Transactional
     public void createUserMarathon(String accessToken, CreateUserMarathonRequest createUserMarathonRequest) {
-        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
-
-        User user = userRepository.findByEmail(kakaoUserInfo.getEmail())
-                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+        User user = getUserByAccessToken(accessToken);
 
         Marathon marathon = marathonRepository.findById(createUserMarathonRequest.getMarathonId())
                 .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
@@ -160,6 +147,12 @@ public class UserMarathonServiceImpl implements UserMarathonService {
                 .build();
 
         userMarathonRepository.save(userMarathon);
+    }
+
+    private User getUserByAccessToken(String accessToken) {
+        KakaoUserInfo kakaoUserInfo = kakaoOauthClient.getUserInfo(accessToken);
+        return userRepository.findByEmail(kakaoUserInfo.getEmail())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {
