@@ -194,7 +194,8 @@ fun PaymentScreen(
             item {
                 SectionWithRadioButtons(
                     title = "결제 수단",
-                    options = listOf("카카오페이", "토스", "무통장 입금"),
+//                    options = listOf("카카오페이", "토스", "무통장 입금"),
+                    options = listOf("카카오페이"),
                     selectedOption = selectedPayment,
                     onOptionSelected = { paymentMethod -> viewModel.updateSelectedPayment(paymentMethod) }
                 )
