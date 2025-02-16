@@ -21,7 +21,7 @@ fun PersonalScreen () {
     val marathonDataViewModel: MarathonDataViewModel = viewModel() // ViewModel 주입
 
     // ViewModel에서 상태를 가져오기
-    val personalState = marathonDataViewModel.marathonDataState.value
+    val personalState = marathonDataViewModel.marathonState.value
 
     // ChangeColor 함수로 색상 계산
     val currentColor = marathonDataViewModel.currentColor.value
@@ -37,29 +37,21 @@ fun PersonalScreen () {
         contentAlignment = Alignment.Center
     ) {
         // 프로그레스바
-        ProgressBar (distance = personalState.distance, totalDistance = personalState.totalDistance, progressBarColor = currentColor)
+        ProgressBar (currentDistanceRate = personalState.currentDistanceRate, progressBarColor = currentColor)
 
         // 텍스트 노출 부분: 터치 시 변경
         when (currentIndex) {
             0 -> PersonalStatus(title = "페이스", current = formatPace(personalState.currentPace), goal = formatPace(personalState.targetPace), currentColor = currentColor, unit = "/km")
-            1 -> PersonalStatus("이동 거리", formatDistance(personalState.distance), personalState.totalDistance.toString(), currentColor, "km")
-            2 -> PersonalStatus("달린 시간", formatTime(marathonDataViewModel.elapsedTime.value), formatTime(marathonDataViewModel.targetTime.value), currentColor)
+            1 -> PersonalStatus("이동 거리", formatDistance(personalState.currentDistance), formatDistance(personalState.totalDistance), currentColor, "km")
+            2 -> PersonalStatus("달린 시간", formatTime(marathonDataViewModel.elapsedTime.value), formatTime(personalState.targetTime), currentColor)
         }
     }
 }
 
-// 임시 데이터 클래스
-data class PersonalState (
-    var distance: Float = 0.0f, // 현재 달린 거리
-    val totalDistance: Float,
-    var currentPace: Float = 0.0f, // 현재 페이스
-    val targetPace: Float
-)
-
 // 초 단위를 "분:초" 형식으로 변환하는 함수
-fun formatPace(seconds: Float): String {
-    val minutes = (seconds / 60).toInt()
-    val remainingSeconds = (seconds % 60).toInt()
+fun formatPace(seconds: Int): String {
+    val minutes = (seconds / 60)
+    val remainingSeconds = (seconds % 60)
     return "%d:%02d".format(minutes, remainingSeconds)
 }
 
@@ -72,8 +64,9 @@ fun formatTime(seconds: Int): String {
 }
 
 // 거리 포맷팅 함수
-fun formatDistance(distance: Float): String {
-    val truncatedValue = floor(distance * 100) / 100 // 소수점 둘째 자리까지 내림
+fun formatDistance(distance: Int): String {
+    val distanceInKm = distance / 100000f // cm -> km 변환
+    val truncatedValue = floor(distanceInKm * 100) / 100 // 소수점 둘째 자리까지 내림
     return "%.2f".format(truncatedValue)
 }
 
