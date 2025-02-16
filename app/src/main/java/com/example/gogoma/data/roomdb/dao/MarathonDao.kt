@@ -1,15 +1,21 @@
-package com.example.newroom.dao
+package com.example.gogoma.data.roomdb.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.gogoma.data.roomdb.entity.Marathon
 
 @Dao
 interface MarathonDao {
-    @Insert
-    fun insertMarathon(marathon: Marathon)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMarathon(marathon: Marathon)
 
-    @Query("SELECT * FROM Marathon limit 1")
-    fun getMarathon(): Marathon?
+    @Query("SELECT * FROM Marathon LIMIT 1")
+    suspend fun getMarathon(): Marathon?
+
+    @Query("DELETE FROM Marathon")
+    suspend fun clearMarathon()
 }
+
+
