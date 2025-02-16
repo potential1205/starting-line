@@ -460,9 +460,8 @@ fun AppNavigation(userViewModel: UserViewModel){
                 }
                 items(paceMap.entries.toList()) { (value, text) ->
                     FilterListItemContent(text, onClick = {
-                        paceViewModel.marathonStartInitDataResponse?.let {
-                            paceViewModel.patchMarathonPace(TokenManager.getAccessToken(context).toString(), it.marathonId, value)
-                        }
+                        paceViewModel.patchMarathonPace(TokenManager.getAccessToken(context).toString(), paceViewModel.marathonStartInitDataResponse.value!!.marathonId, value)
+
                         // 모달창 닫기
                         bottomSheetViewModel.hideBottomSheet()
 
