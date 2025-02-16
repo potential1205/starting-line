@@ -25,6 +25,7 @@ import kotlin.math.floor
 fun TeamStatus( friendInfo: FriendInfo, scale: Float, myCurrentDistance: Int, color: Color ) {
     Box(
         Modifier
+            .fillMaxWidth()
             .height((25 * scale).dp)
             .fillMaxWidth(),
         contentAlignment = Alignment.Center,
@@ -34,7 +35,7 @@ fun TeamStatus( friendInfo: FriendInfo, scale: Float, myCurrentDistance: Int, co
         ) {
             Text(
                 text = "${friendInfo.rank}등",
-                fontSize = (15 * scale).sp,
+                fontSize = (8 * scale).sp,
                 textAlign = TextAlign.Center,
                 color = color,
                 modifier = Modifier
@@ -52,13 +53,15 @@ fun TeamStatus( friendInfo: FriendInfo, scale: Float, myCurrentDistance: Int, co
                     .align(Alignment.CenterVertically)
             )
 
+
+//            Spacer(Modifier.width(5.dp))
+//
 //            Text(
 //                text = formatDistanceDiff(friendInfo.currentDistance - myCurrentDistance) + "km",
-//                fontSize = (15 * scale).sp,
+//                fontSize = (8 * scale).sp,
 //                textAlign = TextAlign.Center,
 //                color = color,
 //                modifier = Modifier
-//                    .scale(scale)
 //                    .align(Alignment.CenterVertically)
 //            )
         }

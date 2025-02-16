@@ -1,12 +1,14 @@
 package com.example.gogoma.presentation.screens
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -62,10 +64,8 @@ fun TeamScreen() {
         ) {
             Row (
                 Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.Center),
+                    .fillMaxSize()
+                    .clip(CircleShape),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -112,7 +112,8 @@ fun TeamScreen() {
                 LazyColumn (
                     state = lazyListState,
                     modifier = Modifier
-                        .height((50+25*1.9).dp),
+                        .fillMaxWidth()
+                        .height((25*2+25*1.9).dp),
                     flingBehavior = flingBehavior,
                     verticalArrangement = Arrangement.Center
                 ){
