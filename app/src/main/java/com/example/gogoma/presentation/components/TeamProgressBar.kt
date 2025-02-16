@@ -33,7 +33,7 @@ fun TeamProgressBar(
             progress = myProgress,
             modifier = Modifier.fillMaxSize(),
             strokeWidth = 10.dp,
-            indicatorColor = Color.LightGray,
+            indicatorColor = Color.Gray,
             trackColor = Color.DarkGray
         )
 
@@ -45,7 +45,7 @@ fun TeamProgressBar(
                     val radius = size.width / 2
                     val centerX = size.width / 2
                     val centerY = size.height / 2
-                    val dotRadius = 5.dp.toPx() // 점 크기
+                    val dotRadius = 4.dp.toPx() // 점 크기
 
                     friendInfoList.forEach { friend ->
                         val angle =

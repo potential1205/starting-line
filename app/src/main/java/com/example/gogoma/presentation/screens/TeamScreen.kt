@@ -7,8 +7,6 @@ import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +34,6 @@ import com.example.gogoma.presentation.data.FriendInfo
 @Composable
 fun TeamScreen() {
     val strokeWidth = 10
-    val screenHeight30 = (LocalConfiguration.current.screenHeightDp - 26) / 3
 
     // 위치 재정비 위해 LazyListState 초기화
     val lazyListState = rememberLazyListState()
@@ -57,14 +53,19 @@ fun TeamScreen() {
     }
 
     Box() {
+
+        // 등수
         Box(
             modifier = Modifier
                 .padding(strokeWidth.dp + 3.dp)
+                .align(Alignment.Center)
         ) {
             Row (
                 Modifier
-                    .fillMaxSize()
-                    .clip(CircleShape),
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Center),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -106,19 +107,19 @@ fun TeamScreen() {
                 }
 
                 // 앞 뒤로 빈 아이템 추가
-                val itemsWithPadding = listOf(null) + friendInfoList + listOf(null) + listOf(null)
+                val itemsWithPadding = listOf(null) + friendInfoList + listOf(null)
 
                 LazyColumn (
                     state = lazyListState,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(end = 5.dp),
-                    flingBehavior = flingBehavior
+                        .height((50+25*1.9).dp),
+                    flingBehavior = flingBehavior,
+                    verticalArrangement = Arrangement.Center
                 ){
                     items(itemsWithPadding.size) { index ->
                         val isCenterItem = index == lazyListState.firstVisibleItemIndex + 1
                         val scale by animateFloatAsState(
-                            targetValue = if (isCenterItem) 1f else .8f,
+                            targetValue = if (isCenterItem) 1.9f else 1f,
                             label = "itemScale"
                         )
 
@@ -130,14 +131,14 @@ fun TeamScreen() {
                         }
 
                         if (itemsWithPadding[index] != null) {
-                            TeamStatus(itemsWithPadding[index]!!, screenHeight30, scale, myCurrentDistance, color)
+                            TeamStatus(itemsWithPadding[index]!!, scale, myCurrentDistance, color)
                         } else {
                             // 같은 크기의 빈 Box 삽입
                             Box(
                                 Modifier
                                     .fillMaxWidth()
-                                    .height(screenHeight30.dp)
-                                    .padding(end = 6.45.dp)
+                                    .height(25.dp)
+//                                    .padding(top = 4.dp, bottom = 4.dp)
                             )
                         }
                     }
@@ -162,7 +163,7 @@ val friendInfoList = listOf(
     FriendInfo(userId = 8, friendName = "남궁은성", currentDistance = 700000, currentDistanceRate = 0.7f, isMe = false, rank = 8),
     FriendInfo(userId = 9, friendName = "김찬", currentDistance = 680000, currentDistanceRate = 0.68f, isMe = false, rank = 9),
     FriendInfo(userId = 10, friendName = "김찬우", currentDistance = 650000, currentDistanceRate = 0.65f, isMe = false, rank = 10),
-    FriendInfo(userId = 11, friendName = "정다빈", currentDistance = 630000, currentDistanceRate = 0.63f, isMe = false, rank = 11)
+    FriendInfo(userId = 11, friendName = "정다빈", currentDistance = 210000, currentDistanceRate = 0.21f, isMe = false, rank = 11)
 )
 
 
