@@ -2,6 +2,7 @@ package com.example.gogoma.data.api
 
 import com.example.gogoma.data.model.BooleanResponse
 import com.example.gogoma.data.model.CreateUserRequest
+import com.example.gogoma.data.model.FriendResponse
 import com.example.gogoma.data.model.KakaoClientOauthTokenResponse
 import com.example.gogoma.data.model.KakaoUserInfo
 import com.example.gogoma.data.model.StatusResponse
@@ -68,5 +69,12 @@ interface UserApiService {
     suspend fun unlinkKakao(
         @Header("Authorization") accessToken: String
     ): Response<BooleanResponse>
+
+    // 내가 참여한 대회 친구 목록
+    @GET("api/v1/users/upcoming/friends")
+    suspend fun getUpcomingMarathonFriendList(
+        @Header("Authorization") accessToken: String
+    ): Response<FriendResponse>
+
 
 }

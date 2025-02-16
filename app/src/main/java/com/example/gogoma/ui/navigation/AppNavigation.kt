@@ -22,13 +22,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.ui.components.TopBar
 import com.example.gogoma.ui.screens.MainScreen
-import com.example.gogoma.ui.screens.SplashScreen
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.BottomSheet
@@ -54,8 +51,6 @@ import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonListViewModel
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.ui.screens.FriendListScreen
