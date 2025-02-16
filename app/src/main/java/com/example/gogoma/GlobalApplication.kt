@@ -14,19 +14,13 @@ class GlobalApplication : Application() {
             private set
     }
 
-    val database: AppDatabase by lazy {
-        Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "UserMarathon"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
-    }
+    lateinit var database: AppDatabase
+        private set
 
     override fun onCreate() {
         super.onCreate()
         instance = this
+        database = AppDatabase.getInstance(applicationContext)
         // 카카오 SDK 초기화
         KakaoSdk.init(this, BuildConfig.KAKAO_APP_KEY)
     }

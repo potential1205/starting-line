@@ -15,14 +15,12 @@ import com.example.gogoma.data.model.UpcomingMarathonInfoResponse
 import com.example.gogoma.data.roomdb.entity.Friend
 import com.example.gogoma.data.roomdb.entity.Marathon
 import com.example.gogoma.data.roomdb.entity.MyInfo
-import com.example.gogoma.data.roomdb.repository.RoomRepository
 import com.example.gogoma.utils.TokenManager
 import kotlinx.coroutines.launch
 
 class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel() {
 
     private val db = GlobalApplication.instance.database
-    private val repository = RoomRepository(db)
 
     var marathonStartInitDataResponse by mutableStateOf<MarathonStartInitDataResponse?>(null)
         private set
@@ -38,11 +36,36 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                 val response = RetrofitInstance.watchApiService.getMarathonStartInitData(accessToken,marathonId)
                 if (response.isSuccessful) {
                     marathonStartInitDataResponse = response.body()
-                    repository.saveMyInfo(MyInfo(marathonStartInitDataResponse!!.userId,marathonStartInitDataResponse!!.userName,marathonStartInitDataResponse!!.targetPace))
-                    repository.saveMarathon(Marathon(marathonStartInitDataResponse!!.marathonId,marathonStartInitDataResponse!!.marathonTitle,marathonStartInitDataResponse!!.marathonStartTime))
+                        db.myInfoDao().clearMyInfo()
+                        db.marathonDao().clearMarathon()
+                        db.friendDao().clearAllFriends()
+
+                        db.myInfoDao().insertMyInfo(
+                            MyInfo(
+                                marathonStartInitDataResponse!!.userId,
+                                marathonStartInitDataResponse!!.userName,
+                                marathonStartInitDataResponse!!.targetPace
+                            )
+                        )
+                        Log.d("Database", "MyInfo 저장 성공")
+
+                        db.marathonDao().insertMarathon(
+                            Marathon(
+                                marathonStartInitDataResponse!!.marathonId,
+                                marathonStartInitDataResponse!!.marathonTitle,
+                                marathonStartInitDataResponse!!.marathonStartTime
+                            )
+                        )
+                        Log.d("Database", "Marathon 저장 성공")
+
                     marathonStartInitDataResponse!!.friendList.forEach { friend ->
-                        repository.saveFriend(Friend(friend.friendId,friend.friendName))
+                            db.friendDao().insertFriend(Friend(friend.friendId, friend.friendName))
+                            Log.d("Database", "Friend 저장 성공: ${friend.friendName}")
                     }
+
+                    Log.d("MyInfo",db.myInfoDao().getMyInfo().toString())
+                    Log.d("Marathon",db.marathonDao().getMarathon().toString())
+                    Log.d("Friend",db.friendDao().getAllFriends().toString())
                     //globalApplication.initData = marathonStartInitDataResponse
                 } else {
                     // 실패 시 처리 (예: 로그 찍기, 에러 메시지 출력 등)
@@ -51,6 +74,7 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
             } catch (e: Exception) {
                 // 예외 처리 (예: 네트워크 에러 등)
                 marathonStartInitDataResponse = null
+                Log.d("ohmygod","nono")
             }
         }
     }

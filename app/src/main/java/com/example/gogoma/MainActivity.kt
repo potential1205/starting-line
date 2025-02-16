@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.room.Room
-import com.example.gogoma.data.roomdb.repository.RoomRepository
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.ui.navigation.AppNavigation
 import com.example.gogoma.viewmodel.UserViewModel

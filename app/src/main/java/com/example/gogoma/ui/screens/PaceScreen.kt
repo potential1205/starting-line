@@ -112,6 +112,7 @@ fun PaceScreen(
                     )
                 )
             }
+
         } else {
             // marathon이 null이 아닐 때 기존 화면 구성
             Column(

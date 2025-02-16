@@ -10,11 +10,11 @@ import com.example.gogoma.data.roomdb.entity.MyInfo
 @Dao
 interface MyInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMyInfo(myInfo: MyInfo)
+    suspend fun insertMyInfo(myInfo: MyInfo)
 
     @Query("SELECT * FROM MyInfo LIMIT 1")
-    fun getMyInfo(): LiveData<MyInfo>  // LiveData 반환
+    suspend fun getMyInfo(): MyInfo?
 
     @Query("DELETE FROM MyInfo")
-    fun clearMyInfo()
+    suspend fun clearMyInfo()
 }
