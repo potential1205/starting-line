@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.theme
+package com.example.gogoma.presentation.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

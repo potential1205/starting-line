@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.tile
+package com.example.gogoma.tile
 
 import android.content.Context
 import androidx.wear.protolayout.ColorBuilders.argb

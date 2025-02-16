@@ -1,4 +1,4 @@
-package com.ssafy.gogomawatch.presentation.screens
+package com.example.gogoma.presentation.screens
 
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import com.ssafy.gogomawatch.presentation.data.FriendInfo
+import com.example.gogoma.presentation.data.FriendInfo
 import kotlin.math.absoluteValue
 
 data class Location(val name: String, val x: Float, val y: Float, val distance: Int)
