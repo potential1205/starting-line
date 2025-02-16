@@ -12,10 +12,17 @@ import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.UpdateUserMarathonRequest
 import com.example.gogoma.data.model.MarathonStartInitDataResponse
 import com.example.gogoma.data.model.UpcomingMarathonInfoResponse
+import com.example.gogoma.data.roomdb.entity.Friend
+import com.example.gogoma.data.roomdb.entity.Marathon
+import com.example.gogoma.data.roomdb.entity.MyInfo
+import com.example.gogoma.data.roomdb.repository.RoomRepository
 import com.example.gogoma.utils.TokenManager
 import kotlinx.coroutines.launch
 
 class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel() {
+
+    private val db = GlobalApplication.instance.database
+    private val repository = RoomRepository(db)
 
     var marathonStartInitDataResponse by mutableStateOf<MarathonStartInitDataResponse?>(null)
         private set
@@ -31,7 +38,12 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                 val response = RetrofitInstance.watchApiService.getMarathonStartInitData(accessToken,marathonId)
                 if (response.isSuccessful) {
                     marathonStartInitDataResponse = response.body()
-                    globalApplication.initData = marathonStartInitDataResponse
+                    repository.saveMyInfo(MyInfo(marathonStartInitDataResponse!!.userId,marathonStartInitDataResponse!!.userName,marathonStartInitDataResponse!!.targetPace))
+                    repository.saveMarathon(Marathon(marathonStartInitDataResponse!!.marathonId,marathonStartInitDataResponse!!.marathonTitle,marathonStartInitDataResponse!!.marathonStartTime))
+                    marathonStartInitDataResponse!!.friendList.forEach { friend ->
+                        repository.saveFriend(Friend(friend.friendId,friend.friendName))
+                    }
+                    //globalApplication.initData = marathonStartInitDataResponse
                 } else {
                     // 실패 시 처리 (예: 로그 찍기, 에러 메시지 출력 등)
                     marathonStartInitDataResponse = null

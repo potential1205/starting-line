@@ -1,6 +1,7 @@
 // Repository.kt
 package com.example.gogoma.data.roomdb.repository
 
+import androidx.lifecycle.LiveData
 import com.example.gogoma.data.roomdb.entity.Friend
 import com.example.gogoma.data.roomdb.entity.Marathon
 import com.example.gogoma.data.roomdb.entity.MyInfo
@@ -9,33 +10,28 @@ import kotlinx.coroutines.runBlocking
 
 class RoomRepository(private val db: AppDatabase) {
 
-    suspend fun updateDataFromServer(
-        newMeList: List<MyInfo>,
-        newFriendList: List<Friend>,
-        newMarathonList: List<Marathon>
-    ) {
+    fun getMyInfo(): LiveData<MyInfo> = db.myInfoDao().getMyInfo()
+    fun getMarathon(): LiveData<Marathon> = db.marathonDao().getMarathon()
+    fun getAllFriends(): LiveData<List<Friend>> = db.friendDao().getAllFriends()
+
+    fun saveMyInfo(myInfo: MyInfo) {
         db.runInTransaction {
-            newMeList.forEach { runBlocking { db.myInfoDao().insertMyInfo(it) } }
-            newFriendList.forEach { runBlocking { db.friendDao().insertFriend(it) } }
-            newMarathonList.forEach { runBlocking { db.marathonDao().insertMarathon(it) } }
+            db.myInfoDao().clearMyInfo()
+            db.myInfoDao().insertMyInfo(myInfo)
         }
     }
 
-    suspend fun resetDatabase() {
-        db.clearAllTables()
+    fun saveMarathon(marathon: Marathon) {
+        db.runInTransaction {
+            db.marathonDao().clearMarathon()
+            db.marathonDao().insertMarathon(marathon)
+        }
     }
 
-    suspend fun getMyInfo(): MyInfo? {
-        // 만약 MyInfo가 항상 하나만 저장된다면
-        return db.myInfoDao().getMyInfo()
+    fun saveFriend(friend: Friend) {  // Friend 한 명씩 저장
+        db.runInTransaction {
+            db.friendDao().insertFriend(friend)
+        }
     }
-
-    suspend fun getAllFriends(): List<Friend> {
-        return db.friendDao().getAllFriends()
-    }
-
-    suspend fun getAllMarathons(): Marathon? {
-        return db.marathonDao().getMarathon()
-    }
-
 }
+

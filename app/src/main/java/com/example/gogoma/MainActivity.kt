@@ -25,8 +25,6 @@ import java.io.IOException
 
 class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels()
-    private lateinit var db: AppDatabase
-    private lateinit var repository: RoomRepository
     private val TAG = "OAuthRedirectActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,16 +34,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             GogomaApp(userViewModel)
         }
-        db = Room.databaseBuilder(
-            application,
-            AppDatabase::class.java,
-            "test-database"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
-
-        repository = RoomRepository(db)
-
         //첫 실행 시 Intent 처리
         handleIntent(intent)
     }
