@@ -37,6 +37,7 @@ import com.example.gogoma.viewmodel.FriendsViewModel
 import com.example.gogoma.viewmodel.PaceViewModel
 import com.example.gogoma.viewmodel.PaceViewModelFactory
 import com.example.gogoma.viewmodel.RegistViewModel
+import com.example.gogoma.viewmodel.ScrollViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -51,8 +52,9 @@ fun AppNavigation(userViewModel: UserViewModel){
     val registViewModel: RegistViewModel = viewModel()
     val globalApplication = context.applicationContext as GlobalApplication
     val paceViewModel: PaceViewModel = viewModel(factory = PaceViewModelFactory(globalApplication))
+    val scrollViewModel: ScrollViewModel = viewModel()
 
-    val protectedRouted = listOf("mypage", "friendList")
+    val protectedRouted = listOf("registList", "paceSetting", "watchConnect", "friendList", "mypage")
 
     // 로그인 상태 감지
     LaunchedEffect(userViewModel.loginStatus) {
@@ -79,10 +81,18 @@ fun AppNavigation(userViewModel: UserViewModel){
             composable(route) { backStackEntry ->
                 if(userViewModel.isLoggedIn){
                     when (route) {
-                        "mypage" -> MypageScreen(navController, userViewModel)
+                        "registList" -> RegistListScreen(
+                            navController,
+                            userViewModel = userViewModel,
+                            registViewModel = registViewModel,
+                            onRegistClick = { registId ->
+                                navController.navigate("registDetail/$registId")
+                            }
+                        )
                         "paceSetting" -> PaceScreen (navController = navController, userViewModel, bottomSheetViewModel, paceViewModel)
                         "watchConnect" -> WatchConnectScreen(navController, userViewModel)
                         "friendList" -> FriendListScreen(navController, userViewModel, friendsViewModel)
+                        "mypage" -> MypageScreen(navController, userViewModel)
 
                     }
                 } else {
@@ -96,20 +106,13 @@ fun AppNavigation(userViewModel: UserViewModel){
             }
         }
 
-        composable("paceSetting") {
-            PaceScreen (navController = navController, userViewModel, bottomSheetViewModel, paceViewModel)
-        }
-
-        composable("watchConnect") {
-            WatchConnectScreen(navController, userViewModel)
-        }
-
         composable("main") {
             MainScreen(
                 navController,
                 userViewModel = userViewModel,
                 marathonListViewModel = marathonListViewModel,
                 bottomSheetViewModel = bottomSheetViewModel,
+                scrollViewModel = scrollViewModel,
                 onFilterClick = { filter ->
                     if(!bottomSheetViewModel.isSubPageVisible){//하위페이지가 아니라면
                         marathonListViewModel.updatePendingFilter(
@@ -125,17 +128,6 @@ fun AppNavigation(userViewModel: UserViewModel){
                 onMarathonClick = { marathonId ->
                     // 마라톤 클릭 시 상세 페이지로 이동
                     navController.navigate("marathonDetail/$marathonId")
-                }
-            )
-        }
-
-        composable("registList") {
-            RegistListScreen(
-                navController,
-                userViewModel = userViewModel,
-                registViewModel = registViewModel,
-                onRegistClick = { registId ->
-                    navController.navigate("registDetail/$registId")
                 }
             )
         }

@@ -51,10 +51,16 @@ fun BottomBar(navController : NavController, userViewModel: UserViewModel){
         ).forEach {(route, icon) ->
             IconButton (
                 onClick = {
-                    if(currRoute == route) {
-                        navController.popBackStack(route, inclusive = true)
-                    } //같은 페이지라면 스택을 쌓지 않음
-                    navController.navigate(route)
+                    if (!isLoggedIn && route != "main" && currRoute != "signpage") {
+                        navController.navigate("signpage") {
+                            popUpTo("signpage") { inclusive = true } //signpage는 스택에 쌓지 않음
+                        }
+                    } else {
+                        if(currRoute == route) {
+                            navController.popBackStack(route, inclusive = true)
+                        } //같은 페이지라면 스택을 쌓지 않음
+                        navController.navigate(route)
+                    }
                 }
             ){
                 Icon(
