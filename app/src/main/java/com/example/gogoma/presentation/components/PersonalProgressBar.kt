@@ -11,9 +11,8 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.CircularProgressIndicator
 
 @Composable
-fun ProgressBar(distance: Float, totalDistance: Float, progressBarColor: Color) {
-    // 원형 프로그레스의 퍼센트
-    val progress_dis = (distance / totalDistance).coerceIn(0f, 1f)
+fun ProgressBar(currentDistanceRate: Float, progressBarColor: Color) {
+
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -26,7 +25,7 @@ fun ProgressBar(distance: Float, totalDistance: Float, progressBarColor: Color) 
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
-                progress = progress_dis,
+                progress = currentDistanceRate,
                 modifier = Modifier.size(200.dp),
                 strokeWidth = 10.dp,
                 indicatorColor = progressBarColor,
