@@ -6,8 +6,6 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.presentation.data.MarathonData
-import com.example.gogoma.presentation.data.MarathonRealTimeData
-import com.example.gogoma.presentation.screens.PersonalState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -16,12 +14,12 @@ class MarathonDataViewModel : ViewModel() {
     private val _marathonState = mutableStateOf(
         MarathonData(
             time = System.currentTimeMillis(),
-            totalDistance = 2000, // 예제: 2km
+            totalDistance = 200000, // 예제: 2km
             currentDistance = 0,
             currentDistanceRate = 0f,
             targetPace = 330, // 목표 페이스 (초)
             currentPace = 330, // 현재 페이스 (초)
-            targetTime = 0,
+            targetTime = 330*2,
             currentTime = 0,
             state = "running",
             myRank = 1,
@@ -45,8 +43,6 @@ class MarathonDataViewModel : ViewModel() {
     val currentColor: State<Color> = _currentColor
 
     init {
-        // 목표 시간 계산
-        calculateTargetTime()
 
         // 5초마다 currentPace 갱신
         viewModelScope.launch {
@@ -74,8 +70,8 @@ class MarathonDataViewModel : ViewModel() {
         }
     }
 
-    private fun generateRandomPace(): Float {
-        return (270..450).random().toFloat() // 4분 30초(270초) ~ 7분 30초(450초) 범위에서 랜덤 선택
+    private fun generateRandomPace(): Int {
+        return (270..450).random() // 4분 30초(270초) ~ 7분 30초(450초) 범위에서 랜덤 선택
     }
 
     // 인덱스 변경 함수
@@ -87,23 +83,30 @@ class MarathonDataViewModel : ViewModel() {
     private fun updateCurrentPace() {
         val newPace = generateRandomPace()
         _marathonState.value = _marathonState.value.copy(
+            currentPace = newPace
         )
     }
 
     // 거리 업데이트
     private fun updateCurrentDistance() {
-        val randomIncrement = (Random.nextFloat() * 0.015f + 0.005f) // 5m~20m를 km 단위로 변환
-        val increment = (randomIncrement * 1000).toInt() // m 단위로 변환
+        val increment = (Random.nextInt(500, 2001)) // 500cm ~ 2000cm 범위 (5m ~ 20m)
         val newDistance = (_marathonState.value.currentDistance + increment)
             .coerceAtMost(_marathonState.value.totalDistance)
         val newRate = newDistance.toFloat() / _marathonState.value.totalDistance
 
+        // 값 업데이트
+        _marathonState.value = _marathonState.value.copy(
+            currentDistance = newDistance,
+            currentDistanceRate = newRate // currentDistanceRate도 갱신
+        )
     }
 
     // 경과 시간 업데이트
     private fun updateElapsedTime() {
         val newTime = _marathonState.value.currentTime + 1
-        _marathonState.value = newTime
+        _marathonState.value = _marathonState.value.copy(currentTime = newTime)
+
+        _elapsedTime.value = newTime
     }
 
     // 색상 업데이트
