@@ -8,11 +8,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
-import androidx.room.Room
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.ui.navigation.AppNavigation
 import com.example.gogoma.viewmodel.UserViewModel
-import com.example.newroom.AppDatabase
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody

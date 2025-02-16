@@ -1,6 +1,5 @@
 package com.example.gogoma.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +14,6 @@ import com.example.gogoma.data.model.UpcomingMarathonInfoResponse
 import com.example.gogoma.data.roomdb.entity.Friend
 import com.example.gogoma.data.roomdb.entity.Marathon
 import com.example.gogoma.data.roomdb.entity.MyInfo
-import com.example.gogoma.utils.TokenManager
 import kotlinx.coroutines.launch
 
 class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel() {
@@ -74,7 +72,6 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
             } catch (e: Exception) {
                 // 예외 처리 (예: 네트워크 에러 등)
                 marathonStartInitDataResponse = null
-                Log.d("ohmygod","nono")
             }
         }
     }

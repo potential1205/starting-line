@@ -1,9 +1,6 @@
 package com.example.gogoma
 
 import android.app.Application
-import android.util.Log
-import androidx.room.Room
-import com.example.gogoma.data.model.MarathonStartInitDataResponse
 import com.example.newroom.AppDatabase
 import com.kakao.sdk.common.KakaoSdk
 
