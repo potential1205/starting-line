@@ -16,6 +16,7 @@ fun AppNavigation(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = "startScreen"
+
     ) {
         composable("startScreen") { StartScreen(navController) }
         composable("viewPagerScreen") {
