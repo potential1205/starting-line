@@ -3,12 +3,12 @@ package com.example.gogoma.data.util
 import android.content.Context
 import android.util.Log
 import com.example.gogoma.data.dto.MarathonRealTimeData
-import com.example.gogoma.data.model.Friend
-import com.example.gogoma.data.model.MarathonStartInitDataResponse
-import com.example.gogoma.data.repository.UserDistanceRepository
-import java.util.Timer
 
-import kotlin.concurrent.fixedRateTimer
+import com.example.gogoma.data.repository.UserDistanceRepository
+import com.example.gogoma.data.roomdb.entity.Friend
+import com.example.gogoma.data.roomdb.entity.Marathon
+import com.example.gogoma.data.roomdb.entity.MyInfo
+import java.util.Timer
 
 
 class MarathonRealTimeDataUtil(private val context: Context) {
@@ -18,7 +18,6 @@ class MarathonRealTimeDataUtil(private val context: Context) {
     private val startTime = System.currentTimeMillis()
 
     private var marathonRealTimeData = MarathonRealTimeData (
-        time = 0,
         totalDistance = 0, // cm
         currentDistance = 0, // cm
         currentDistanceRate = 0.0f, // ex) 0.98
@@ -36,18 +35,17 @@ class MarathonRealTimeDataUtil(private val context: Context) {
         marathonTitle = ""
     )
 
-     fun setReadyData(marathonReadyData: MarathonStartInitDataResponse) {
-        marathonRealTimeData.totalDistance = marathonReadyData.runningDistance * 100000 // runningDistance -> km, totalDistance -> cm
+     fun setReadyData(myInfo: MyInfo, marathon: Marathon, friendList: List<Friend>) {
+        marathonRealTimeData.totalDistance = myInfo.runningDistance // cm
         marathonRealTimeData.targetPace =
-            (marathonReadyData.targetPace / 100) * 60 + (marathonReadyData.targetPace % 100)
-        marathonRealTimeData.targetTime = marathonReadyData.runningDistance * marathonRealTimeData.targetPace
-        marathonRealTimeData.totalMemberCount = marathonReadyData.friendList.size
-        marathonRealTimeData.friendInfoList = marathonReadyData.friendList
-        marathonRealTimeData.userName = marathonReadyData.userName
-        marathonRealTimeData.userId = marathonReadyData.userId
-        marathonRealTimeData.marathonId = marathonReadyData.marathonId
-        marathonRealTimeData.marathonTitle = marathonReadyData.marathonTitle
-        marathonRealTimeData.time = System.currentTimeMillis()
+            (myInfo.targetPace / 100) * 60 + (myInfo.targetPace % 100)
+        marathonRealTimeData.targetTime = (myInfo.runningDistance / 100000) * marathonRealTimeData.targetPace
+        marathonRealTimeData.totalMemberCount = friendList.size
+        marathonRealTimeData.friendInfoList = friendList
+        marathonRealTimeData.userName = myInfo.name
+        marathonRealTimeData.userId = myInfo.id
+        marathonRealTimeData.marathonId = marathon.id
+        marathonRealTimeData.marathonTitle = marathon.title
 
          Log.d("marathon", "[Marathon Ready] MarathonRealTimeData: $marathonRealTimeData")
     }
@@ -56,11 +54,13 @@ class MarathonRealTimeDataUtil(private val context: Context) {
         return marathonRealTimeData
     }
 
+
     fun updateData() {
         val elapsedTimeSeconds = ((System.currentTimeMillis() - startTime) / 1000)
 
-        marathonRealTimeData.time = System.currentTimeMillis()
-        marathonRealTimeData.currentTime = elapsedTimeSeconds
+        marathonRealTimeData.currentTime = elapsedTimeSeconds.toInt()
+        marathonRealTimeData.currentDistance += 1
+        marathonRealTimeData.currentPace = marathonRealTimeData.currentTime * 100000 / marathonRealTimeData.currentDistance
 
         UserDistanceRepository.getUserCumulativeDistance(userId = 56) { distance ->
             if (distance != null) {
@@ -89,7 +89,7 @@ class MarathonRealTimeDataUtil(private val context: Context) {
             }
 
             // 친구 정보 업데이트 (자신의 누적 거리 업데이트 후 호출)
-            updateFriendInfoList()
+            //updateFriendInfoList()
             Log.d("marathon", "업데이트된 MarathonRealTimeData: $marathonRealTimeData")
         }
     }
@@ -99,28 +99,28 @@ class MarathonRealTimeDataUtil(private val context: Context) {
         timer = null
     }
 
-    private fun updateFriendInfoList() {
-        val updatedFriendList = mutableListOf<Friend>()
-        val friendList = marathonRealTimeData.friendInfoList
-
-        val myFriendInfo = Friend(
-            userId = marathonRealTimeData.userId,
-            friendName = marathonRealTimeData.userName,
-            currentDistance = marathonRealTimeData.currentDistance,
-            currentDistanceRate = if (marathonRealTimeData.totalDistance != 0)
-                marathonRealTimeData.currentDistance.toFloat() / marathonRealTimeData.totalDistance
-            else 0.0f,
-            isMe = true,
-            rank = 0
-        )
-
-        if (friendList.isEmpty()) {
-            marathonRealTimeData = marathonRealTimeData.copy(friendInfoList = listOf(myFriendInfo))
-            return
-        }
-
-        var completedCount = 0
-        val totalFriends = friendList.size
+//    private fun updateFriendInfoList() {
+//        val updatedFriendList = mutableListOf<Friend>()
+//        val friendList = marathonRealTimeData.friendInfoList
+//
+//        val myFriendInfo = Friend(
+//            userId = marathonRealTimeData.userId,
+//            friendName = marathonRealTimeData.userName,
+//            currentDistance = marathonRealTimeData.currentDistance,
+//            currentDistanceRate = if (marathonRealTimeData.totalDistance != 0)
+//                marathonRealTimeData.currentDistance.toFloat() / marathonRealTimeData.totalDistance
+//            else 0.0f,
+//            isMe = true,
+//            rank = 0
+//        )
+//
+//        if (friendList.isEmpty()) {
+//            marathonRealTimeData = marathonRealTimeData.copy(friendInfoList = listOf(myFriendInfo))
+//            return
+//        }
+//
+//        var completedCount = 0
+//        val totalFriends = friendList.size
 
 //        friendList.forEach { friend ->
 //            UserDistanceRepository.getUserCumulativeDistance(userId = friend.userId) { friendDistance ->
@@ -149,7 +149,7 @@ class MarathonRealTimeDataUtil(private val context: Context) {
 
 
 
-    }
+//    }
 
     // -------------------------------------------GPS---------------------------------------------
 

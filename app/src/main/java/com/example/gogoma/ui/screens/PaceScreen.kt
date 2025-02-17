@@ -1,7 +1,6 @@
 package com.example.gogoma.ui.screens
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +45,7 @@ import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonViewModel
 import com.example.gogoma.viewmodel.PaceViewModel
 import com.example.gogoma.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun PaceScreen(
@@ -98,6 +99,15 @@ fun PaceScreen(
                 marathon!!.marathon.id
             )
         }
+    }
+
+    LaunchedEffect(marathon) {
+        if(marathon != null){
+            paceViewModel.getUpcomingMarathonFriendList(
+                TokenManager.getAccessToken(context = context).toString()
+            )
+        }
+
     }
     LaunchedEffect(totalTextWidth + totalColumnWidth) {
         isColumn = (totalTextWidth + totalColumnWidth) > contentWidth
@@ -293,20 +303,20 @@ fun PaceScreen(
                         }
                     }
                 }
+                val scope = rememberCoroutineScope()
                 ButtonBasic(
                     text = "준비",
                     modifier = Modifier.fillMaxWidth(),
                     round = 0.dp,
                     onClick = {
-                        marathonViewModel.marathonReady()
-
-                        marathonStartInitDataResponse?.let {
-                            paceViewModel.saveMarathonDataToDB(
-                                it
-                            )
+                        scope.launch {
+                            marathonStartInitDataResponse?.let { response ->
+                                paceViewModel.saveMarathonDataToDB(response) {
+                                    marathonViewModel.marathonReady()
+                                }
+                                navController.navigate("watchConnect")
+                            }
                         }
-
-                        navController.navigate("watchConnect")
                     }
                 )
             }
