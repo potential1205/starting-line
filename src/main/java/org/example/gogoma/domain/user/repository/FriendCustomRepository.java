@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface FriendCustomRepository {
     List<Friend> findAllByUserIdAndMarathonId(int userId, int marathonId);
+
+    void deleteFriendByUserId(int userId);
 }

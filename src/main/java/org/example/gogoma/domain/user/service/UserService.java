@@ -35,4 +35,6 @@ public interface UserService {
     void sendNotificationToFriends(FcmRequest fcmRequest);
 
     UserAlertInfo getUserAlertInfoByEmail(String email);
+
+    void deleteFriend(String email);
 }
