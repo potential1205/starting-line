@@ -1,7 +1,6 @@
 package com.example.gogoma.ui.screens
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -98,6 +97,15 @@ fun PaceScreen(
                 marathon!!.marathon.id
             )
         }
+    }
+
+    LaunchedEffect(marathon) {
+        if(marathon != null){
+            paceViewModel.getUpcomingMarathonFriendList(
+                TokenManager.getAccessToken(context = context).toString()
+            )
+        }
+
     }
     LaunchedEffect(totalTextWidth + totalColumnWidth) {
         isColumn = (totalTextWidth + totalColumnWidth) > contentWidth
