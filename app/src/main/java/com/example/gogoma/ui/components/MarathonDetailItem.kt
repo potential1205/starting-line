@@ -3,7 +3,6 @@ package com.example.gogoma.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -14,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gogoma.data.model.MarathonDetailResponse
+import com.example.gogoma.data.model.getCourseTypeInKm
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.viewmodel.MarathonDetailViewModel
 
@@ -21,8 +21,7 @@ import com.example.gogoma.viewmodel.MarathonDetailViewModel
 fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
     Column (
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, top = 10.dp, end = 20.dp, bottom = 10.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
         horizontalAlignment = Alignment.Start,
     ) {
@@ -30,7 +29,7 @@ fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
         val formattedRaceStartTime = FormattedDate(marathonDetail.marathon.raceStartTime)
         InfoTableRow(label = "대회일시", value = formattedRaceStartTime)
         InfoTableRow(label = "대회장소", value = marathonDetail.marathon.location)
-        InfoTableRow(label = "대회종목", value = marathonDetail.marathonTypeList.joinToString("/") { "${it.courseType}" })
+        InfoTableRow(label = "대회종목", value = marathonDetail.marathonTypeList.joinToString("/") { it.getCourseTypeInKm() })
         InfoTableRow(
             label = "접수기간",
             value = if (marathonDetail.marathon.registrationStartDateTime == null && marathonDetail.marathon.registrationEndDateTime == null) {
@@ -41,7 +40,7 @@ fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
         )
         // marathonTypeList 그룹화 및 매니아 처리
         val groupedCourseTypes = marathonDetail.marathonTypeList
-            .groupBy { it.courseType } // courseType 기준으로 그룹화
+            .groupBy { it.getCourseTypeInKm() } // courseType 기준으로 그룹화
             .mapValues { (_, types) ->
                 // 각 courseType에 대해 "매니아"가 있는지 확인
                 val regularPrice = types.firstOrNull { it.etc.isEmpty() }?.price ?: ""
