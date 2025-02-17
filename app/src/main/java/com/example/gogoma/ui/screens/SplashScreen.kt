@@ -2,35 +2,33 @@ package com.example.gogoma.ui.screens
 
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.unit.sp
 import com.example.gogoma.MainActivity
 import com.example.gogoma.R
-import com.example.gogoma.theme.SplashTheme
-import com.example.gogoma.viewmodel.UserViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -60,22 +58,35 @@ fun SplashScreen(context: Context) {
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize(),
         ) {
-            Column(
-                modifier = Modifier.padding(bottom = 20.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.logo_image), // 벡터 파일 로드
-                    contentDescription = "Logo image",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(50.dp) // 로고 크기 설정
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.logo), // 벡터 파일 로드
-                    contentDescription = "Logo",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(50.dp) // 로고 크기 설정
-                )
-            }
+            Image(
+                painter = painterResource(id = R.drawable.logo_road),
+                contentDescription = "brand name start line image",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .width(192.dp)
+                    .height(323.dp)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 21.dp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "logo image",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = "출발선에 서는 순간,\n모든 준비는 끝났다.",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 28.8.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    letterSpacing = -0.64.sp
+                ),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 187.dp)
+            )
         }
     }
 }
