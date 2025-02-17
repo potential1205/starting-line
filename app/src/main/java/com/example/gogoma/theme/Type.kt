@@ -8,27 +8,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 
-val NanumSquareRound = FontFamily(
-    Font(R.font.nanum_square_round_l, FontWeight.Light),
-    Font(R.font.nanum_square_round_r, FontWeight.Normal),
-    Font(R.font.nanum_square_round_b, FontWeight.Bold),
-    Font(R.font.nanum_square_round_eb, FontWeight.ExtraBold)
+val Pretendard = FontFamily(
+    Font(R.font.pretendard_extralight, FontWeight.ExtraLight),
+    Font(R.font.pretendard_light, FontWeight.Light),
+    Font(R.font.pretendard_thin, FontWeight.Thin),
+    Font(R.font.pretendard_regular, FontWeight.Normal),
+    Font(R.font.pretendard_medium, FontWeight.W500),
+    Font(R.font.pretendard_bold, FontWeight.Bold),
+    Font(R.font.pretendard_black, FontWeight.Black),
+    Font(R.font.pretendard_semibold, FontWeight.SemiBold),
+    Font(R.font.pretendard_extrabold, FontWeight.ExtraBold)
+)
+
+val PartialSansKR = FontFamily(
+    Font(R.font.partialsanskr_regular, FontWeight.Normal)
 )
 
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = NanumSquareRound,
+        fontFamily = Pretendard,
         fontSize = 16.sp,
         fontWeight = FontWeight.Normal,
     ),
     titleLarge = TextStyle(
-        fontFamily = NanumSquareRound,
+        fontFamily = Pretendard,
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
     ),
     labelSmall = TextStyle(
-        fontFamily = NanumSquareRound,
+        fontFamily = Pretendard,
         fontSize = 12.sp,
         fontWeight = FontWeight.Light,
+    ),
+    displayLarge = TextStyle(
+        fontFamily = PartialSansKR,
+    ),
+    displayMedium = TextStyle(
+        fontFamily = PartialSansKR,
+    ),
+    displaySmall = TextStyle(
+        fontFamily = PartialSansKR,
     )
 )
