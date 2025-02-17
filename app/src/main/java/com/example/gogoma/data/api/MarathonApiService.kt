@@ -26,7 +26,7 @@ interface MarathonApiService {
         @Path("id") marathonId: Int,
     ): Response<MarathonDetailResponse>
 
-    @GET("api/v1/marathons/upcoming/72")
+    @GET("api/v1/marathons/upcoming/1")
     suspend fun getUpcomingMarathonInfo(
         @Header("Authorization") accessToken: String
     ): Response<UpcomingMarathonInfoResponse>

@@ -1,80 +1,98 @@
 package com.example.gogoma.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.UpdateUserMarathonRequest
+import com.example.gogoma.data.model.FriendResponse
 import com.example.gogoma.data.model.MarathonStartInitDataResponse
 import com.example.gogoma.data.model.UpcomingMarathonInfoResponse
 import com.example.gogoma.data.roomdb.entity.Friend
 import com.example.gogoma.data.roomdb.entity.Marathon
 import com.example.gogoma.data.roomdb.entity.MyInfo
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel() {
 
     private val db = GlobalApplication.instance.database
 
-    var marathonStartInitDataResponse by mutableStateOf<MarathonStartInitDataResponse?>(null)
-        private set
+    private val _marathonStartInitDataResponse = MutableStateFlow<MarathonStartInitDataResponse?>(null)
+    val marathonStartInitDataResponse: StateFlow<MarathonStartInitDataResponse?> = _marathonStartInitDataResponse
 
-    var upcomingMarathonInfoResponse by mutableStateOf<UpcomingMarathonInfoResponse?>(null)
-        private set
+    private val _upcomingMarathonInfoResponse = MutableStateFlow<UpcomingMarathonInfoResponse?>(null)
+    val upcomingMarathonInfoResponse: StateFlow<UpcomingMarathonInfoResponse?> = _upcomingMarathonInfoResponse
+
+    private val _friendList = MutableStateFlow<List<FriendResponse>>(emptyList())
+    val friendList: StateFlow<List<FriendResponse>> = _friendList
+
 
 
     fun getInitData(accessToken: String, marathonId: Int) {
         viewModelScope.launch {
             try {
-                // RetrofitInstance를 사용하여 API 호출
-                val response = RetrofitInstance.watchApiService.getMarathonStartInitData(accessToken,marathonId)
+                val response = RetrofitInstance.watchApiService.getMarathonStartInitData(accessToken, marathonId)
                 if (response.isSuccessful) {
-                    marathonStartInitDataResponse = response.body()
-                        db.myInfoDao().clearMyInfo()
-                        db.marathonDao().clearMarathon()
-                        db.friendDao().clearAllFriends()
+                    _marathonStartInitDataResponse.value = response.body()
+                    Log.d("API", "Marathon 데이터 불러오기 성공")
 
-                        db.myInfoDao().insertMyInfo(
-                            MyInfo(
-                                marathonStartInitDataResponse!!.userId,
-                                marathonStartInitDataResponse!!.userName,
-                                marathonStartInitDataResponse!!.targetPace
-                            )
-                        )
-                        Log.d("Database", "MyInfo 저장 성공")
-
-                        db.marathonDao().insertMarathon(
-                            Marathon(
-                                marathonStartInitDataResponse!!.marathonId,
-                                marathonStartInitDataResponse!!.marathonTitle,
-                                marathonStartInitDataResponse!!.marathonStartTime
-                            )
-                        )
-                        Log.d("Database", "Marathon 저장 성공")
-
-                    marathonStartInitDataResponse!!.friendList.forEach { friend ->
-                            db.friendDao().insertFriend(Friend(friend.friendId, friend.friendName))
-                            Log.d("Database", "Friend 저장 성공: ${friend.friendName}")
-                    }
-
-                    Log.d("MyInfo",db.myInfoDao().getMyInfo().toString())
-                    Log.d("Marathon",db.marathonDao().getMarathon().toString())
-                    Log.d("Friend",db.friendDao().getAllFriends().toString())
-                    //globalApplication.initData = marathonStartInitDataResponse
                 } else {
-                    // 실패 시 처리 (예: 로그 찍기, 에러 메시지 출력 등)
-                    marathonStartInitDataResponse = null
+                    _marathonStartInitDataResponse.value = null
+                    Log.e("API", "Marathon 데이터 불러오기 실패: ${response.code()}")
                 }
             } catch (e: Exception) {
-                // 예외 처리 (예: 네트워크 에러 등)
-                marathonStartInitDataResponse = null
+                _marathonStartInitDataResponse.value = null
+                Log.e("API", "예외 발생: ${e.message}")
             }
         }
     }
+
+    fun saveMarathonDataToDB(marathonData: MarathonStartInitDataResponse) {
+        viewModelScope.launch {
+            try {
+                db.myInfoDao().clearMyInfo()
+                db.marathonDao().clearMarathon()
+                db.friendDao().clearAllFriends()
+
+                db.myInfoDao().insertMyInfo(
+                    MyInfo(
+                        marathonData.userId,
+                        marathonData.userName,
+                        marathonData.targetPace
+                    )
+                )
+                Log.d("Database", "MyInfo 저장 성공")
+
+                db.marathonDao().insertMarathon(
+                    Marathon(
+                        marathonData.marathonId,
+                        marathonData.marathonTitle,
+                        marathonData.marathonStartTime
+                    )
+                )
+                Log.d("Database", "Marathon 저장 성공")
+
+                Log.d("1111",marathonData.friendList.toString())
+
+                marathonData.friendList.forEach { friend ->
+                    db.friendDao().insertFriend(Friend(friend.friendId, friend.friendName))
+                    Log.d("Database", "Friend 저장 성공: ${friend.friendName}")
+                }
+
+                // 데이터 확인 로그
+                Log.d("MyInfo", db.myInfoDao().getMyInfo().toString())
+                Log.d("Marathon", db.marathonDao().getMarathon().toString())
+                Log.d("Friend", db.friendDao().getAllFriends().toString())
+
+            } catch (e: Exception) {
+                Log.e("Database", "Room DB 저장 실패: ${e.message}")
+            }
+        }
+    }
+
 
     fun getUpcomingMarathonInfo(accessToken: String){
         viewModelScope.launch {
@@ -82,12 +100,31 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                 val response =
                     RetrofitInstance.marathonApiService.getUpcomingMarathonInfo(accessToken)
                 if (response.isSuccessful) {
-                    upcomingMarathonInfoResponse = response.body()
+                    _upcomingMarathonInfoResponse.value = response.body()
                 } else {
-                    upcomingMarathonInfoResponse = null
+                    _upcomingMarathonInfoResponse.value = null
                 }
             } catch (e: Exception) {
-                upcomingMarathonInfoResponse = null
+                _upcomingMarathonInfoResponse.value = null
+            }
+        }
+    }
+
+    fun getUpcomingMarathonFriendList(accessToken: String){
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.userApiService.getUpcomingMarathonFriendList(accessToken)
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        _friendList.value = listOf(it)  // 응답 데이터를 StateFlow에 할당
+                    }
+                } else {
+                    _friendList.value = emptyList()  // 실패 시 빈 리스트로 설정
+                }
+            } catch (e: Exception) {
+                _friendList.value = emptyList()  // 예외 발생 시 빈 리스트로 설정
+                Log.e("API", "getUpcomingMarathonFriendList 예외 발생: ${e.message}")
             }
         }
     }
