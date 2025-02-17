@@ -170,6 +170,18 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                                     )
                                 )
                             }
+
+                            fun formattedDistance(courseType: Int): String {
+                                val kmValue = courseType / 100000.0
+                                return if (kmValue % 1 == 0.0) {
+                                    // 소수점이 0일 때는 정수로 표시
+                                    "${kmValue.toInt()} km"
+                                } else {
+                                    // 소수점이 있을 때는 소수점 2자리까지 표시
+                                    "%.3f km".format(kmValue)
+                                }
+                            }
+
                             Row(
                                 modifier = Modifier
                                     .padding(bottom = 20.dp),
@@ -177,7 +189,7 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                  marathonDetail!!.marathonTypeList.forEach { type ->
-                                    HashTag(type.courseType)
+                                    HashTag(formattedDistance(type.courseType))
                                 }
                             }
 
