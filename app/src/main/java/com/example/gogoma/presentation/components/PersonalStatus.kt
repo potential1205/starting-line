@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.example.gogoma.R
 
@@ -33,8 +33,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
             text = title,
             style = TextStyle(
                 fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
-                color = Color(0xFFFFFFFF),
+                color = MaterialTheme.colors.onBackground,
             )
         )
 
@@ -46,19 +45,20 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
             Text(
                 text = current,
                 style = TextStyle(
+//                    fontFamily = MaterialTheme.typography.caption1.fontFamily,
                     fontSize = 38.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
-                    color = currentColor,
-
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colors.onBackground,
                     )
             )
             unit?.let{
                 Text(
                     text = it,
                     style = TextStyle(
+//                        fontFamily = MaterialTheme.typography.caption1.fontFamily,
                         fontSize = 15.sp,
-                        fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
-                        color = currentColor,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colors.onBackground,
                     )
                 )
             }
@@ -72,15 +72,14 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
             Icon (
                 painter = painterResource(id = R.drawable.icon_flag),
                 contentDescription = "image description",
-                tint = Color(0xFFB6B6B6),
+                tint = MaterialTheme.colors.onBackground,
                 modifier = Modifier.size(17.dp)
             )
             Text(
                 text = goal,
                 style = TextStyle(
                     fontSize = 15.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
-                    color = Color(0xFFB6B6B6),
+                    color = MaterialTheme.colors.onBackground,
                 )
             )
             unit?.let {
@@ -88,8 +87,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
                     text = it,
                     style = TextStyle(
                         fontSize = 15.sp,
-                        fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
-                        color = Color(0xFFB6B6B6),
+                        color = MaterialTheme.colors.onBackground,
                     )
                 )
             }
