@@ -18,6 +18,7 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = BrandColor1,
+    primaryContainer = BrandColor1_30pct,
     secondary = BrandColor2,
     tertiary = BrandColor3,
     onPrimary = NeutralWhite,
@@ -27,6 +28,7 @@ private val LightColorScheme = lightColorScheme(
     onBackground = NeutralDark,
     surface = NeutralWhite,
     error = CustomRed
+
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
