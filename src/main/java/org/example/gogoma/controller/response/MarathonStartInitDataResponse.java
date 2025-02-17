@@ -21,7 +21,7 @@ public class MarathonStartInitDataResponse {
     private List<Friend> friendList;
 
     public static MarathonStartInitDataResponse of(
-            int userId, String userName, int targetPace, int marathonId, String marathonTitle, List<Friend> friendList, LocalDateTime marathonStartTime) {
+            int userId, String userName, int targetPace, int marathonId, String marathonTitle, List<Friend> friendList, LocalDateTime marathonStartTime, int runningDistance) {
 
         return MarathonStartInitDataResponse.builder()
                 .userId(userId)
@@ -31,6 +31,7 @@ public class MarathonStartInitDataResponse {
                 .marathonTitle(marathonTitle)
                 .friendList(friendList)
                 .marathonStartTime(marathonStartTime)
+                .runningDistance(runningDistance)
                 .build();
     }
 }
