@@ -1,6 +1,9 @@
 package com.example.gogoma
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -31,6 +34,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GogomaApp(userViewModel)
         }
+        createNotificationChannel()
         //첫 실행 시 Intent 처리
         handleIntent(intent)
     }
@@ -101,6 +105,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         })
+    }
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "my_channel",
+                "대회 알림",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "대회 신청 관련 알림"
+            }
+
+            val manager = getSystemService(NotificationManager::class.java)
+            manager?.createNotificationChannel(channel)
+        }
     }
 }
 

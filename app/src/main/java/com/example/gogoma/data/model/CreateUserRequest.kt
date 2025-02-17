@@ -15,5 +15,6 @@ data class CreateUserRequest (
     val phoneNumber: String,
     val roadAddress: String,
     val detailAddress: String,
-    val clothingSize: String
+    val clothingSize: String,
+    val fcmToken: String
 ) : Parcelable
