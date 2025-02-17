@@ -6,6 +6,7 @@ import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.user.dto.*;
 import org.example.gogoma.controller.response.UserResponse;
+import org.example.gogoma.domain.user.repository.FriendCustomRepository;
 import org.example.gogoma.external.firebase.FirebaseNotificationClient;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendListResponse;
 import org.example.gogoma.external.kakao.oauth.KakaoFriendResponse;
@@ -31,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserCustomRepository userCustomRepository;
     private final FriendRepository friendRepository;
+    private final FriendCustomRepository friendCustomRepository;
     private final FirebaseNotificationClient firebaseNotificationClient;
 
     @Override
@@ -126,6 +128,11 @@ public class UserServiceImpl implements UserService {
     public UserAlertInfo getUserAlertInfoByEmail(String email) {
         return userCustomRepository.findIdAndNameByEmail(email)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public void deleteFriend(String email) {
+        friendCustomRepository.deleteFriendByUserId(getIdByEmail(email));
     }
 
 

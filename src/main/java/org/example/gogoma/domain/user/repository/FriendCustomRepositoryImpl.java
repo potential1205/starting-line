@@ -45,4 +45,12 @@ public class FriendCustomRepositoryImpl implements FriendCustomRepository {
                     )))
                     .fetch();
     }
+
+    @Override
+    public void deleteFriendByUserId(int userId) {
+        queryFactory
+                .delete(friend)
+                .where(friend.userId.eq(userId).or(friend.friendId.eq(userId)))
+                .execute();
+    }
 }
