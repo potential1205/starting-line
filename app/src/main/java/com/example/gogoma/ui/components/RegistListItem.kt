@@ -78,7 +78,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                         text = regist.marathonTitle,
                         style = TextStyle(
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         ),
                     )
@@ -103,7 +102,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = regist.marathonType,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         )
@@ -119,7 +117,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = it,
                             style = TextStyle(
                                 fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
                                 color = Color.White
                             ),
                             modifier = Modifier

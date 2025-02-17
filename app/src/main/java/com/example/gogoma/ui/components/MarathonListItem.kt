@@ -155,7 +155,7 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
                     },
                     style = TextStyle(
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
+                        fontWeight = FontWeight(400),
                         color = Color(0xFFB3B3B3),
                     ),
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -241,7 +241,6 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
                     text = "대회일시 ${(formattedRaceStartTime)}",
                     style = TextStyle(
                         fontSize = 13.8.sp,
-                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                     )
                 )

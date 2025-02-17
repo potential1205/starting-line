@@ -20,6 +20,12 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
+import android.Manifest
+import androidx.activity.result.ActivityResultLauncher
+
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+
 class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels()
     private val TAG = "OAuthRedirectActivity"
@@ -33,6 +39,29 @@ class MainActivity : ComponentActivity() {
         }
         //첫 실행 시 Intent 처리
         handleIntent(intent)
+
+        lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
+
+        // Activity 시작 시 위치 권한 요청을 위한 launcher 등록
+        permissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+                if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
+                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
+                    // 권한이 허용되었으므로 필요한 작업 수행 (예: MarathonRunService 실행 전 미리 처리)
+                    // 필요에 따라 여기서 추가 작업을 할 수 있습니다.
+                } else {
+                    Log.e("MarathonRunService", "위치 권한이 거부되었습니다.")
+
+                }
+            }
+
+        // 앱 시작 시 즉시 위치 권한 요청
+        permissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -102,6 +131,8 @@ class MainActivity : ComponentActivity() {
             }
         })
     }
+
+
 }
 
 @Composable

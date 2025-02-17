@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +45,7 @@ import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonViewModel
 import com.example.gogoma.viewmodel.PaceViewModel
 import com.example.gogoma.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun PaceScreen(
@@ -301,20 +303,20 @@ fun PaceScreen(
                         }
                     }
                 }
+                val scope = rememberCoroutineScope()
                 ButtonBasic(
                     text = "준비",
                     modifier = Modifier.fillMaxWidth(),
                     round = 0.dp,
                     onClick = {
-                        marathonViewModel.marathonReady()
-
-                        marathonStartInitDataResponse?.let {
-                            paceViewModel.saveMarathonDataToDB(
-                                it
-                            )
+                        scope.launch {
+                            marathonStartInitDataResponse?.let { response ->
+                                paceViewModel.saveMarathonDataToDB(response) {
+                                    marathonViewModel.marathonReady()
+                                }
+                                navController.navigate("watchConnect")
+                            }
                         }
-
-                        navController.navigate("watchConnect")
                     }
                 )
             }

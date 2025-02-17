@@ -8,5 +8,6 @@ data class MyInfo(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
     val name: String,
-    val targetPace: Int
+    val targetPace: Int,
+    val runningDistance: Int
 )
