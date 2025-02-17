@@ -14,6 +14,7 @@ import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.PersonalStatus
+import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import kotlin.math.floor
 
 @Composable
@@ -73,5 +74,7 @@ fun formatDistance(distance: Int): String {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun PersonalScreenPreview() {
-    PersonalScreen()
+    GogomaWatchTheme {
+        PersonalScreen()
+    }
 }
