@@ -1,26 +1,17 @@
 package com.example.gogoma.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gogoma.data.model.MarathonDetailResponse
 import com.example.gogoma.theme.GogomaTheme
@@ -31,45 +22,10 @@ fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.background)
             .padding(start = 20.dp, top = 10.dp, end = 20.dp, bottom = 10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
         horizontalAlignment = Alignment.Start,
     ) {
-        Row (
-            modifier = Modifier
-                .padding(top = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = marathonDetail.marathon.title,
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(bottom = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.0371174812316895.dp, Alignment.Start),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            marathonDetail.marathonTypeList.forEach { type ->
-                HashTag(type.courseType)
-            }
-        }
-
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp),
-            thickness = 1.dp,
-            color = Color(0xFFDDDDDD)
-        )
-
         //대회 정보
         val formattedRaceStartTime = FormattedDate(marathonDetail.marathon.raceStartTime)
         InfoTableRow(label = "대회일시", value = formattedRaceStartTime)
@@ -104,13 +60,6 @@ fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
         InfoTableRow(label = "대회주최", value = marathonDetail.marathon.hostList.joinToString(", ") { "${it}" })
         InfoTableRow(label = "대회주관", value = marathonDetail.marathon.organizerList.joinToString(", ") { "${it}" })
         InfoTableRow(label = "대회후원", value = marathonDetail.marathon.sponsorList.joinToString(", ") { "${it}" })
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 12.dp),
-            thickness = 1.dp,
-            color = Color(0xFFDDDDDD)
-        )
     }
 }
 
