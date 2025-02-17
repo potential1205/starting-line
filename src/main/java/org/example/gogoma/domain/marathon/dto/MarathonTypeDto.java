@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class MarathonTypeDto {
-    private String courseType;
+    private int courseType;
     private String price;
     private String etc;
 }

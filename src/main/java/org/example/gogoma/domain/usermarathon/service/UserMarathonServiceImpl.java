@@ -74,7 +74,7 @@ public class UserMarathonServiceImpl implements UserMarathonService {
         Marathon marathon = marathonRepository.findById(userMarathon.getMarathonId())
                 .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
 
-        List<String> courseTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId())
+        List<Integer> courseTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId())
                 .stream()
                 .map(MarathonType::getCourseType)
                 .collect(Collectors.toSet())

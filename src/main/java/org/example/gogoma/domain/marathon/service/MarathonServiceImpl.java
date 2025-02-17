@@ -356,13 +356,13 @@ public class MarathonServiceImpl implements MarathonService {
                 "제주특별자치도"
         ));
 
-        Set<String> marathonTypeSet = new HashSet<>();
+        Set<Integer> marathonTypeSet = new HashSet<>();
 
         List<MarathonPreviewDto> marathonPreviewDtoList = marathonList.stream()
                 .map(marathon -> {
                     List<MarathonType> marathonTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId());
 
-                    List<String> courseTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId())
+                    List<Integer> courseTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId())
                             .stream()
                             .map(MarathonType::getCourseType)
                             .collect(Collectors.toSet())

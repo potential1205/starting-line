@@ -14,13 +14,13 @@ import java.time.LocalDateTime;
 public class UserMarathonSearchDto {
     private int userMarathonId;
     private String marathonTitle;
-    private String marathonType;
+    private int marathonType;
     private String dDay;
     private LocalDateTime raceStartDateTime;
     private LocalDateTime paymentDateTime;
 
     public static UserMarathonSearchDto of(int userMarathonId,
-                                           String marathonTitle, String marathonType, String dDay,
+                                           String marathonTitle, int marathonType, String dDay,
             LocalDateTime raceStartDateTime, LocalDateTime paymentDateTime) {
 
         return UserMarathonSearchDto.builder()

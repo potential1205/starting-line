@@ -12,10 +12,10 @@ public class MarathonSearchResponse {
 
     private List<MarathonPreviewDto> marathonPreviewDtoList;
     private List<String> cityList;
-    private List<String> marathonTypeList;
+    private List<Integer> marathonTypeList;
 
     public static MarathonSearchResponse of(
-            List<MarathonPreviewDto> marathonPreviewDtoList, List<String> cityList, List<String> marathonTypeList) {
+            List<MarathonPreviewDto> marathonPreviewDtoList, List<String> cityList, List<Integer> marathonTypeList) {
 
         return MarathonSearchResponse.builder()
                 .marathonPreviewDtoList(marathonPreviewDtoList)

@@ -22,5 +22,5 @@ public class CreateUserMarathonRequest {
 
     private LocalDateTime paymentDateTime;
 
-    private String courseType;
+    private int courseType;
 }
