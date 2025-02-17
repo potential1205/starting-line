@@ -28,6 +28,6 @@ public class MarathonPreviewDto {
     private MarathonStatus marathonStatus;
     private String thumbnailImage;
     private String dDay;
-    private List<String> courseTypeList;
+    private List<Integer> courseTypeList;
     private List<MarathonType> marathonTypeList;
 }

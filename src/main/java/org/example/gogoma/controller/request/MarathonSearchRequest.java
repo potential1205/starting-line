@@ -17,6 +17,6 @@ public class MarathonSearchRequest {
     private String city;                   // 시/도 (예: 서울, 부산...)
     private String year;                   // 대회 년 (예: 1998, 2015...)
     private String month;                  // 대회 월 (예: 1,2,3,...)
-    private List<String> courseTypeList;   // 종목 (예: 5km, 10km, half, full)
+    private List<Integer> courseTypeList;   // 종목 거리 (cm)
     private String keyword;                // 마라톤 명 (예: 머니투데이)
 }

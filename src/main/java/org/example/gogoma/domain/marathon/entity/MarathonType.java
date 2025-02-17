@@ -22,7 +22,7 @@ public class MarathonType {
     @Column(nullable = false)
     private int marathonId;
 
-    private String courseType; // 5km, 10km, half, full
+    private int courseType;
 
     private String price;
 

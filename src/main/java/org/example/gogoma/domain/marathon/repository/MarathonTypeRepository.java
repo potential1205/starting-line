@@ -11,5 +11,5 @@ public interface MarathonTypeRepository extends JpaRepository<MarathonType, Inte
 
     void deleteAllByMarathonId(int id);
 
-    Optional<MarathonType> findByMarathonIdAndCourseType(int id, String courseType);
+    Optional<MarathonType> findByMarathonIdAndCourseType(int id, int courseType);
 }

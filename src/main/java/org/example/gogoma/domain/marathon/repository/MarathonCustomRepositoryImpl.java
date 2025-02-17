@@ -29,7 +29,7 @@ public class MarathonCustomRepositoryImpl implements MarathonCustomRepository {
 
     @Override
     public List<Marathon> searchMarathonByConitions(
-            MarathonStatus marathonStatus, String city, String year, String month, String keyword, List<String> courseTypeList) {
+            MarathonStatus marathonStatus, String city, String year, String month, String keyword, List<Integer> courseTypeList) {
 
         BooleanBuilder builder = new BooleanBuilder();
 

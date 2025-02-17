@@ -17,11 +17,11 @@ import java.util.List;
 public class UserMarathonDetailDto {
 
     private Marathon marathon;
-    private List<String> courseTypeList;
+    private List<Integer> courseTypeList;
     private PaymentType paymentType;
     private String paymentAmount;
     private LocalDateTime paymentDateTime;
     private String address;
-    private String selectedCourseType;
+    private int selectedCourseType;
     private int targetPace;
 }
