@@ -1,5 +1,7 @@
 package com.example.gogoma.data.dto
 
+import com.example.gogoma.data.model.Friend
+
 data class MarathonRealTimeData (
     var time: Long,                 // 타임스탬프 (밀리초)
     var totalDistance: Int,         // 전체 거리 (cm 단위)
@@ -12,7 +14,7 @@ data class MarathonRealTimeData (
     var state: String,              // 상태: 목표페이스 이상 "G", 1분이하 미달 "Y", 그외 "R"
     var myRank: Int,                // 내 순위
     var totalMemberCount: Int,      // 전체 멤버 수
-    var friendInfoList: List<FriendDto>,
+    var friendInfoList: List<Friend>,
     var userId: Int = 0,
     var marathonId: Int = 0,
     var userName: String = "",

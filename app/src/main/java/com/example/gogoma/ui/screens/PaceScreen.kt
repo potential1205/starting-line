@@ -41,6 +41,7 @@ import com.example.gogoma.ui.components.ButtonBasic
 import com.example.gogoma.ui.components.TopBarArrow
 import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.viewmodel.BottomSheetViewModel
+import com.example.gogoma.viewmodel.MarathonViewModel
 import com.example.gogoma.viewmodel.PaceViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 
@@ -49,6 +50,7 @@ fun PaceScreen(
     navController: NavController,
     userViewModel: UserViewModel,
     bottomSheetViewModel: BottomSheetViewModel,
+    marathonViewModel: MarathonViewModel = viewModel(),
     paceViewModel: PaceViewModel,
 ) {
     val context = LocalContext.current
@@ -295,6 +297,8 @@ fun PaceScreen(
                     modifier = Modifier.fillMaxWidth(),
                     round = 0.dp,
                     onClick = {
+                        marathonViewModel.marathonReady()
+
                         marathonStartInitDataResponse?.let {
                             paceViewModel.saveMarathonDataToDB(
                                 it
