@@ -25,12 +25,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.viewmodel.UserViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 @Composable
 fun BottomBar(navController : NavController, userViewModel: UserViewModel){
     val isLoggedIn = userViewModel.isLoggedIn
+    val currRoute = navController.currentDestination?.route
 
     val bottomInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
@@ -39,55 +38,41 @@ fun BottomBar(navController : NavController, userViewModel: UserViewModel){
             .fillMaxWidth()
             .height(65.dp + bottomInset)
             .background(color = MaterialTheme.colorScheme.background)
-            .padding(top = 5.dp, start = 28.dp, end = 28.dp, bottom = 5.dp+bottomInset),
+            .padding(top = 5.dp, start = 28.dp, end = 28.dp, bottom = 5.dp + bottomInset),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton (onClick = { navController.navigate("registList") }){
-            Icon(
-                painter = painterResource(id = R.drawable.icon_list),
-                contentDescription = "icon of marathon application list",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(34.dp).padding(3.dp)
-            )
-        }
-        IconButton (onClick = { navController.navigate("paceSetting") }){
-            Icon(
-                painter = painterResource(id = R.drawable.icon_running),
-                contentDescription = "icon of pacemaker using watch",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(34.dp).padding(3.dp)
-            )
-        }
-        IconButton (onClick = { navController.navigate("main") }){
-            Icon(
-                painter = painterResource(id = R.drawable.icon_home),
-                contentDescription = "icon of home",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(34.dp).padding(3.dp)
-            )
-        }
-        IconButton (onClick = { navController.navigate("friendList") }){
-            Icon(
-                painter = painterResource(id = R.drawable.icon_friend),
-                contentDescription = "icon of friend list",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(34.dp).padding(3.dp)
-            )
-        }
-        IconButton (onClick = {
-            if (isLoggedIn) {
-                navController.navigate("mypage")
-            } else {
-                navController.navigate("signpage")
+        listOf(
+            "registList" to R.drawable.icon_list,
+            "paceSetting" to R.drawable.icon_running,
+            "main" to R.drawable.icon_home,
+            "friendList" to R.drawable.icon_friend,
+            "mypage" to R.drawable.logo_image
+        ).forEach {(route, icon) ->
+            IconButton (
+                onClick = {
+                    if (!isLoggedIn && route != "main" && currRoute != "signpage") {
+                        navController.navigate("signpage") {
+                            popUpTo("signpage") { inclusive = true } //signpage는 스택에 쌓지 않음
+                        }
+                    } else {
+                        if(currRoute == route) {
+                            navController.popBackStack(route, inclusive = true)
+                        } //같은 페이지라면 스택을 쌓지 않음
+                        navController.navigate(route)
+                    }
+                }
+            ){
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = "icon of ${route}",
+                    tint = if (currRoute == route) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .size(34.dp)
+                        .padding(3.dp)
+                )
             }
-        }){
-            Icon(
-                painter = painterResource(id = R.drawable.logo_image),
-                contentDescription = "icon of mypage",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(34.75.dp).padding(3.dp)
-            )
         }
     }
 }

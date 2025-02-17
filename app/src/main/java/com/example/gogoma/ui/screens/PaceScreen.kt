@@ -1,5 +1,7 @@
 package com.example.gogoma.ui.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,6 +71,17 @@ fun PaceScreen(
         totalColumnWidth = coordinates.size.width
     }
 
+    // 뒤로 가기 동작 정의
+    BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
+        // 모달창이 열려 있을 때 뒤로 가기 버튼 처리
+        if (bottomSheetViewModel.isSubPageVisible) {
+            // 모달 내에서 페이지가 바뀌었으면 이전 페이지로 돌아가게 처리
+            bottomSheetViewModel.goBackToPreviousPage()
+        } else {
+            // 처음 연 모달 창이라면 모달 닫기
+            bottomSheetViewModel.hideBottomSheet()
+        }
+    }
 
     LaunchedEffect(Unit) {
         paceViewModel.getUpcomingMarathonInfo(
