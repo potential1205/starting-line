@@ -12,18 +12,19 @@ data class MarathonRealTimeData(
 
 @Parcelize
 data class MarathonData(
-    val time: Long,
-    val totalDistance: Int,
-    val currentDistance: Int,
-    val currentDistanceRate: Float,
-    val targetPace: Int,
-    val currentPace: Int,
-    val targetTime: Int,
-    val currentTime: Int,
-    val state: String,
-    val myRank: Int,
-    val totalMemberCount: Int,
-    val friendInfoList: List<FriendInfo>
+    var time: Long,
+    var totalDistance: Int,
+    var currentDistance: Int,
+    var currentDistanceRate: Float,
+    var targetPace: Int,
+    var currentPace: Int,
+    var targetTime: Int,
+    var currentTime: Int,
+    var state: String,
+    var myRank: Int,
+    var totalMemberCount: Int,
+    var friendInfoList: List<FriendInfo>,
+    var marathonTitle: String
 ) : Parcelable
 
 @Parcelize

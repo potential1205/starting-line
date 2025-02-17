@@ -18,10 +18,12 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.MaterialTheme
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.google.android.gms.wearable.*
 import com.example.gogoma.presentation.data.MarathonData
+import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import com.google.gson.Gson
 
 @Composable
@@ -30,50 +32,36 @@ fun StartScreen(navController: NavController) {
     val activity = context as? Activity
     val marathonData = remember { mutableStateOf<MarathonData?>(null) }
     val isMarathonReady = remember { mutableStateOf(false) }
+    val gson = Gson()
+
+    var marathonDataViewModel : MarathonDataViewModel = viewModel()
 
     DisposableEffect(Unit) {
         val dataClient = Wearable.getDataClient(context)
         val listener = DataClient.OnDataChangedListener { dataEvents ->
             Log.d("StartScreen", "📡 onDataChanged() 호출됨! 데이터 이벤트 감지")
 
-            dataEvents.forEach { event ->
-                val dataItem = event.dataItem
-                val path = dataItem.uri.path
-                Log.d("StartScreen", "📩 데이터 수신: ${dataItem.uri}") // ✅ 로그로 확인
-
+            for (event in dataEvents) {
                 if (event.type == DataEvent.TYPE_CHANGED) {
-                    Log.d("StartScreen", "📥 데이터 변경 감지, path: $path")
+                    val dataItem = event.dataItem
 
-                    if (path?.endsWith("/ready") == true) {
-                        try {
-                            val dataMapItem = DataMapItem.fromDataItem(event.dataItem)
-                            val dataMap = dataMapItem.dataMap
+                    if (dataItem.uri.path == "/update") {
+                        val dataMapItem = DataMapItem.fromDataItem(dataItem)
+                        val age = dataMapItem.dataMap.getInt("age")
+                        val name = dataMapItem.dataMap.getString("name")
+                        val timestamp = dataMapItem.dataMap.getLong("timestamp")
 
-                            // 데이터맵에 marathonData 키가 있는지 체크
-                            if (!dataMap.containsKey("marathonData")) {
-                                Log.e("StartScreen", "❌ 데이터맵에 marathonData 키가 존재하지 않음!")
-                            } else {
-                                Log.d("StartScreen", "✅ 데이터맵에서 marathonData 키 확인됨.")
-                            }
+                    } else if (dataItem.uri.path == "/ready") {
+                        val dataMapItem = DataMapItem.fromDataItem(dataItem)
+                        val timestamp = dataMapItem.dataMap.getLong("timestamp")
+                        val totalMemberCount = dataMapItem.dataMap.getInt("totalMemberCount")
+                        val marathonTitle = dataMapItem.dataMap.getString("marathonTitle")
 
-                            val jsonData = dataMap.getString("marathonData")
-
-                            // marathonData 데이터 상태 확인
-                            if (jsonData == null) {
-                                Log.e("StartScreen", "❌ marathonData is NULL!")
-                            } else if (jsonData.isEmpty()) {
-                                Log.e("StartScreen", "❌ marathonData is EMPTY!")
-                            } else {
-                                Log.d("StartScreen", "📦 marathonData 원본 데이터: $jsonData")
-
-                                val receivedData = Gson().fromJson(jsonData, MarathonData::class.java)
-                                marathonData.value = receivedData
-                                isMarathonReady.value = true
-                                Log.d("StartScreen", "✅ 마라톤 준비 완료: $receivedData")
-                            }
-                        } catch (e: Exception) {
-                            Log.e("StartScreen", "❌ 데이터 변환 실패", e)
+                        if (marathonTitle != null) {
+                            marathonDataViewModel.updateInitData(totalMemberCount, marathonTitle)
                         }
+
+                        isMarathonReady.value = true;
                     }
                 }
             }
@@ -100,10 +88,9 @@ fun StartScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (isMarathonReady.value && marathonData.value != null) {
-                val data = marathonData.value!!
+            if (isMarathonReady.value) {
 
-                Text(data.time.toString(), fontSize = 14.sp, color = Color.White)
+                Text("${marathonDataViewModel._marathonState.value.marathonTitle}명", fontSize = 14.sp, color = Color.White)
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
@@ -114,7 +101,7 @@ fun StartScreen(navController: NavController) {
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-                Text("참여 ${data.totalMemberCount}명", fontSize = 12.sp, color = Color.Gray)
+                Text("참여 ${marathonDataViewModel._marathonState.value.totalMemberCount}", fontSize = 12.sp, color = Color.Gray)
             } else {
                 Text("가까운 대회가 없습니다", fontSize = 14.sp, color = Color.White)
             }
@@ -177,5 +164,7 @@ fun CheckWearOSConnection() {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun StartScreenPreview() {
-    StartScreen(navController = rememberNavController())
+    StartScreen(
+        navController = rememberNavController()
+    )
 }

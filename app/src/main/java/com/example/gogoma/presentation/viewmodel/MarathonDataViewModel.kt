@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class MarathonDataViewModel : ViewModel() {
-    private val _marathonState = mutableStateOf(
+    var _marathonState = mutableStateOf(
         MarathonData(
             time = System.currentTimeMillis(),
             totalDistance = 200000, // 예제: 2km
@@ -24,7 +24,8 @@ class MarathonDataViewModel : ViewModel() {
             state = "running",
             myRank = 1,
             totalMemberCount = 5,
-            friendInfoList = emptyList()
+            friendInfoList = emptyList(),
+            marathonTitle = ""
         )
     )
 
@@ -123,5 +124,10 @@ class MarathonDataViewModel : ViewModel() {
         }
 
         _currentColor.value = color
+    }
+
+    fun updateInitData(totalMemberCount: Int, marathonTitle: String) {
+        _marathonState.value.totalMemberCount = totalMemberCount
+        _marathonState.value.marathonTitle = marathonTitle
     }
 }
