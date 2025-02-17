@@ -99,6 +99,15 @@ fun PaceScreen(
             )
         }
     }
+
+    LaunchedEffect(marathon) {
+        if(marathon != null){
+            paceViewModel.getUpcomingMarathonFriendList(
+                TokenManager.getAccessToken(context = context).toString()
+            )
+        }
+
+    }
     LaunchedEffect(totalTextWidth + totalColumnWidth) {
         isColumn = (totalTextWidth + totalColumnWidth) > contentWidth
     }

@@ -74,7 +74,7 @@ interface UserApiService {
     @GET("api/v1/users/upcoming/friends")
     suspend fun getUpcomingMarathonFriendList(
         @Header("Authorization") accessToken: String
-    ): Response<FriendResponse>
+    ): Response<List<FriendResponse>>
 
 
 }
