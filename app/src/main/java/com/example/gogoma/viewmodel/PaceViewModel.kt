@@ -78,7 +78,7 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                 Log.d("1111",marathonData.friendList.toString())
 
                 marathonData.friendList.forEach { friend ->
-                    db.friendDao().insertFriend(Friend(friend.friendId, friend.friendName))
+                    db.friendDao().insertFriend(Friend(friend.userId, friend.friendName))
                     Log.d("Database", "Friend 저장 성공: ${friend.friendName}")
                 }
 
