@@ -56,9 +56,17 @@ public class FriendCustomRepositoryImpl implements FriendCustomRepository {
 
     @Override
     public void deleteFriendByUserId(int userId) {
-        queryFactory
-                .delete(friend)
+        List<Integer> friendIds = queryFactory
+                .select(friend.id)
+                .from(friend)
                 .where(friend.userId.eq(userId).or(friend.friendId.eq(userId)))
-                .execute();
+                .fetch();
+
+        if (!friendIds.isEmpty())
+            queryFactory
+                    .delete(friend)
+                    .where(friend.id.in(friendIds))
+                    .execute();
     }
 }
+
