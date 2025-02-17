@@ -31,14 +31,14 @@ fun FilterChip(
     icon : Int? = null,
     modifier: Modifier = Modifier,
     isPoint: Boolean = false,
-    backgroundColor: Color = Color(0xFFF1F1F1),
-    contentColor: Color = Color(0xFF000000),
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = Color(0xFF9C9C9C),
 ){
     Row(
         modifier = Modifier
-            .border(width = 0.6.dp, color = Color(0xFFDADADA), shape = RoundedCornerShape(size = 10.dp))
+            .border(width = 0.6.dp, color = Color(0xFFDADADA), shape = RoundedCornerShape(size = 16.dp))
             .height(32.2.dp)
-            .background(color = backgroundColor, shape = RoundedCornerShape(size = 10.dp))
+            .background(color = backgroundColor, shape = RoundedCornerShape(size = 16.dp))
             .padding(start = 10.dp, top = 7.dp, end = 10.dp, bottom = 7.dp)
             .clickable (onClick = { onCLick?.invoke() }),
         horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
@@ -59,7 +59,7 @@ fun FilterChip(
             Text(
                 text = text,
                 color = contentColor,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
             )
         }
     }
