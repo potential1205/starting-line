@@ -34,6 +34,7 @@ import com.example.gogoma.ui.screens.PaceScreen
 import com.example.gogoma.ui.screens.PaymentWebViewScreen
 import com.example.gogoma.ui.screens.WatchConnectScreen
 import com.example.gogoma.viewmodel.FriendsViewModel
+import com.example.gogoma.viewmodel.MarathonViewModel
 import com.example.gogoma.viewmodel.PaceViewModel
 import com.example.gogoma.viewmodel.PaceViewModelFactory
 import com.example.gogoma.viewmodel.RegistViewModel
@@ -53,6 +54,7 @@ fun AppNavigation(userViewModel: UserViewModel){
     val globalApplication = context.applicationContext as GlobalApplication
     val paceViewModel: PaceViewModel = viewModel(factory = PaceViewModelFactory(globalApplication))
     val scrollViewModel: ScrollViewModel = viewModel()
+    val marathonViewModel: MarathonViewModel = viewModel()
 
     val protectedRouted = listOf("registList", "paceSetting", "watchConnect", "friendList", "mypage")
 
@@ -89,7 +91,7 @@ fun AppNavigation(userViewModel: UserViewModel){
                                 navController.navigate("registDetail/$registId")
                             }
                         )
-                        "paceSetting" -> PaceScreen (navController = navController, userViewModel, bottomSheetViewModel, paceViewModel)
+                        "paceSetting" -> PaceScreen (navController = navController, userViewModel, bottomSheetViewModel, marathonViewModel, paceViewModel)
                         "watchConnect" -> WatchConnectScreen(navController, userViewModel)
                         "friendList" -> FriendListScreen(navController, userViewModel, friendsViewModel)
                         "mypage" -> MypageScreen(navController, userViewModel)
