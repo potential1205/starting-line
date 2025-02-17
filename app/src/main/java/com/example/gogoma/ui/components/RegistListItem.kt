@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
@@ -77,7 +78,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                         text = regist.marathonTitle,
                         style = TextStyle(
                             fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         ),
                     )
@@ -92,7 +93,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = regist.raceStartDateTime,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         )
@@ -103,7 +103,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = regist.marathonType,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         )
@@ -119,7 +119,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = it,
                             style = TextStyle(
                                 fontSize = 12.sp,
-                                fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
+                                fontWeight = FontWeight.Bold,
                                 color = Color.White
                             ),
                             modifier = Modifier
