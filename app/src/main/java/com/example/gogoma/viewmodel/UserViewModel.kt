@@ -13,6 +13,8 @@ import com.example.gogoma.data.model.CreateUserRequest
 import com.example.gogoma.data.model.KakaoUserInfo
 import com.example.gogoma.data.model.StatusResponse
 import com.example.gogoma.utils.TokenManager
+import com.google.firebase.messaging.FirebaseMessaging
+import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -182,7 +184,7 @@ class UserViewModel() : ViewModel() {
         isLoading = true
 
         // 공통 로그인 결과 처리
-        val loginResultHandler: (token: com.kakao.sdk.auth.model.OAuthToken?, error: Throwable?) -> Unit =
+        val loginResultHandler: (token: OAuthToken?, error: Throwable?) -> Unit =
             { token, error -> handleKakaoResponse(token, error, context, callback) }
 
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
@@ -195,7 +197,7 @@ class UserViewModel() : ViewModel() {
 
     //카카오 로그인 응답 처리
     private fun handleKakaoResponse(
-        token: com.kakao.sdk.auth.model.OAuthToken?,
+        token: OAuthToken?,
         error: Throwable?,
         context: Context,
         callback: (Boolean) -> Unit
@@ -247,15 +249,47 @@ class UserViewModel() : ViewModel() {
                     tmpAccessToken = accessToken
                     tmpRefreshToken = refreshToken
 
-                    getKakaoUserInfo(context, tmpAccessToken?:""){ userInfo ->
-                        if(userInfo != null){ //사용자 정보 불러오기 성공
+                    getKakaoUserInfo(context, tmpAccessToken ?: "") { userInfo ->
+                        if (userInfo != null) {
                             tmpkakaoUserInfo = userInfo
                             Log.i("SignUp", "사용자 정보: ${userInfo.name}")
-                            loginStatus = statusResponse.status //회원가입 화면으로 이동
-                        }else{
+
+                            // ✅ FCM 토큰 가져온 후 회원가입 요청 실행
+                            FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener {
+                                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                                    if (!task.isSuccessful) {
+                                        Log.d("FCM", "FCM 토큰 갱신 실패", task.exception)
+                                        return@addOnCompleteListener
+                                    }
+
+                                    val fcmToken = task.result ?: "" // ✅ 정상적으로 토큰을 가져온 후
+
+                                    val request = CreateUserRequest(
+                                        kakaoId = tmpkakaoUserInfo?.id ?: 0,
+                                        name = tmpkakaoUserInfo?.name ?: "",
+                                        profileImage = tmpkakaoUserInfo?.profileImage ?: "",
+                                        email = tmpkakaoUserInfo?.email ?: "",
+                                        gender = tmpkakaoUserInfo?.gender ?: "MALE",
+                                        birthDate = tmpkakaoUserInfo?.birthDate ?: "",
+                                        birthYear = tmpkakaoUserInfo?.birthYear ?: "",
+                                        phoneNumber = tmpkakaoUserInfo?.phoneNumber ?: "",
+                                        roadAddress = "",
+                                        detailAddress = "",
+                                        clothingSize = "",
+                                        fcmToken = fcmToken // ✅ 여기서 올바른 토큰이 들어감
+                                    )
+
+                                    signUpUser(context, request) { success ->
+                                        if (success) {
+                                        } else {
+                                            Toast.makeText(context, "회원 가입 실패", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
                             Log.e("SignUp", "사용자 정보 불러오기 실패")
                             Toast.makeText(context, "사용자 정보 불러오기 실패. 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
-                            //회원가입으로 넘어가지 못함
                         }
                     }
                 }
