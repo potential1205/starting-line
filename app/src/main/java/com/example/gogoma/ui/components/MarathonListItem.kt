@@ -267,8 +267,8 @@ fun MarathonListItemPreview(){
             thumbnailImage = "https://example.com/seoul_thumbnail.jpg",
             courseTypeList = listOf("풀코스", "하프코스"),
             marathonTypeList = listOf(
-                MarathonType(id = 1, marathonId = 1, courseType = "풀코스", price = "50000", etc = "마라톤 풀코스"),
-                MarathonType(id = 2, marathonId = 1, courseType = "하프코스", price = "30000", etc = "하프마라톤")
+                MarathonType(id = 1, marathonId = 1, courseType = 100000, price = "50000", etc = "마라톤 풀코스"),
+                MarathonType(id = 2, marathonId = 1, courseType = 100000, price = "30000", etc = "하프마라톤")
             ),
             dday = "30"
         ),
