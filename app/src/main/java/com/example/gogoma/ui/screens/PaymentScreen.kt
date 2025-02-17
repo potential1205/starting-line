@@ -59,13 +59,14 @@ fun PaymentScreen(
             rawDate
         }
 
-        val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
+        val distanceOnly = selectedOption?.split(" - ")?.firstOrNull()?.filter { it.isDigit() }?.toIntOrNull() ?: 0
 
         UserMarathonSearchDto (
             paymentDateTime = currentDate,
             marathonTitle = detail.marathon.title,
             raceStartDateTime = formattedDate,
-            marathonType = distanceOnly
+            marathonType = distanceOnly,
+            userMarathonId = detail.marathon.id
         )
     }
 
@@ -98,13 +99,14 @@ fun PaymentScreen(
                                     Log.e("PaymentScreen", "❌ 날짜 변환 실패: ${e.message}")
                                     rawDate
                                 }
-                                val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
+                                val distanceOnly = selectedOption?.split(" - ")?.firstOrNull()?.filter { it.isDigit() }?.toIntOrNull() ?: 0
 
                                 UserMarathonSearchDto (
                                     paymentDateTime = currentDate,
                                     marathonTitle = detail.marathon.title,
                                     raceStartDateTime = formattedDate,
-                                    marathonType = distanceOnly
+                                    marathonType = distanceOnly,
+                                    userMarathonId = detail.marathon.id
                                 )
                             }
 
@@ -172,6 +174,7 @@ fun PaymentScreen(
                                 selectedOption = selected
                                 viewModel.updateSelectedDistance(selected)
                                 selectedPrice = courseOptions.find { it.first == selected }?.second ?: 0
+                                viewModel.updateSelectedPrice(selectedPrice)
                             }
                         )
                     }

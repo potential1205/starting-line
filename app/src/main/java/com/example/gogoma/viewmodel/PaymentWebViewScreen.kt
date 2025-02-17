@@ -16,7 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.viewmodel.PaymentViewModel
+import com.google.gson.Gson
+import org.json.JSONObject
 
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -28,6 +31,7 @@ fun PaymentWebViewScreen(
     registJson: String
 ) {
     val context = LocalContext.current
+    val gson = remember { Gson() }
 
     AndroidView(
         factory = { context ->
@@ -56,8 +60,37 @@ fun PaymentWebViewScreen(
                                     val redirectUrl = "gogoma://payment/result/success"
                                     viewModel.redirectAfterPayment(pgToken, redirectUrl, context) { isSuccess ->
                                         if (isSuccess) {
-                                            navController.navigate("paymentSuccess/${Uri.encode(registJson)}")
+                                            val regist = viewModel.getRegistFromJson(registJson)
+                                            if (regist != null) {
+                                                val dto = gson.fromJson(registJson, UserMarathonSearchDto::class.java)
+                                                val marathonTitle = dto.marathonTitle ?: "마라톤 제목 없음"
+
+                                                val jsonObject = JSONObject(registJson)
+                                                jsonObject.put("marathonTitle", marathonTitle)
+                                                val enrichedJson = jsonObject.toString()
+                                                Log.d("PaymentWebViewScreen", "🟦 marathonTitle 동적 추가된 JSON: $enrichedJson")
+                                                viewModel.checkAndRegisterMarathon(
+                                                    regist,
+                                                    context
+                                                ) { registered ->
+                                                    if (registered) {
+                                                        val encodedJson = Uri.encode(enrichedJson)
+                                                        Log.d(
+                                                            "PaymentWebViewScreen",
+                                                            "✅ 등록 및 성공 화면 이동 완료"
+                                                        )
+                                                        navController.navigate("paymentSuccess/$encodedJson")
+                                                    } else {
+                                                        Log.e("PaymentWebViewScreen", "❌ 마라톤 등록 실패")
+                                                        navController.navigate("paymentFailure")
+                                                    }
+                                                }
+                                            } else {
+                                                Log.e("PaymentWebViewScreen", "❌ regist 생성 실패")
+                                                navController.navigate("paymentFailure")
+                                            }
                                         } else {
+                                            Log.e("PaymentWebViewScreen", "❌ 리다이렉트 실패")
                                             navController.navigate("paymentFailure")
                                         }
                                     }

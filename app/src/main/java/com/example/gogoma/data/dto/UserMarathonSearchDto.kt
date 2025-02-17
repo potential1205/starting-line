@@ -9,7 +9,7 @@ data class UserMarathonSearchDto (
 
         val marathonTitle: String,
 
-        val marathonType: String,
+        val marathonType: Int,
 
         val dday: String? = null,
 

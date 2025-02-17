@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.KakaoPayApproveRequest
@@ -18,12 +19,20 @@ import com.example.gogoma.data.dto.KakaoPayReadyRequest
 import com.example.gogoma.data.dto.KakaoPayReadyResponse
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.data.model.Address
+import com.example.gogoma.data.model.CreateUserMarathonRequest
+import com.example.gogoma.data.model.PaymentType
+import com.google.gson.Gson
+import com.kakao.sdk.user.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.Callback
 import retrofit2.HttpException
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class PaymentViewModel : ViewModel() {
     // 저장된 주소 리스트
@@ -46,6 +55,9 @@ class PaymentViewModel : ViewModel() {
     private val _selectedPayment = MutableStateFlow("카카오페이")
     val selectedPayment: StateFlow<String> = _selectedPayment
 
+    private val _selectedPrice = MutableStateFlow(0)
+    val selectedPrice: StateFlow<Int> = _selectedPrice
+
     // 약관 동의 상태
     private val _isAgreementChecked = MutableStateFlow(false)
     val isAgreementChecked: StateFlow<Boolean> = _isAgreementChecked
@@ -54,6 +66,8 @@ class PaymentViewModel : ViewModel() {
     val registInfo: StateFlow<UserMarathonSearchDto?> = _registInfo.asStateFlow()
 
     private val paymentApi = RetrofitInstance.paymentApiService
+
+    private val userMarathonApi = RetrofitInstance.userMarathonApiService
 
     private val _kakaoPayReadyRequest = MutableStateFlow<KakaoPayReadyRequest?>(null)
     val kakaoPayReadyRequest: StateFlow<KakaoPayReadyRequest?> = _kakaoPayReadyRequest.asStateFlow()
@@ -98,6 +112,12 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
+    fun updateSelectedPrice(price: Int) {
+        viewModelScope.launch {
+            _selectedPrice.value = price
+        }
+    }
+
     // 약관 동의 상태 업데이트
     fun updateAgreementChecked(isChecked: Boolean) {
         viewModelScope.launch {
@@ -105,8 +125,12 @@ class PaymentViewModel : ViewModel() {
         }
     }
 
-    fun saveRegistInfo(regist: UserMarathonSearchDto) {
-        _registInfo.value = regist
+    fun saveRegistInfo(regist: UserMarathonSearchDto, title: String) {
+        viewModelScope.launch {
+            val updatedRegist = regist.copy(marathonTitle = title)
+            _registInfo.value = updatedRegist
+            Log.d("PaymentViewModel", "📌 [제목 저장 완료]: $title")
+        }
     }
 
     fun requestKakaoPayReady(request: KakaoPayReadyRequest, context: Context) {
@@ -211,9 +235,126 @@ class PaymentViewModel : ViewModel() {
                     Log.e("PaymentViewModel", "❌ 리다이렉트 실패: HTTP ${response.code()} - ${response.errorBody()?.string()}")
                     onResult(false)
                 }
+
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                Log.e("PaymentViewModel", "❌ [API 오류] HTTP 400 발생! 서버 응답: $errorBody", e)
+                onResult(false)
             } catch (e: Exception) {
                 Log.e("PaymentViewModel", "❌ 리다이렉트 요청 오류 발생: ${e.message}", e)
                 onResult(false)
+            }
+        }
+    }
+
+    fun getRegistFromJson(json: String): CreateUserMarathonRequest? {
+        return try {
+            val dto = Gson().fromJson(json, UserMarathonSearchDto::class.java)
+
+            Log.d("PaymentViewModel", "📥 [JSON 파싱 결과]: $dto")
+
+            val marathonId = dto.userMarathonId ?: run {
+                Log.e("PaymentViewModel", "🚨 Marathon ID가 null 또는 0입니다.")
+                return null
+            }
+
+            val paymentAmount = _selectedPrice.value.toString().takeIf { it.isNotBlank() } ?: run {
+                Log.e("PaymentViewModel", "🚨 PaymentAmount가 비어 있습니다.")
+                return null
+            }
+
+            val courseType = dto.marathonType ?: run {
+                Log.e("PaymentViewModel", "🚨 CourseType이 null입니다.")
+                return null
+            }
+            val paymentDate = try {
+                val now = Date()
+                val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA)
+                sdf.format(now)
+            } catch (e: Exception) {
+                Log.e("PaymentViewModel", "❌ 날짜 변환 실패: ${e.message}", e)
+                return null
+            }
+
+            val raceDate = try {
+                val sdf = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA)
+                val raceDate = sdf.parse(dto.raceStartDateTime!!)
+                val today = Date()
+                val diff = (raceDate.time - today.time) / (1000 * 60 * 60 * 24)
+                diff.toInt()
+            } catch (e: Exception) {
+                Log.e("PaymentViewModel", "❌ D-Day 계산 실패: ${e.message}", e)
+                return null
+            }
+
+            if (marathonId == null || marathonId <= 0) {
+                Log.e("PaymentViewModel", "🚨 [오류] 유효하지 않은 marathonId: $marathonId")
+                return null
+            }
+
+            CreateUserMarathonRequest(
+                marathonId = marathonId,
+                address = selectedAddress.value?.let { "${it.address} ${it.detailAddress}" } ?: "주소 미입력",
+                paymentType = PaymentType.KAKAO_PAY,
+                paymentAmount = paymentAmount,
+                paymentDateTime = paymentDate,
+                courseType = courseType
+            ).also {
+                Log.d("PaymentViewModel", "✅ CreateUserMarathonRequest 생성: $it, D-Day: $raceDate")
+            }
+        } catch (e: Exception) {
+            Log.e("PaymentViewModel", "❌ JSON 파싱 실패: ${e.message}", e)
+            null
+        }
+    }
+
+    fun checkAndRegisterMarathon(
+        regist: CreateUserMarathonRequest,
+        context: Context,
+        callback: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val accessToken = TokenManager.getAccessToken(context) ?: run {
+                    Log.e("PaymentViewModel", "❌ 토큰이 null입니다.")
+                    callback(false)
+                    return@launch
+                }
+
+                val json = Gson().toJson(regist)
+                Log.d("PaymentViewModel", "📤 [API 요청 전송]: $json")
+
+                Log.d("PaymentViewModel", "[API 호출] 중복 체크 시작 (마라톤 ID: ${regist.marathonId})")
+
+                val duplicateResponse =
+                    userMarathonApi.checkDuplicateUserMarathon(accessToken, regist.marathonId)
+                Log.d("PaymentViewModel", "🛠️ [중복 체크 응답] 성공 여부: ${duplicateResponse.success}")
+
+                if (duplicateResponse.success) {
+                    Log.d("PaymentViewModel", "✅ [중복 체크] 등록 진행 가능")
+
+                    val response = userMarathonApi.registerUserMarathon(accessToken, regist)
+
+                    if (response.success) {
+                        Log.d("PaymentViewModel", "🎯 [등록 성공] 마라톤 등록 완료")
+                        callback(true)
+                    } else {
+                        callback(false)
+                    }
+                } else {
+                    Log.d("PaymentViewModel", "⚠️ [중복 탐지] 이미 등록된 마라톤.")
+                    callback(false)
+                }
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                Log.e("PaymentViewModel", "❌ [API 오류] HTTP 400 발생! 서버 응답: $errorBody", e)
+                callback(false)
+            } catch (e: IOException) {
+                Log.e("PaymentViewModel", "❌ [네트워크 오류] ${e.message}", e)
+            } catch (e: Exception) {
+                Log.e("PaymentViewModel", "❌ [API 오류] 마라톤 등록 실패: ${e.message}", e)
+                e.printStackTrace()
+                callback(false)
             }
         }
     }

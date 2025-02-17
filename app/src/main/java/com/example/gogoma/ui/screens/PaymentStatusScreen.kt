@@ -30,6 +30,7 @@ fun PaymentStatusScreen(
     val gson = remember { Gson() }
     val regist: UserMarathonSearchDto? = registJson?.let {
         try {
+            val parsed = gson.fromJson(it, UserMarathonSearchDto::class.java)
             gson.fromJson(it, UserMarathonSearchDto::class.java).apply {
                 Log.d("PaymentStatusScreen", "✅ JSON 변환 성공: $this")
             }
@@ -103,8 +104,8 @@ fun SuccessContent(onConfirm: () -> Unit, registInfo: UserMarathonSearchDto?) {
                     marathonTitle = it.marathonTitle,
                     raceStartDateTime = it.raceStartDateTime,
                     marathonType = it.marathonType,
-                    userMarathonId = null,
-                    dday = null
+                    userMarathonId = it.userMarathonId,
+                    dday = it.dday
                 ),
                 onClick = {}
             )
