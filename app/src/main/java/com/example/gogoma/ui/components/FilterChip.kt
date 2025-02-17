@@ -34,9 +34,12 @@ fun FilterChip(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = Color(0xFF9C9C9C),
 ){
+    val textColor = if (isPoint) MaterialTheme.colorScheme.primary else contentColor
+    val borderColor = if (isPoint) MaterialTheme.colorScheme.primary else Color(0xFFDADADA)
+
     Row(
         modifier = Modifier
-            .border(width = 0.6.dp, color = Color(0xFFDADADA), shape = RoundedCornerShape(size = 16.dp))
+            .border(width = 0.6.dp, color = borderColor, shape = RoundedCornerShape(size = 16.dp))
             .height(32.2.dp)
             .background(color = backgroundColor, shape = RoundedCornerShape(size = 16.dp))
             .padding(start = 10.dp, top = 7.dp, end = 10.dp, bottom = 7.dp)
@@ -49,7 +52,7 @@ fun FilterChip(
             Icon(
                 painter = painterResource(id = it),
                 contentDescription = "icon",
-                tint = contentColor,
+                tint = textColor,
                 modifier = Modifier.size(18.2.dp)
             )
         }
@@ -58,7 +61,7 @@ fun FilterChip(
         text?.takeIf { it.isNotEmpty() }?.let {
             Text(
                 text = text,
-                color = contentColor,
+                color = textColor,
                 fontSize = 14.sp,
             )
         }
