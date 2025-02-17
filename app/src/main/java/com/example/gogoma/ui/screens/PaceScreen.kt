@@ -1,6 +1,6 @@
 package com.example.gogoma.ui.screens
 
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,20 +26,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.R
-import com.example.gogoma.data.roomdb.entity.Friend
-import com.example.gogoma.data.roomdb.entity.Marathon
-import com.example.gogoma.data.roomdb.entity.MyInfo
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.ButtonBasic
 import com.example.gogoma.ui.components.TopBarArrow
@@ -46,22 +43,21 @@ import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonViewModel
 import com.example.gogoma.viewmodel.PaceViewModel
-import com.example.gogoma.viewmodel.PaceViewModelFactory
 import com.example.gogoma.viewmodel.UserViewModel
-import com.example.newroom.AppDatabase
 
 @Composable
 fun PaceScreen(
     navController: NavController,
     userViewModel: UserViewModel,
     bottomSheetViewModel: BottomSheetViewModel,
-    marathonViewModel: MarathonViewModel = viewModel()
+    marathonViewModel: MarathonViewModel = viewModel(),
+    paceViewModel: PaceViewModel,
 ) {
     val context = LocalContext.current
 
-    val globalApplication = context.applicationContext as GlobalApplication
-    val paceViewModel: PaceViewModel = viewModel(factory = PaceViewModelFactory(globalApplication))
-    val marathon = paceViewModel.upcomingMarathonInfoResponse
+    val marathon by paceViewModel.upcomingMarathonInfoResponse.collectAsState()
+    val marathonStartInitDataResponse by paceViewModel.marathonStartInitDataResponse.collectAsState()
+    val friendList by paceViewModel.friendList.collectAsState()
 
     var isColumn by remember { mutableStateOf(false) }
     var totalTextWidth by remember { mutableStateOf(0) }
@@ -77,12 +73,31 @@ fun PaceScreen(
         totalColumnWidth = coordinates.size.width
     }
 
-    LaunchedEffect(Unit) {
-        paceViewModel.getUpcomingMarathonInfo(
-            TokenManager.getAccessToken(context = context).toString()
-        )
+    // 뒤로 가기 동작 정의
+    BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
+        // 모달창이 열려 있을 때 뒤로 가기 버튼 처리
+        if (bottomSheetViewModel.isSubPageVisible) {
+            // 모달 내에서 페이지가 바뀌었으면 이전 페이지로 돌아가게 처리
+            bottomSheetViewModel.goBackToPreviousPage()
+        } else {
+            // 처음 연 모달 창이라면 모달 닫기
+            bottomSheetViewModel.hideBottomSheet()
+        }
     }
 
+    LaunchedEffect(Unit) {
+        paceViewModel.getUpcomingMarathonInfo(
+            TokenManager.getAccessToken(context = context).toString())
+    }
+
+    LaunchedEffect(marathon) {
+        if (marathon != null) {
+            paceViewModel.getInitData(
+                TokenManager.getAccessToken(context = context).toString(),
+                marathon!!.marathon.id
+            )
+        }
+    }
     LaunchedEffect(totalTextWidth + totalColumnWidth) {
         isColumn = (totalTextWidth + totalColumnWidth) > contentWidth
     }
@@ -113,6 +128,7 @@ fun PaceScreen(
                     )
                 )
             }
+
         } else {
             // marathon이 null이 아닐 때 기존 화면 구성
             Column(
@@ -141,7 +157,7 @@ fun PaceScreen(
                                 horizontalAlignment = Alignment.Start,
                             ) {
                                 Text(
-                                    text = marathon.marathon.title,
+                                    text = marathon!!.marathon.title,
                                     style = TextStyle(
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Bold,
@@ -160,13 +176,19 @@ fun PaceScreen(
                                         )
                                     )
                                     Text(
-                                        text = "240",
+                                        text = if (marathonStartInitDataResponse?.targetPace == 0) {
+                                            "페이스를 설정해주세요"
+                                        } else {
+                                            marathonStartInitDataResponse?.targetPace?.toString() ?: "페이스를 설정해주세요"
+                                        },
                                         style = TextStyle(
                                             fontSize = 35.sp,
                                             fontWeight = FontWeight(400),
                                             color = Color(0xFF000000)
                                         )
                                     )
+
+
                                     ButtonBasic(
                                         iconResId = R.drawable.icon_settings,
                                         text = "페이스 설정",
@@ -183,7 +205,7 @@ fun PaceScreen(
                                 verticalAlignment = Alignment.Top,
                             ) {
                                 Text(
-                                    text = marathon.marathon.title,
+                                    text = marathon!!.marathon.title,
                                     style = TextStyle(
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Bold,
@@ -204,13 +226,19 @@ fun PaceScreen(
                                         )
                                     )
                                     Text(
-                                        text = "240",
+                                        text = if (marathonStartInitDataResponse?.targetPace == 0) {
+                                            "페이스를 설정해주세요"
+                                        } else {
+                                            marathonStartInitDataResponse?.targetPace?.toString() ?: "페이스를 설정해주세요"
+                                        },
                                         style = TextStyle(
                                             fontSize = 35.sp,
                                             fontWeight = FontWeight(400),
                                             color = Color(0xFF000000)
                                         )
                                     )
+
+
                                     ButtonBasic(
                                         iconResId = R.drawable.icon_settings,
                                         text = "페이스 설정",
@@ -223,7 +251,6 @@ fun PaceScreen(
                         }
                     }
 
-                    // 참여자 정보
                     Column(
                         verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom),
                         horizontalAlignment = Alignment.Start,
@@ -233,23 +260,35 @@ fun PaceScreen(
                             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
+                            val participantText = if (friendList.isNotEmpty()) {
+                                "${friendList[0].name} 님 외 ${friendList.size - 1}명 참가"
+                            } else {
+                                "참가자 정보 없음"
+                            }
+
                             Text(
-                                text = "김용현 님 외 3명 참가",
+                                text = participantText,
                                 style = TextStyle(
                                     fontSize = 12.sp,
                                     color = Color(0xFF000000)
                                 )
                             )
                         }
+
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.Start),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo_image),
-                                contentDescription = "profile image",
-                                contentScale = ContentScale.None
-                            )
+                            if (friendList.isNotEmpty()) {
+                                friendList.take(4).forEach { friend ->
+                                    AsyncImage( // Coil 라이브러리를 이용한 비동기 이미지 로드
+                                        model = friend.profileImage, // 이미지가 없을 경우 기본 이미지 사용
+                                        contentDescription = "${friend.name}의 프로필 이미지",
+                                        modifier = Modifier.size(30.dp),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -260,10 +299,11 @@ fun PaceScreen(
                     onClick = {
                         marathonViewModel.marathonReady()
 
-                        paceViewModel.getInitData(
-                            TokenManager.getAccessToken(context = context).toString(),
-                            marathon.marathon.id,
-                        )
+                        marathonStartInitDataResponse?.let {
+                            paceViewModel.saveMarathonDataToDB(
+                                it
+                            )
+                        }
 
                         navController.navigate("watchConnect")
                     }
@@ -277,11 +317,11 @@ fun PaceScreen(
 @Preview(showBackground = true, widthDp = 320)
 @Composable
 fun PaceScreenSmallPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel(), paceViewModel = PaceViewModel(GlobalApplication()))
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PaceScreenPreview(){
-    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel())
+    PaceScreen(navController = rememberNavController(), userViewModel = UserViewModel(), bottomSheetViewModel = BottomSheetViewModel(), paceViewModel = PaceViewModel(GlobalApplication()))
 }

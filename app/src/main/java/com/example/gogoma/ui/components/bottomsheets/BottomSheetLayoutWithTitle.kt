@@ -1,4 +1,4 @@
-package com.example.gogoma.ui.components
+package com.example.gogoma.ui.components.bottomsheets
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

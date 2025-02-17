@@ -8,12 +8,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
-import androidx.room.Room
-import com.example.gogoma.data.roomdb.repository.RoomRepository
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.ui.navigation.AppNavigation
 import com.example.gogoma.viewmodel.UserViewModel
-import com.example.newroom.AppDatabase
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -25,8 +22,6 @@ import java.io.IOException
 
 class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels()
-    private lateinit var db: AppDatabase
-    private lateinit var repository: RoomRepository
     private val TAG = "OAuthRedirectActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,16 +31,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             GogomaApp(userViewModel)
         }
-        db = Room.databaseBuilder(
-            application,
-            AppDatabase::class.java,
-            "test-database"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
-
-        repository = RoomRepository(db)
-
         //첫 실행 시 Intent 처리
         handleIntent(intent)
     }

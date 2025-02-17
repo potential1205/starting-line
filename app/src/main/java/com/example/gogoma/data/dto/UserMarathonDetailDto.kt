@@ -1,7 +1,6 @@
 package com.example.gogoma.data.dto
 
 import android.os.Parcelable
-import com.example.gogoma.data.model.PaymentType
 import com.example.gogoma.data.model.Marathon
 import kotlinx.parcelize.Parcelize
 
@@ -11,7 +10,7 @@ data class UserMarathonDetailDto (
 
     val courseTypeList: List<String>,
 
-    val paymentType: PaymentType,
+    val paymentType: String,
 
     val paymentAmount: String,
 
@@ -19,5 +18,7 @@ data class UserMarathonDetailDto (
 
     val address: String,
 
-    val selectedCourseType: String
+    val selectedCourseType: String,
+
+    val targetPace: Int
 ) : Parcelable
