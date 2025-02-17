@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,7 +57,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = "${friendResponse.rank}",
                 style = TextStyle(
                     fontSize = 26.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_eb)),
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                 )
@@ -89,7 +90,6 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = friendResponse.name,
                 style = TextStyle(
                     fontSize = 17.5.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                 )
@@ -109,7 +109,6 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = "${friendResponse.totalDistance} km",
                 style = TextStyle(
                     fontSize = 15.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                     color = Color.Black,
                 )
             )

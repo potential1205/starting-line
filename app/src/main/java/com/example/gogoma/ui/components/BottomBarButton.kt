@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.GogomaTheme
-import com.example.gogoma.theme.NanumSquareRound
 
 @Composable
 fun BottomBarButton(
@@ -45,7 +44,6 @@ fun BottomBarButton(
             text = text,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
             color = if (enabled) textColor else Color.LightGray // 비활성화 시 텍스트 색 연하게
         )
     }
