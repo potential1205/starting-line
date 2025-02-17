@@ -29,6 +29,7 @@ import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.MarathonDetailItem
 import com.example.gogoma.ui.components.PaymentDetails
 import com.example.gogoma.ui.components.TopBarArrow
+import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.viewmodel.MarathonDetailViewModel
 import com.example.gogoma.viewmodel.RegistDetailViewModel
 import com.example.gogoma.viewmodel.UserViewModel
@@ -48,8 +49,7 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
 
     // 유저 마라톤 상세 정보 로드
     LaunchedEffect(registId) {
-//        val token = TokenManager.getAccessToken(context)
-        val token = "qnCHwQWZQ1QCP8x1RPK5ZqkN9h5ieH_gAAAAAQo9c04AAAGVEnkGfpCBbdpZdq0Z"
+        val token = TokenManager.getAccessToken(context)
         token?.let { registDetailViewModel.getUserMarathonById(it, registId) }
     }
 
