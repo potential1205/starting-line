@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,6 +16,7 @@ import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.PersonalStatus
+import com.example.gogoma.presentation.data.MarathonData
 import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import kotlin.math.floor
 
@@ -22,13 +25,22 @@ fun PersonalScreen () {
     val marathonDataViewModel: MarathonDataViewModel = viewModel() // ViewModel 주입
 
     // ViewModel에서 상태를 가져오기
-    val personalState = marathonDataViewModel.marathonState.value
+    val personalState = marathonDataViewModel.marathonState.collectAsState().value
 
     // ChangeColor 함수로 색상 계산
-    val currentColor = marathonDataViewModel.currentColor.value
+    val currentColor = marathonDataViewModel.currentColor.collectAsState().value
 
     // ViewModel에서 currentIndex 가져오기
-    val currentIndex = marathonDataViewModel.currentIndex.value
+    val currentIndex = marathonDataViewModel.currentIndex.collectAsState().value
+
+    // ViewModel에서 elapsedTime 가져오기
+    val elapsedTime = marathonDataViewModel.elapsedTime.collectAsState().value
+
+    // 상태 변화가 있을 때 UI 업데이트를 트리거
+    LaunchedEffect (personalState) {
+        // 상태 변화에 따른 작업 추가
+        marathonDataViewModel.updateMarathonState(personalState)
+    }
 
     Box(
         modifier = Modifier
@@ -44,7 +56,7 @@ fun PersonalScreen () {
         when (currentIndex) {
             0 -> PersonalStatus(title = "페이스", current = formatPace(personalState.currentPace), goal = formatPace(personalState.targetPace), currentColor = currentColor, unit = "/km")
             1 -> PersonalStatus("이동 거리", formatDistance(personalState.currentDistance), formatDistance(personalState.totalDistance), currentColor, "km")
-            2 -> PersonalStatus("달린 시간", formatTime(marathonDataViewModel.elapsedTime.value), formatTime(personalState.targetTime), currentColor)
+            2 -> PersonalStatus("달린 시간", formatTime(elapsedTime), formatTime(personalState.targetTime), currentColor)
         }
     }
 }

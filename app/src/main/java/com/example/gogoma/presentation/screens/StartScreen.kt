@@ -29,6 +29,9 @@ fun StartScreen(navController: NavController) {
     val activity = context as? Activity
     val marathonDataViewModel: MarathonDataViewModel = viewModel()
 
+    // ViewModel에서 상태를 가져오기
+    val marathonState = marathonDataViewModel.marathonState.collectAsState().value
+
     // 한 번만 Data Listener를 시작하도록 LaunchedEffect 사용
     LaunchedEffect(Unit) {
         marathonDataViewModel.startDataListener(context)
@@ -47,7 +50,7 @@ fun StartScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (marathonDataViewModel.marathonState.value.marathonTitle.isNotEmpty()) {
+            if (marathonState.marathonTitle.isNotEmpty()) {
                 Text(
                     marathonDataViewModel.marathonState.value.marathonTitle,
                     fontSize = 14.sp,
@@ -65,7 +68,7 @@ fun StartScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    "참여 ${marathonDataViewModel.marathonState.value.totalMemberCount}",
+                    "참여 ${marathonState.totalMemberCount}",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
