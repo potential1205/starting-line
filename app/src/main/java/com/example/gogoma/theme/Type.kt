@@ -20,6 +20,10 @@ val Pretendard = FontFamily(
     Font(R.font.pretendard_extrabold, FontWeight.ExtraBold)
 )
 
+val PartialSansKR = FontFamily(
+    Font(R.font.partialsanskr_regular, FontWeight.Normal)
+)
+
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = Pretendard,
@@ -35,5 +39,14 @@ val Typography = Typography(
         fontFamily = Pretendard,
         fontSize = 12.sp,
         fontWeight = FontWeight.Light,
+    ),
+    displayLarge = TextStyle(
+        fontFamily = PartialSansKR,
+    ),
+    displayMedium = TextStyle(
+        fontFamily = PartialSansKR,
+    ),
+    displaySmall = TextStyle(
+        fontFamily = PartialSansKR,
     )
 )
