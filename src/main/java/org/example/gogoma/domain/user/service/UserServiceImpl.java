@@ -131,6 +131,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteFriend(String email) {
         friendCustomRepository.deleteFriendByUserId(getIdByEmail(email));
     }
