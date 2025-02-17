@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.gogoma.controller.request.MarathonEndInitDataRequest;
 import org.example.gogoma.controller.response.MarathonStartInitDataResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
+import org.example.gogoma.domain.marathon.entity.MarathonType;
 import org.example.gogoma.domain.marathon.repository.MarathonRepository;
+import org.example.gogoma.domain.marathon.repository.MarathonTypeRepository;
 import org.example.gogoma.domain.user.entity.Friend;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.FriendCustomRepository;
@@ -30,6 +32,7 @@ public class WatchServiceImpl implements WatchService {
     private final FriendCustomRepository friendCustomRepository;
     private final MarathonRepository marathonRepository;
     private final UserMarathonRepository userMarathonRepository;
+    private final MarathonTypeRepository marathonTypeRepository;
 
     @Override
     public MarathonStartInitDataResponse sendMarathonStartInitData(String accessToken, int marathonId) {
@@ -47,9 +50,12 @@ public class WatchServiceImpl implements WatchService {
 
         List<Friend> friendList = friendCustomRepository.findAllByUserIdAndMarathonId(user.getId(), marathon.getId());
 
+        MarathonType marathonType = marathonTypeRepository.findById(userMarathon.getMarathonTypeId())
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_TYPE_NOT_FOUND));
+
         return MarathonStartInitDataResponse.of(
                 user.getId(), user.getName(), userMarathon.getTargetPace(),
-                marathon.getId(), marathon.getTitle(), friendList, marathon.getRaceStartTime());
+                marathon.getId(), marathon.getTitle(), friendList, marathon.getRaceStartTime(), marathonType.getCourseType());
     }
 
     @Override
