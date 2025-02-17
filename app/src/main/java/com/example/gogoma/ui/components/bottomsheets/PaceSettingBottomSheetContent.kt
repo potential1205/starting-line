@@ -59,7 +59,7 @@ fun PaceSettingBottomSheetContent(bottomSheetViewModel: BottomSheetViewModel, pa
             }
             items(paceMap.entries.toList()) { (value, text) ->
                 FilterListItemContent(text, onClick = {
-                    paceViewModel.marathonStartInitDataResponse?.let {
+                    paceViewModel.marathonStartInitDataResponse.value?.let {
                         paceViewModel.patchMarathonPace(TokenManager.getAccessToken(context).toString(), it.marathonId, value)
                     }
                     // 모달창 닫기
