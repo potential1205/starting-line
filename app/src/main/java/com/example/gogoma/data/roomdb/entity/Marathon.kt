@@ -8,6 +8,6 @@ import java.time.LocalDateTime
 data class Marathon(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
-    val name: String,
+    val title: String,
     val startTime: String
 )

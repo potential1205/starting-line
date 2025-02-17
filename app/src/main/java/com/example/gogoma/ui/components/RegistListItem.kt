@@ -77,7 +77,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                         text = regist.marathonTitle,
                         style = TextStyle(
                             fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
                             color = MaterialTheme.colorScheme.onBackground
                         ),
                     )
@@ -92,7 +91,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = regist.raceStartDateTime,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         )
@@ -103,7 +101,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = regist.marathonType,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         )
@@ -119,7 +116,6 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                             text = it,
                             style = TextStyle(
                                 fontSize = 12.sp,
-                                fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
                                 color = Color.White
                             ),
                             modifier = Modifier

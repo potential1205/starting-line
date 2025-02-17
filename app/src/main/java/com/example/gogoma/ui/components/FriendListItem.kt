@@ -56,7 +56,6 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = "${friendResponse.rank}",
                 style = TextStyle(
                     fontSize = 26.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_eb)),
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                 )
@@ -89,7 +88,6 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = friendResponse.name,
                 style = TextStyle(
                     fontSize = 17.5.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                 )
@@ -109,7 +107,6 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = "${friendResponse.totalDistance} km",
                 style = TextStyle(
                     fontSize = 15.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_r)),
                     color = Color.Black,
                 )
             )

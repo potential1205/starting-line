@@ -47,7 +47,6 @@ fun PaymentDetails (paymentDetail: UserMarathonDetailDto) {
                 text = "결제 내역",
                 style = TextStyle(
                     fontSize = 19.sp,
-                    fontFamily = FontFamily(Font(R.font.nanum_square_round_b)),
                     color = MaterialTheme.colorScheme.onBackground,
                 )
             )

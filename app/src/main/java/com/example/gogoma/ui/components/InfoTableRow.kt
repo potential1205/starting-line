@@ -34,7 +34,6 @@ fun InfoTableRow(label: String, value: String) {
             text = label,
             style = TextStyle(
                 fontSize = 13.sp,
-                fontFamily = FontFamily(Font(R.font.nanum_square_round_l)),
                 color = MaterialTheme.colorScheme.onBackground,
             )
         )
@@ -43,7 +42,6 @@ fun InfoTableRow(label: String, value: String) {
             text = value,
             style = TextStyle(
                 fontSize = 13.sp,
-                fontFamily = FontFamily(Font(R.font.nanum_square_round_l)),
                 color = MaterialTheme.colorScheme.onBackground,
             )
         )

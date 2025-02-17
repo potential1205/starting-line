@@ -29,19 +29,17 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
     private val _friendList = MutableStateFlow<List<FriendResponse>>(emptyList())
     val friendList: StateFlow<List<FriendResponse>> = _friendList
 
-
-
     fun getInitData(accessToken: String, marathonId: Int) {
         viewModelScope.launch {
             try {
                 val response = RetrofitInstance.watchApiService.getMarathonStartInitData(accessToken, marathonId)
                 if (response.isSuccessful) {
                     _marathonStartInitDataResponse.value = response.body()
-                    Log.d("API", "Marathon 데이터 불러오기 성공")
+                    Log.d("marathon", _marathonStartInitDataResponse.value.toString())
 
                 } else {
                     _marathonStartInitDataResponse.value = null
-                    Log.e("API", "Marathon 데이터 불러오기 실패: ${response.code()}")
+                    Log.e("marathon", "Marathon 데이터 불러오기 실패: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _marathonStartInitDataResponse.value = null
@@ -50,7 +48,7 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
         }
     }
 
-    fun saveMarathonDataToDB(marathonData: MarathonStartInitDataResponse) {
+    fun saveMarathonDataToDB(marathonData: MarathonStartInitDataResponse, onComplete: () -> Unit) {
         viewModelScope.launch {
             try {
                 db.myInfoDao().clearMyInfo()
@@ -61,10 +59,10 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                     MyInfo(
                         marathonData.userId,
                         marathonData.userName,
-                        marathonData.targetPace
+                        marathonData.targetPace,
+                        marathonData.runningDistance
                     )
                 )
-                Log.d("Database", "MyInfo 저장 성공")
 
                 db.marathonDao().insertMarathon(
                     Marathon(
@@ -73,19 +71,17 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                         marathonData.marathonStartTime
                     )
                 )
-                Log.d("Database", "Marathon 저장 성공")
-
-                Log.d("1111",marathonData.friendList.toString())
 
                 marathonData.friendList.forEach { friend ->
                     db.friendDao().insertFriend(Friend(friend.userId, friend.friendName))
-                    Log.d("Database", "Friend 저장 성공: ${friend.friendName}")
                 }
 
                 // 데이터 확인 로그
-                Log.d("MyInfo", db.myInfoDao().getMyInfo().toString())
-                Log.d("Marathon", db.marathonDao().getMarathon().toString())
-                Log.d("Friend", db.friendDao().getAllFriends().toString())
+                Log.d("MyInfo", "[Room DB]" + db.myInfoDao().getMyInfo().toString())
+                Log.d("Marathon","[Room DB]" + db.marathonDao().getMarathon().toString())
+                Log.d("Friend", "[Room DB]" + db.friendDao().getAllFriends().toString())
+
+                onComplete()
 
             } catch (e: Exception) {
                 Log.e("Database", "Room DB 저장 실패: ${e.message}")
