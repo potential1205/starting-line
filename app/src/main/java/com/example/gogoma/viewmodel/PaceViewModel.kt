@@ -113,7 +113,7 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                 val response = RetrofitInstance.userApiService.getUpcomingMarathonFriendList(accessToken)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        _friendList.value = listOf(it)  // 응답 데이터를 StateFlow에 할당
+                        _friendList.value = it  // 응답 데이터를 StateFlow에 할당
                     }
                 } else {
                     _friendList.value = emptyList()  // 실패 시 빈 리스트로 설정
