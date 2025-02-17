@@ -136,6 +136,7 @@ fun MainScreen(
     ){ paddingValues ->
         Box(
             modifier = Modifier
+                .fillMaxWidth()
                 .height(screenHeight * 2)
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
@@ -160,7 +161,7 @@ fun MainScreen(
             if(isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
-                        .padding(16.dp),
+                        .size(60.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
             } else {
