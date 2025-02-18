@@ -2,25 +2,21 @@ package com.example.gogoma.viewmodel
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gogoma.data.util.UserDistanceRepository
+import com.example.gogoma.GlobalApplication
 import com.example.gogoma.data.util.MarathonRealTimeDataUtil
+import com.example.gogoma.data.util.MarathonRunService
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
-import kotlinx.coroutines.launch
-import android.Manifest
-import android.content.pm.PackageManager
-import android.location.Location
-import android.os.Looper
-import androidx.core.content.ContextCompat.checkSelfPermission
-import com.example.gogoma.GlobalApplication
-import com.google.android.gms.location.*
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 
@@ -77,10 +73,10 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
 
         dataClient.putDataItem(putDataRequest)
             .addOnSuccessListener {
-                Log.d("marathon", "[Marathon Ready] Marathon Ready 상태 전송 성공")
+                Log.d("marathon", "[Marathon Ready] 상태 전송 성공")
             }
             .addOnFailureListener { e ->
-                Log.e("marathon", "[Marathon Ready] Marathon Ready 상태 전송 실패", e)
+                Log.e("marathon", "[Marathon Ready] 상태 전송 실패", e)
             }
     }
 
@@ -96,7 +92,10 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
                         viewModelScope.launch {
                             val myInfo = db.myInfoDao().getMyInfo()
                             if (myInfo != null) {
-                                startMarathonRun(myInfo.id)
+                                val intent = Intent(getApplication(), MarathonRunService::class.java).apply {
+                                    putExtra("userId", myInfo.id)
+                                }
+                                getApplication<Application>().startForegroundService(intent)
                             } else {
                                 Log.e("marathon", "myInfo null")
                             }
@@ -105,10 +104,13 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
                         Log.d("marathon", "[Marathon Start] 워치로부터 마라톤 시작 신호 도착")
                     }
                     "/end" -> {
+                        // 서비스 종료
+                        val intent = Intent(getApplication(), MarathonRunService::class.java)
+                        getApplication<Application>().stopService(intent)
+
                         marathonRealTimeDataUtil.endUpdating()
                         stopMarathonSendData()
                         Log.d("marathon", "[Marathon End] 워치로부터 마라톤 종료 신호 도착")
-
                     }
                 }
             }
@@ -159,88 +161,10 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
 
         dataClient.putDataItem(putDataRequest)
             .addOnSuccessListener {
-                //Log.d("marathon", "워치에게 마라톤 데이터 전송 성공")
+                // 데이터 전송 성공 로그
             }
             .addOnFailureListener { e ->
-                //Log.e("marathon", "워치에게 마라톤 데이터 전송 실패", e)
+                // 데이터 전송 실패 로그
             }
     }
-
-    // 계산 관련 (누적 거리를 cm 단위로 저장)
-    private var cumulativeDistance: Int = 0
-    private var previousLocation: Location? = null
-
-    // Location 관련 변수
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
-
-    // --------------- [Start 버튼 클릭 시 실행되는 로직] ---------------
-    @SuppressLint("VisibleForTests")
-    private fun startMarathonRun(currentUserId : Int) {
-
-        // 1. 초기 데이터 생성: 누적 거리를 0 (cm 단위)로 DB에 저장
-        UserDistanceRepository.createInitialUserData(
-            currentUserId,
-            onSuccess = { Log.d("MarathonRunService", "초기 데이터 생성 성공") },
-            onFailure = { exception ->
-                Log.e("MarathonRunService", "초기 데이터 생성 실패: ${exception.message}")
-            }
-        )
-        cumulativeDistance = 0
-        previousLocation = null
-
-        // 2. 위치 업데이트 시작: fusedLocationClient 초기화
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplication())
-        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000L)
-            .setMinUpdateIntervalMillis(1000)
-            .build()
-
-        locationCallback = object : LocationCallback() {
-            @SuppressLint("DefaultLocale")
-            override fun onLocationResult(locationResult: LocationResult) {
-                for (currentLocation in locationResult.locations) {
-                    Log.d("MarathonRunService", "현재 위치 -> 위도: ${currentLocation.latitude}, 경도: ${currentLocation.longitude}")
-                    previousLocation?.let { prevLoc ->
-                        // 이전 위치와 현재 위치 간 거리를 구한 후 cm 단위로 변환
-                        val distanceInCm = Math.round(prevLoc.distanceTo(currentLocation) * 100)
-                        cumulativeDistance += distanceInCm
-
-                        // 화면 표시용: 누적 거리와 이번 이동 거리를 km 단위로 변환 (1km = 100000cm) 후 소수 둘째자리로 포맷
-                        val formattedCumulative = String.format("%.2f", cumulativeDistance / 100000.0)
-                        val formattedIncrement = String.format("%.2f", distanceInCm / 100000.0)
-                        Log.d("MarathonRunService", "이번 이동 거리: $formattedIncrement km, 누적 거리: $formattedCumulative km")
-
-                        // DB 업데이트: 누적 거리를 cm 단위로 업데이트
-                        UserDistanceRepository.updateUserCumulativeDistance(
-                            currentUserId,
-                            cumulativeDistance,
-                            onSuccess = {
-                                Log.d("MarathonRunService", "Firebase 업데이트 성공: ${cumulativeDistance} cm")
-                            },
-                            onFailure = { exception ->
-                                Log.e("MarathonRunService", "Firebase 업데이트 실패: ${exception.message}")
-                            }
-                        )
-                    }
-                    if (previousLocation == null) {
-                        Log.d("MarathonRunService", "첫 위치 업데이트입니다.")
-                    }
-                    previousLocation = currentLocation
-                }
-            }
-        }
-
-        startLocationUpdates()
-    }
-
-    private fun startLocationUpdates() {
-        if (checkSelfPermission(getApplication(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            checkSelfPermission(getApplication(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.e("MarathonRunService", "위치 권한 부족")
-            return
-        }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-    }
-
 }
