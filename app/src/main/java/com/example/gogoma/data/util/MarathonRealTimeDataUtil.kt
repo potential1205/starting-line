@@ -69,7 +69,8 @@ class MarathonRealTimeDataUtil(private val context: Context) {
                     currentDistance = 0,      // 초기값
                     isMe = friend.id == myInfo.id,
                     rank = 0,
-                    currentDistanceRate = 0.0f
+                    currentDistanceRate = 0.0f,
+                    gapDistance = 0
                 )
             } + FriendDto(
                 userId = myInfo.id,
@@ -77,7 +78,8 @@ class MarathonRealTimeDataUtil(private val context: Context) {
                 currentDistance = 0,
                 isMe = true,
                 rank = 0,
-                currentDistanceRate = 0.0f
+                currentDistanceRate = 0.0f,
+                gapDistance = 0
             )
         }
 
@@ -150,7 +152,11 @@ class MarathonRealTimeDataUtil(private val context: Context) {
                             rank = 0,
                             currentDistanceRate = if (marathonRealTimeData.totalDistance != 0)
                                 distance.toFloat() / marathonRealTimeData.totalDistance
-                            else 0.0f
+                            else 0.0f,
+
+                            gapDistance = if (friend.userId != marathonRealTimeData.userId)
+                                distance - marathonRealTimeData.currentDistance
+                            else 0
                         )
                     )
                 } else {
