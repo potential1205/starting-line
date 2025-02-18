@@ -1,7 +1,11 @@
 package com.example.gogoma.ui.screens
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,11 +31,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -42,6 +50,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.R
 import com.example.gogoma.ui.components.BottomBar
@@ -238,7 +248,7 @@ fun PaceScreen(
                                         text = if (marathonStartInitDataResponse?.targetPace == 0) {
                                             "페이스를 설정해주세요"
                                         } else {
-                                            marathonStartInitDataResponse?.targetPace?.toString() ?: "페이스를 설정해주세요"
+                                            "${(marathonStartInitDataResponse?.targetPace ?: 0) / 100}:${((marathonStartInitDataResponse?.targetPace ?: 0) % 100).let { if(it < 10) "0$it" else it }}"
                                         },
                                         style = TextStyle(
                                             fontSize = 35.sp,
@@ -248,13 +258,34 @@ fun PaceScreen(
                                     )
 
 
-                                    ButtonBasic(
-                                        iconResId = R.drawable.icon_settings,
-                                        text = "페이스 설정",
-                                        contentColor = Color(0xFF8A8A8A),
-                                        round = 0.dp,
-                                        onClick = { bottomSheetViewModel.showBottomSheet() }
-                                    )
+                                    Button(
+                                        onClick = { bottomSheetViewModel.showBottomSheet() },
+                                        modifier = Modifier
+                                            .background(Color.Transparent)
+                                            .border(1.dp, Color(0xFFD0D0D0), shape = RoundedCornerShape(0.dp)),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = Color(0xFFD0D0D0)
+                                        ),
+                                        shape = RoundedCornerShape(0.dp),
+                                        elevation = ButtonDefaults.elevatedButtonElevation(0.dp),
+                                        contentPadding = PaddingValues(12.dp) // 내부 패딩을 4.dp로 설정
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.icon_settings),
+                                            contentDescription = null,
+                                            tint = Color(0xFFD0D0D0)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            "페이스 설정",
+                                            color = Color(0xFFD0D0D0)
+                                        )
+                                    }
+
+
+
+
                                 }
                             }
                         } else { // 반응형 레이아웃: 가로 배치
@@ -288,7 +319,7 @@ fun PaceScreen(
                                         text = if (marathonStartInitDataResponse?.targetPace == 0) {
                                             "페이스를 설정해주세요"
                                         } else {
-                                            marathonStartInitDataResponse?.targetPace?.toString() ?: "페이스를 설정해주세요"
+                                            "${(marathonStartInitDataResponse?.targetPace ?: 0) / 100}\"${((marathonStartInitDataResponse?.targetPace ?: 0) % 100).let { if(it < 10) "0$it" else it }}"
                                         },
                                         style = TextStyle(
                                             fontSize = 35.sp,
@@ -296,7 +327,6 @@ fun PaceScreen(
                                             color = Color(0xFF000000)
                                         )
                                     )
-
 
                                     ButtonBasic(
                                         iconResId = R.drawable.icon_settings,
@@ -311,7 +341,7 @@ fun PaceScreen(
                     }
 
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom),
+                        verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.Bottom),
                         horizontalAlignment = Alignment.Start,
                     ) {
                         Row(
@@ -320,53 +350,97 @@ fun PaceScreen(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             val participantText = if (friendList.isNotEmpty()) {
-                                "${friendList[0].name} 님 외 ${friendList.size - 1}명 참가"
+                                "함께 뛰는 친구 ${friendList.size}명"
                             } else {
                                 "참가자 정보 없음"
                             }
-
                             Text(
                                 text = participantText,
                                 style = TextStyle(
                                     fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
                                     color = Color(0xFF000000)
                                 )
                             )
                         }
 
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.Start),
+                            modifier = Modifier.padding(start = 6.dp, end = 6.dp), // 여기서 시작 패딩 추가
+                            horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.Start),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             if (friendList.isNotEmpty()) {
-                                friendList.take(4).forEach { friend ->
-                                    AsyncImage( // Coil 라이브러리를 이용한 비동기 이미지 로드
-                                        model = friend.profileImage, // 이미지가 없을 경우 기본 이미지 사용
-                                        contentDescription = "${friend.name}의 프로필 이미지",
-                                        modifier = Modifier.size(30.dp),
-                                        contentScale = ContentScale.Crop
-                                    )
+                                friendList.forEach { friend ->
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        val painter = if (friend.profileImage.isNullOrEmpty()) {
+                                            painterResource(id = R.drawable.logo_image)
+                                        } else {
+                                            val secureProfileImage = friend.profileImage.replaceFirst("http://", "https://")
+                                            rememberAsyncImagePainter(
+                                                ImageRequest.Builder(LocalContext.current)
+                                                    .data(data = secureProfileImage)
+                                                    .apply {
+                                                        crossfade(true)
+                                                        placeholder(R.drawable.icon_running)
+                                                        error(R.drawable.icon_close)
+                                                    }
+                                                    .build()
+                                            )
+                                        }
+                                        Image(
+                                            painter = painter,
+                                            contentDescription = "Profile image of ${friend.name}",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(45.dp)
+                                                .clip(CircleShape)
+                                        )
+                                        Text(
+                                            text = friend.name,
+                                            style = TextStyle(
+                                                fontSize = 12.sp,
+                                                color = Color(0xFF000000)
+                                            )
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+
                 }
                 val scope = rememberCoroutineScope()
-                ButtonBasic(
-                    text = "준비",
-                    modifier = Modifier.fillMaxWidth(),
-                    round = 0.dp,
-                    onClick = {
-                        scope.launch {
-                            marathonStartInitDataResponse?.let { response ->
-                                paceViewModel.saveMarathonDataToDB(response) {
-                                    marathonViewModel.marathonReady()
+                if(marathonStartInitDataResponse != null){
+                if(marathonStartInitDataResponse!!.targetPace == 0){
+                    ButtonBasic(
+                        text = "준비",
+                        modifier = Modifier.fillMaxWidth(),
+                        round = 0.dp,
+                        backgroundColor = Color(0xFF909090),
+                        onClick = {
+                        }
+                    )
+                }else {
+                    ButtonBasic(
+                        text = "준비",
+                        modifier = Modifier.fillMaxWidth(),
+                        round = 0.dp,
+                        onClick = {
+                            scope.launch {
+                                marathonStartInitDataResponse?.let { response ->
+                                    paceViewModel.saveMarathonDataToDB(response) {
+                                        marathonViewModel.marathonReady()
+                                    }
+                                    navController.navigate("watchConnect")
                                 }
-                                navController.navigate("watchConnect")
                             }
                         }
+                    )
+                }
                     }
-                )
             }
         }
     }
