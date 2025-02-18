@@ -1,71 +1,100 @@
 package com.example.gogoma.ui.components
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import com.example.gogoma.theme.PartialSansKR
+import com.example.gogoma.theme.Pretendard
 
 @Composable
-fun TopBarArrow(title: String, onBackClick: () -> Unit, refreshAction: (()->Unit)? = null) {
+fun TopBarArrow(
+    title: String,
+    isDisplay: Boolean = false,
+    onBackClick: () -> Unit,
+    refreshAction: (()->Unit)? = null
+) {
     val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(65.dp)
+            .height(45.dp + topInset)
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = 5.dp, end = 5.dp, top = topInset),
+            .padding(start = 20.dp, end = 20.dp, top = topInset),
+        horizontalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 뒤로가기 버튼
         IconButton(
-            onClick = onBackClick, // 네비게이션 핸들링 가능
-            modifier = Modifier.size(40.dp)
+            onClick = onBackClick,
+            modifier = Modifier.size(24.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.arrow_back),
                 contentDescription = "Back Arrow",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(30.dp)
+                tint = Color(0xFFCFCFCF),
+                modifier = Modifier.size(20.dp)
             )
         }
 
-        // 중앙 타이틀
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.Center
+        //타이틀 스크롤 가능
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .horizontalScroll(rememberScrollState()),
+            contentAlignment = if (isDisplay) Alignment.CenterStart else Alignment.Center
         ) {
             Text(
                 text = title,
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onBackground
+                fontSize = 15.sp,
+                color = Color(0xFF222222),
+                fontFamily = if (isDisplay) PartialSansKR else Pretendard,
+                fontWeight = FontWeight.Bold,
             )
         }
 
         if (refreshAction != null) {
             IconButton(
                 onClick = refreshAction,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(24.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_refresh),
                     contentDescription = "Refresh",
                     tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(22.dp)
                 )
             }
+        } else if(!isDisplay) {
+            // 오른쪽 공백 (뒤로가기 버튼과 크기 맞추기)
+            Spacer(modifier = Modifier.size(24.dp))
         }
-        // 오른쪽 공백 (뒤로가기 버튼과 크기 맞추기)
-        else Spacer(modifier = Modifier.size(40.dp))
     }
 }
 
@@ -73,6 +102,30 @@ fun TopBarArrow(title: String, onBackClick: () -> Unit, refreshAction: (()->Unit
 @Composable
 fun TopBarArrowPreview() {
     GogomaTheme {
-        TopBarArrow(title = "결제하기", onBackClick = {}, refreshAction = { println("refresh") })
+        TopBarArrow(title = "결제하기", onBackClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopBarArrowPreview2() {
+    GogomaTheme {
+        TopBarArrow(title = "친구", onBackClick = {}, refreshAction = { println("refresh") })
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopBarArrowPreview3() {
+    GogomaTheme {
+        TopBarArrow(title = "서울 마라톤 2022", isDisplay = true, onBackClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopBarArrowPreview4() {
+    GogomaTheme {
+        TopBarArrow(title = "서울 마라톤 2022 asdfsdfafawefawfasdf", isDisplay = true, onBackClick = {}, refreshAction = { })
     }
 }
