@@ -60,7 +60,7 @@ fun TeamStatus( friendInfo: FriendInfo, scale: Float, myCurrentDistance: Int, co
             Spacer(Modifier.width(5.dp))
 
             Text(
-                text = formatDistanceDiff(friendInfo.currentDistance - myCurrentDistance) + "km",
+                text = formatDistanceDiff(friendInfo.gapDistance) + "km",
                 fontSize = (8 * scale).sp,
                 textAlign = TextAlign.Center,
                 color = color,
