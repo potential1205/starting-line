@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.gogoma.services.LocationForegroundService
+import com.example.gogoma.data.util.LocationForegroundUtil
 
 class MarathonDistanceGPSTestActivity : ComponentActivity() {
 
@@ -17,7 +17,7 @@ class MarathonDistanceGPSTestActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Foreground Service를 시작하여 백그라운드에서 5초마다 위치 업데이트 및 DB 업데이트 로직을 처리합니다.
-        val serviceIntent = Intent(this, LocationForegroundService::class.java)
+        val serviceIntent = Intent(this, LocationForegroundUtil::class.java)
         startForegroundService(serviceIntent)
 
         // 간단한 UI를 표시합니다.

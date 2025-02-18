@@ -13,7 +13,6 @@ class MarathonDetailViewModel : ViewModel() {
     private val _marathonDetail = MutableStateFlow<MarathonDetailResponse?>(null)
     val marathonDetail: StateFlow<MarathonDetailResponse?> = _marathonDetail
 
-
     fun loadMarathonDetail(marathonId: Int) {
         Log.d("marathonId",marathonId.toString())
         viewModelScope.launch {

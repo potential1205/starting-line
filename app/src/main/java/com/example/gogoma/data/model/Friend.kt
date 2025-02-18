@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Friend(
-    val userId: Int,
+    val friendId: Int,
     val friendName: String,
     var currentDistance: Int,       // cm 단위
     var currentDistanceRate: Float,

@@ -73,10 +73,9 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
                 )
 
                 marathonData.friendList.forEach { friend ->
-                    db.friendDao().insertFriend(Friend(friend.userId, friend.friendName))
+                    db.friendDao().insertFriend(Friend(friend.friendId, friend.friendName))
                 }
 
-                // 데이터 확인 로그
                 Log.d("MyInfo", "[Room DB]" + db.myInfoDao().getMyInfo().toString())
                 Log.d("Marathon","[Room DB]" + db.marathonDao().getMarathon().toString())
                 Log.d("Friend", "[Room DB]" + db.friendDao().getAllFriends().toString())
@@ -88,7 +87,6 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
             }
         }
     }
-
 
     fun getUpcomingMarathonInfo(accessToken: String){
         viewModelScope.launch {
@@ -107,19 +105,18 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
     }
 
     fun getUpcomingMarathonFriendList(accessToken: String){
-
         viewModelScope.launch {
             try {
                 val response = RetrofitInstance.userApiService.getUpcomingMarathonFriendList(accessToken)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        _friendList.value = it  // 응답 데이터를 StateFlow에 할당
+                        _friendList.value = it
                     }
                 } else {
-                    _friendList.value = emptyList()  // 실패 시 빈 리스트로 설정
+                    _friendList.value = emptyList()
                 }
             } catch (e: Exception) {
-                _friendList.value = emptyList()  // 예외 발생 시 빈 리스트로 설정
+                _friendList.value = emptyList()
                 Log.e("API", "getUpcomingMarathonFriendList 예외 발생: ${e.message}")
             }
         }
@@ -132,13 +129,10 @@ class PaceViewModel(private val globalApplication: GlobalApplication): ViewModel
             try {
                 val response = RetrofitInstance.userMarathonApiService.updateUserMarathon(accessToken, marathonId, request)
                 if (response.success) {
-                    // 성공 시 갱신
                     getInitData(accessToken, marathonId)
                 } else {
-                    // 실패
                 }
             } catch (e: Exception) {
-                // 네트워크 오류
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.gogoma.data.repository
+package com.example.gogoma.data.util
 
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
