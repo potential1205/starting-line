@@ -56,7 +56,7 @@ fun TeamProgressBar(
                         val y = centerY + (radius - 5.dp.toPx()) * sin(radian)
 
                         drawCircle(
-                            color = if (friend.isMe) Color.Green else Color.Red, // '나'는 초록색, 친구들은 빨간색
+                            color = if (friend.isMe) Color(0xFF2680FF) else Color(0xFFFF291A), // '나'는 초록색, 친구들은 빨간색
                             radius = dotRadius,
                             center = Offset(x.toFloat(), y.toFloat())
                         )
@@ -71,7 +71,7 @@ fun TeamProgressBar(
                         val y = centerY + (radius - 5.dp.toPx()) * sin(radian)
 
                         drawCircle(
-                            color = Color.Green,
+                            color = Color(0xFF2680FF),
                             radius = dotRadius,
                             center = Offset(x.toFloat(), y.toFloat())
                         )
@@ -86,7 +86,7 @@ fun TeamProgressBar(
                         val y = centerY + (radius - 5.dp.toPx()) * sin(radian)
 
                         drawCircle(
-                            color = Color.Yellow,
+                            color = Color(0xFFFFFFFF),
                             radius = dotRadius,
                             center = Offset(x.toFloat(), y.toFloat())
                         )

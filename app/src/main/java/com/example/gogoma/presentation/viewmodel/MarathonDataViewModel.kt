@@ -73,8 +73,7 @@ class MarathonDataViewModel : ViewModel() {
 
     // 경과 시간 업데이트
     private fun updateElapsedTime() {
-        val newTime = _marathonState.value.currentTime + 1
-        _marathonState.value = _marathonState.value.copy(currentTime = newTime)
+        val newTime = _elapsedTime.value + 1
         _elapsedTime.value = newTime
     }
 
