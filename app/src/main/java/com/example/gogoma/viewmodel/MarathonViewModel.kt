@@ -27,6 +27,7 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     private var db = GlobalApplication.instance.database
     private val dataClient: DataClient = Wearable.getDataClient(application)
     private var marathonRealTimeDataUtil: MarathonRealTimeDataUtil = MarathonRealTimeDataUtil(getApplication())
+    private var isMarathonRunning = true
 
     init {
         dataClient.addListener(this)
@@ -110,6 +111,7 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
 
                         marathonRealTimeDataUtil.endUpdating()
                         stopMarathonSendData()
+                        isMarathonRunning = false
                         Log.d("marathon", "[Marathon End] 워치로부터 마라톤 종료 신호 도착")
                     }
                 }
@@ -132,6 +134,8 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     private fun stopMarathonSendData() {
         marathonStartTimer?.cancel()
         marathonStartTimer = null
+        stopLocationUpdates()
+        Log.d("MarathonRunService", "[Marathon End] 데이터 전송 및 위치 추적 중단")
     }
 
     // -------------------------------------------------------------------------------- //
@@ -139,6 +143,10 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     // ------------------------------------------------------------------------------ //
     @SuppressLint("VisibleForTests")
     fun marathonSendData() {
+        if(!isMarathonRunning) {
+            Log.d("MarathonRunService", "[Marathon End] 마라톤이 종료되어 데이터 전송 중단")
+            return
+        }
         val marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
         Log.d("marathon", "[Marathon Ing] 데이터 전송 성공 : $marathonRealTimeData")
 
