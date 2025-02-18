@@ -2,67 +2,106 @@ package com.example.gogoma.data.util
 
 import android.content.Context
 import android.util.Log
+import com.example.gogoma.data.dto.FriendDto
 import com.example.gogoma.data.dto.MarathonRealTimeData
 
-import com.example.gogoma.data.repository.UserDistanceRepository
 import com.example.gogoma.data.roomdb.entity.Friend
 import com.example.gogoma.data.roomdb.entity.Marathon
 import com.example.gogoma.data.roomdb.entity.MyInfo
 import java.util.Timer
-
+import java.util.concurrent.atomic.AtomicInteger
 
 class MarathonRealTimeDataUtil(private val context: Context) {
 
     private var timer: Timer? = null
 
-    private val startTime = System.currentTimeMillis()
-
     private var marathonRealTimeData = MarathonRealTimeData (
-        totalDistance = 0, // cm
-        currentDistance = 0, // cm
-        currentDistanceRate = 0.0f, // ex) 0.98
-        targetPace = 0, // 초 (400페이스 -> 240초)
-        currentPace = 0, // 초 (400페이스 -> 240초)
-        targetTime = 0, // 초
-        currentTime = 0, // 초
-        state = "G", // G, Y, R
+        // 사용자 및 마라톤 정보
+        userId = 0,
+        userName = "",
+        marathonId = 0,
+        marathonTitle = "",
+
+        // 거리 관련 정보 (단위: cm)
+        totalDistance = 0,
+        currentDistance = 0,
+        currentDistanceRate = 0.0f,
+
+        // 페이스 및 시간 관련 (단위: 초)
+        targetPace = 0,   // 예: 600페이스 -> 1km 360초 페이스
+        currentPace = 0,  // 예: 700페이스 -> 1km 420초 페이스
+        targetTime = 0,
+        currentTime = 0,
+
+        // 상태 및 순위 정보
+        state = "G",      // "Green : 목표 페이스 이상", "Yellow : 목표 페이스 1분 초과까지", "Red : 그 외"
         myRank = 0,
         totalMemberCount = 0,
-        friendInfoList = listOf(),
-        userId = 0,
-        marathonId = 0,
-        userName = "",
-        marathonTitle = ""
+
+        // 친구 관련 목록
+        friendList = listOf(),
+        friendInfoList = listOf()
     )
 
-     fun setReadyData(myInfo: MyInfo, marathon: Marathon, friendList: List<Friend>) {
-        marathonRealTimeData.totalDistance = myInfo.runningDistance // cm
-        marathonRealTimeData.targetPace =
-            (myInfo.targetPace / 100) * 60 + (myInfo.targetPace % 100)
-        marathonRealTimeData.targetTime = (myInfo.runningDistance / 100000) * marathonRealTimeData.targetPace
-        marathonRealTimeData.totalMemberCount = friendList.size
-        marathonRealTimeData.friendInfoList = friendList
-        marathonRealTimeData.userName = myInfo.name
-        marathonRealTimeData.userId = myInfo.id
-        marathonRealTimeData.marathonId = marathon.id
-        marathonRealTimeData.marathonTitle = marathon.title
+    fun setReadyData(myInfo: MyInfo, marathon: Marathon, friendList: List<Friend>) {
+        marathonRealTimeData.apply {
 
-         Log.d("marathon", "[Marathon Ready] MarathonRealTimeData: $marathonRealTimeData")
+            // 거리 및 페이스 관련 값 설정
+            totalDistance = myInfo.runningDistance
+            targetPace = (myInfo.targetPace / 100) * 60 + (myInfo.targetPace % 100)
+            targetTime = (myInfo.runningDistance / 100000) * targetPace
+
+            // 사용자 및 마라톤 정보 설정
+            userId = myInfo.id
+            userName = myInfo.name
+            marathonId = marathon.id
+            marathonTitle = marathon.title
+
+            // 참여 멤버 수 및 친구 목록 설정
+            totalMemberCount = friendList.size + 1
+            this.friendList = friendList
+
+            // 친구 정보 리스트 생성 (친구 목록 + 본인)
+            friendInfoList = friendList.map { friend ->
+                FriendDto(
+                    userId = friend.id,
+                    friendName = friend.name,
+                    currentDistance = 0,      // 초기값
+                    isMe = friend.id == myInfo.id,
+                    rank = 0,
+                    currentDistanceRate = 0.0f
+                )
+            } + FriendDto(
+                userId = myInfo.id,
+                friendName = myInfo.name,
+                currentDistance = 0,
+                isMe = true,
+                rank = 0,
+                currentDistanceRate = 0.0f
+            )
+        }
+
+        Log.d("marathon", "[Marathon Ready] MarathonRealTimeData: $marathonRealTimeData")
     }
 
     fun getMarathonRealTimeData(): MarathonRealTimeData {
         return marathonRealTimeData
     }
 
-
     fun updateData() {
-        val elapsedTimeSeconds = ((System.currentTimeMillis() - startTime) / 1000)
-
-        marathonRealTimeData.currentTime = elapsedTimeSeconds.toInt()
+        marathonRealTimeData.currentTime += 1
         marathonRealTimeData.currentDistance += 1
         marathonRealTimeData.currentPace = marathonRealTimeData.currentTime * 100000 / marathonRealTimeData.currentDistance
 
-        UserDistanceRepository.getUserCumulativeDistance(userId = 56) { distance ->
+        if (marathonRealTimeData.currentPace <= marathonRealTimeData.targetPace) {
+            marathonRealTimeData.state = "G"
+        } else if (marathonRealTimeData.currentPace + 60 <= marathonRealTimeData.targetPace) {
+            marathonRealTimeData.state = "Y"
+        } else {
+            marathonRealTimeData.state = "R"
+        }
+
+        UserDistanceRepository.getUserCumulativeDistance(userId = marathonRealTimeData.userId) { distance ->
             if (distance != null) {
                 marathonRealTimeData.currentDistance = distance
                 marathonRealTimeData.currentDistanceRate =
@@ -78,20 +117,14 @@ class MarathonRealTimeDataUtil(private val context: Context) {
                             .toInt()
                     else 0
 
-                // 상태 업데이트: targetPace보다 빠르면 "G", targetPace+60초 이내면 "Y", 그 외 "R"
-                marathonRealTimeData.state = when {
-                    marathonRealTimeData.currentPace <= marathonRealTimeData.targetPace -> "G"
-                    marathonRealTimeData.currentPace <= marathonRealTimeData.targetPace + 60 -> "Y"
-                    else -> "R"
-                }
             } else {
                 Log.d("marathon", "누적 거리 값을 가져오지 못했습니다.")
             }
-
-            // 친구 정보 업데이트 (자신의 누적 거리 업데이트 후 호출)
-            //updateFriendInfoList()
-            Log.d("marathon", "업데이트된 MarathonRealTimeData: $marathonRealTimeData")
         }
+
+        updateList()
+
+        Log.d("marathon", "업데이트된 MarathonRealTimeData: $marathonRealTimeData")
     }
 
     fun endUpdating() {
@@ -99,59 +132,43 @@ class MarathonRealTimeDataUtil(private val context: Context) {
         timer = null
     }
 
-//    private fun updateFriendInfoList() {
-//        val updatedFriendList = mutableListOf<Friend>()
-//        val friendList = marathonRealTimeData.friendInfoList
-//
-//        val myFriendInfo = Friend(
-//            userId = marathonRealTimeData.userId,
-//            friendName = marathonRealTimeData.userName,
-//            currentDistance = marathonRealTimeData.currentDistance,
-//            currentDistanceRate = if (marathonRealTimeData.totalDistance != 0)
-//                marathonRealTimeData.currentDistance.toFloat() / marathonRealTimeData.totalDistance
-//            else 0.0f,
-//            isMe = true,
-//            rank = 0
-//        )
-//
-//        if (friendList.isEmpty()) {
-//            marathonRealTimeData = marathonRealTimeData.copy(friendInfoList = listOf(myFriendInfo))
-//            return
-//        }
-//
-//        var completedCount = 0
-//        val totalFriends = friendList.size
+    fun updateList() {
+        val updatedList = mutableListOf<FriendDto>()
+        val totalFriends = marathonRealTimeData.friendInfoList.size
+        val processedCount = AtomicInteger(0)
 
-//        friendList.forEach { friend ->
-//            UserDistanceRepository.getUserCumulativeDistance(userId = friend.userId) { friendDistance ->
-//                val updatedFriend = friend.copy(
-//                    currentDistance = friendDistance ?: friend.currentDistance,
-//                    currentDistanceRate = if (marathonRealTimeData.totalDistance != 0 && friendDistance != null)
-//                        friendDistance.toFloat() / marathonRealTimeData.totalDistance else friend.currentDistanceRate
-//                )
-//                // 동시 접근을 대비해 동기화 처리
-//                synchronized(updatedFriendList) {
-//                    updatedFriendList.add(updatedFriend)
-//                    completedCount++
-//                    if (completedCount == totalFriends) {
-//                        updatedFriendList.add(myFriendInfo)
-//                        val sortedList = updatedFriendList.sortedByDescending { it.currentDistance }
-//
-//                        // 정렬된 리스트에 순위 부여 (1부터)
-//                        sortedList.forEachIndexed { index, friend ->
-//                            friend.rank = index + 1
-//                        }
-//                        marathonRealTimeData = marathonRealTimeData.copy(friendInfoList = sortedList)
-//                    }
-//                }
-//            }
-//        }
+        marathonRealTimeData.friendInfoList.forEach { friend ->
+            UserDistanceRepository.getUserCumulativeDistance(userId = friend.userId) { distance ->
+                processedCount.incrementAndGet()
+                if (distance != null) {
+                    updatedList.add(
+                        FriendDto(
+                            userId = friend.userId,
+                            friendName = friend.friendName,
+                            currentDistance = distance,
+                            isMe = friend.userId == marathonRealTimeData.userId,
+                            rank = 0,
+                            currentDistanceRate = if (marathonRealTimeData.totalDistance != 0)
+                                distance.toFloat() / marathonRealTimeData.totalDistance
+                            else 0.0f
+                        )
+                    )
+                } else {
+                    Log.d("marathon", "userId=${friend.userId}의 누적 거리를 가져오지 못했습니다.")
+                }
 
+                if (processedCount.get() == totalFriends) {
+                    updatedList.sortByDescending { it.currentDistance }
 
+                    updatedList.forEachIndexed { index, friendDto ->
+                        friendDto.rank = index + 1
+                    }
 
-//    }
-
-    // -------------------------------------------GPS---------------------------------------------
+                    marathonRealTimeData.friendInfoList = updatedList
+                }
+            }
+        }
+    }
 
 }
 

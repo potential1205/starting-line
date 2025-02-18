@@ -1,4 +1,4 @@
-package com.example.gogoma.services
+package com.example.gogoma.data.util
 
 import android.Manifest
 import android.app.Notification
@@ -14,10 +14,9 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import com.example.gogoma.data.repository.UserDistanceRepository
 import com.google.android.gms.location.*
 
-class LocationForegroundService : Service() {
+class LocationForegroundUtil : Service() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest

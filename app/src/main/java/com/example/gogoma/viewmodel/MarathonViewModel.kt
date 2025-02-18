@@ -3,13 +3,9 @@ package com.example.gogoma.viewmodel
 import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gogoma.data.model.MarathonStartInitDataResponse
-import com.example.gogoma.data.repository.UserDistanceRepository
+import com.example.gogoma.data.util.UserDistanceRepository
 import com.example.gogoma.data.util.MarathonRealTimeDataUtil
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
@@ -23,23 +19,18 @@ import android.location.Location
 import android.os.Looper
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.example.gogoma.GlobalApplication
-import com.example.gogoma.data.dto.MarathonRealTimeData
 import com.google.android.gms.location.*
 import com.google.gson.Gson
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 
-
 class MarathonViewModel(application: Application) : AndroidViewModel(application),
     DataClient.OnDataChangedListener {
 
-    var isMarathonStart by mutableStateOf(false)
-    var isMarathonReady by mutableStateOf(false)
-
+    private var marathonStartTimer: Timer? = null
+    private var db = GlobalApplication.instance.database
     private val dataClient: DataClient = Wearable.getDataClient(application)
     private var marathonRealTimeDataUtil: MarathonRealTimeDataUtil = MarathonRealTimeDataUtil(getApplication())
-
-    private var marathonStartTimer: Timer? = null
 
     init {
         dataClient.addListener(this)
@@ -56,15 +47,12 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     @SuppressLint("VisibleForTests")
     fun marathonReady() {
         viewModelScope.launch {
-            val db = GlobalApplication.instance.database
+            val myInfo = db.myInfoDao().getMyInfo()
+            val marathon = db.marathonDao().getMarathon()
+            val friendList = db.friendDao().getAllFriends()
 
-            var myInfo = db.myInfoDao().getMyInfo()
-            var marathon = db.marathonDao().getMarathon()
-            var friendList = db.friendDao().getAllFriends()
-
-            if (myInfo != null && marathon != null && friendList != null) {
+            if (myInfo != null && marathon != null) {
                 marathonRealTimeDataUtil.setReadyData(myInfo, marathon, friendList)
-                isMarathonReady = true
                 sendMarathonReady()
             }
 
@@ -77,12 +65,14 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     // -------------------------------------------------------------- //
     @SuppressLint("VisibleForTests")
     fun sendMarathonReady() {
-        var marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
+        val marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
+
         val putDataMapRequest = PutDataMapRequest.create("/ready").apply {
             dataMap.putLong("timestamp", System.currentTimeMillis())
             dataMap.putString("marathonTitle", marathonRealTimeData.marathonTitle)
             dataMap.putInt("totalMemberCount", marathonRealTimeData.totalMemberCount)
         }
+
         val putDataRequest = putDataMapRequest.asPutDataRequest().setUrgent()
 
         dataClient.putDataItem(putDataRequest)
@@ -102,15 +92,20 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
         for (event in dataEvents) {
             if (event.type == DataEvent.TYPE_CHANGED) {
                 when (event.dataItem.uri.path) {
-                    "/start" -> { // 마라톤 시작 이벤트 수신
-                        isMarathonStart = true
-                        startMarathonRun()
+                    "/start" -> {
+                        viewModelScope.launch {
+                            val myInfo = db.myInfoDao().getMyInfo()
+                            if (myInfo != null) {
+                                startMarathonRun(myInfo.id)
+                            } else {
+                                Log.e("marathon", "myInfo null")
+                            }
+                        }
                         startMarathonSendData()
                         Log.d("marathon", "[Marathon Start] 워치로부터 마라톤 시작 신호 도착")
                     }
-                    "/end" -> { // 마라톤 종료 이벤트 수신
-                        isMarathonStart = false
-                        marathonRealTimeDataUtil?.endUpdating()
+                    "/end" -> {
+                        marathonRealTimeDataUtil.endUpdating()
                         stopMarathonSendData()
                         Log.d("marathon", "[Marathon End] 워치로부터 마라톤 종료 신호 도착")
 
@@ -164,24 +159,16 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
 
         dataClient.putDataItem(putDataRequest)
             .addOnSuccessListener {
-                Log.d("marathon", "워치에게 마라톤 데이터 전송 성공")
+                //Log.d("marathon", "워치에게 마라톤 데이터 전송 성공")
             }
             .addOnFailureListener { e ->
-                Log.e("marathon", "워치에게 마라톤 데이터 전송 실패", e)
+                //Log.e("marathon", "워치에게 마라톤 데이터 전송 실패", e)
             }
     }
-
-    private var currentUserId: Int = 56
-    private var currentMarathonId: Int = 30
-    private var currentTargetFace: Int = 0
 
     // 계산 관련 (누적 거리를 cm 단위로 저장)
     private var cumulativeDistance: Int = 0
     private var previousLocation: Location? = null
-
-    // UI 상태: 화면에는 누적 거리와 최근 이동 거리를 km 단위(소수 둘째자리)로 표시
-    private val displayedCumulative = mutableStateOf("0.00")
-    private val displayedIncremental = mutableStateOf("0.00")
 
     // Location 관련 변수
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -190,7 +177,8 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
 
     // --------------- [Start 버튼 클릭 시 실행되는 로직] ---------------
     @SuppressLint("VisibleForTests")
-    private fun startMarathonRun() {
+    private fun startMarathonRun(currentUserId : Int) {
+
         // 1. 초기 데이터 생성: 누적 거리를 0 (cm 단위)로 DB에 저장
         UserDistanceRepository.createInitialUserData(
             currentUserId,
@@ -200,9 +188,7 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
             }
         )
         cumulativeDistance = 0
-        displayedCumulative.value = "0.00"
-        displayedIncremental.value = "0.00"
-        previousLocation = null  // 초기화
+        previousLocation = null
 
         // 2. 위치 업데이트 시작: fusedLocationClient 초기화
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplication())
