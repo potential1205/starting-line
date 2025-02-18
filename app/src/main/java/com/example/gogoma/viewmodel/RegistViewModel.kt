@@ -5,13 +5,26 @@ import androidx.lifecycle.viewModelScope
 import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RegistViewModel : ViewModel() {
     // 상태를 StateFlow로 변경
     private val _registList = MutableStateFlow<List<UserMarathonSearchDto>>(emptyList())
     val registList: StateFlow<List<UserMarathonSearchDto>> get() = _registList
+
+    // 출발 전 (D+가 포함되지 않은 항목)
+    val beforeStartList = registList.map { list ->
+        list.filter { it.dday?.contains("D+") != true }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    // 도착 후 (D+가 포함된 항목)
+    val afterFinishList = registList.map { list ->
+        list.filter { it.dday?.contains("D+") == true }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun addRegist(newRegist: UserMarathonSearchDto) {
         _registList.value = _registList.value + newRegist
