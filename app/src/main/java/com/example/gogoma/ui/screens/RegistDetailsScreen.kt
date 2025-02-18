@@ -58,7 +58,7 @@ fun RegistDetailsScreen(registId: Int, navController: NavController, userViewMod
     }
 
     Scaffold(
-        topBar = { TopBarArrow(title = marathonDetail?.marathon?.title.toString(), { navController.popBackStack() } ) },
+        topBar = { TopBarArrow(title = marathonDetail?.marathon?.title.toString(), isDisplay = true, onBackClick= {navController.popBackStack()} ) },
         bottomBar = { BottomBar(navController, userViewModel) }
     ) { paddingValues ->
         Column(
