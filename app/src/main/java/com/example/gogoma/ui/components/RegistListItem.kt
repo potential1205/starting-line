@@ -99,7 +99,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                         Spacer(Modifier.width(10.dp))
 
                         Text(
-                            text = regist.marathonType,
+                            text = regist.marathonType.toString(),
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onBackground
