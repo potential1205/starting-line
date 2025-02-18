@@ -118,7 +118,7 @@ fun MainScreen(
     Scaffold (
         topBar = {
             Column {
-                TopBar()
+                TopBar(navController)
                 if(isFilterFixed) {
                     Box(
                         modifier = Modifier

@@ -1,7 +1,6 @@
 package com.example.gogoma.ui.navigation
 
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.ui.screens.MainScreen
 import androidx.compose.runtime.LaunchedEffect
 import com.example.gogoma.ui.components.bottomsheets.BottomSheet
-import com.example.gogoma.ui.screens.MypageScreen
+import com.example.gogoma.ui.screens.SettingScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -57,7 +56,7 @@ fun AppNavigation(userViewModel: UserViewModel){
     val scrollViewModel: ScrollViewModel = viewModel()
     val marathonViewModel: MarathonViewModel = viewModel()
 
-    val protectedRouted = listOf("registList", "paceSetting", "watchConnect", "friendList", "mypage")
+    val protectedRouted = listOf("registList", "paceSetting", "watchConnect", "friendList", "setting")
 
     // 로그인 상태 감지
 //    LaunchedEffect(userViewModel.loginStatus) {
@@ -95,7 +94,7 @@ fun AppNavigation(userViewModel: UserViewModel){
                         "paceSetting" -> PaceScreen (navController = navController, userViewModel, bottomSheetViewModel, marathonViewModel, paceViewModel)
                         "watchConnect" -> WatchConnectScreen(navController, userViewModel)
                         "friendList" -> FriendListScreen(navController, userViewModel, friendsViewModel)
-                        "mypage" -> MypageScreen(navController, userViewModel)
+                        "setting" -> SettingScreen(navController, userViewModel)
 
                     }
                 } else {
