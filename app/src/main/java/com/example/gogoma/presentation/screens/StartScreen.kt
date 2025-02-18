@@ -18,8 +18,6 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.MaterialTheme
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
@@ -27,7 +25,6 @@ import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDataViewModel) {
     val context = LocalContext.current
     val activity = context as? Activity
-//    val marathonDataViewModel: MarathonDataViewModel = viewModel()
 
     // ViewModel에서 상태를 가져오기
     val marathonState = marathonDataViewModel.marathonState.collectAsState().value

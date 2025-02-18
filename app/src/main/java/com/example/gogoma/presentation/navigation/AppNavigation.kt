@@ -16,14 +16,6 @@ import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun AppNavigation(navController: NavHostController, marathonDataViewModel: MarathonDataViewModel) {
-//    val activity = LocalContext.current as? FragmentActivity
-//        ?: throw IllegalStateException("AppNavigation must be used within a FragmentActivity")
-//
-//    // 앱 시작 시 한 번만 데이터 리스너 등록
-//    LaunchedEffect(Unit) {
-//        marathonDataViewModel.startDataListener(activity)
-//    }
-
     NavHost(
         navController = navController,
         startDestination = "startScreen"
@@ -31,7 +23,7 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
     ) {
         composable("startScreen") { StartScreen(navController, marathonDataViewModel) }
         composable("viewPagerScreen") {
-            ViewPagerScreen(activity = LocalContext.current as FragmentActivity, navController, marathonDataViewModel)
+            ViewPagerScreen(activity = LocalContext.current as FragmentActivity)
         }
     }
 }

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavController
 import com.example.gogoma.presentation.screens.PersonalScreen
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 

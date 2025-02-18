@@ -14,16 +14,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.MaterialTheme
 import com.example.gogoma.presentation.components.ProgressBar
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.PersonalStatus
-import com.example.gogoma.presentation.data.MarathonData
 import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import kotlin.math.floor
 
 @Composable
 fun PersonalScreen (marathonDataViewModel: MarathonDataViewModel) {
-//    val marathonDataViewModel: MarathonDataViewModel = viewModel() // ViewModel 주입
 
     // ViewModel에서 상태를 가져오기
     val personalState = marathonDataViewModel.marathonState.collectAsState().value
