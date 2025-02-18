@@ -79,7 +79,7 @@ interface UserApiService {
 
     // 대회 신청 시 친구들에게 알림 보내기
     @POST("api/v1/users/alert/{marathonId}")
-    fun sendPushNotification(
+    suspend fun sendPushNotification(
         @Header("Authorization") accessToken: String,
         @Path("marathonId") marathonId: Int
     ): Response<BooleanResponse>

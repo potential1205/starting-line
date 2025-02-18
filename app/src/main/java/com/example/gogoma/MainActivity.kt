@@ -24,10 +24,14 @@ import org.json.JSONObject
 import java.io.IOException
 
 import android.Manifest
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 
 class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels()
@@ -66,6 +70,20 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
+        // Android 13 이상에서 알림 권한(POST_NOTIFICATIONS) 요청
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val notificationPermissionLauncher = registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                if (isGranted) {
+                    Log.d(TAG, "알림 권한 허용됨")
+                } else {
+                    Log.e(TAG, "알림 권한 거부됨")
+                    Toast.makeText(this, "푸시 알림을 받으려면 알림 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

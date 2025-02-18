@@ -1,5 +1,6 @@
 package com.example.gogoma.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.data.api.RetrofitInstance
@@ -43,4 +44,23 @@ class RegistViewModel : ViewModel() {
             }
         }
     }
+
+    fun notifyFriends(accessToken: String, marathonId: Int) {
+        viewModelScope.launch {
+            try {
+                Log.d("tokentokne",accessToken)
+                Log.d("marathonId",accessToken)
+                val response = RetrofitInstance.userApiService.sendPushNotification(accessToken, marathonId)
+
+                if (response.isSuccessful) {
+                    Log.d("FCM", "푸시 알림 성공! 친구들에게 알림이 전송됨")
+                } else {
+                    Log.e("FCM", "푸시 알림 실패: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("FCM", "푸시 알림 요청 중 오류 발생: ${e.message}")
+            }
+        }
+    }
+
 }
