@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -16,6 +17,7 @@ import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.BrandColor2
 import com.example.gogoma.ui.components.*
+import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.viewmodel.RegistViewModel
 import com.google.gson.Gson
 
@@ -27,6 +29,7 @@ fun PaymentStatusScreen(
     onConfirm: () -> Unit,
     onNavigateToMain: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     val gson = remember { Gson() }
     val regist: UserMarathonSearchDto? = registJson?.let {
         try {
@@ -43,6 +46,12 @@ fun PaymentStatusScreen(
     LaunchedEffect(isSuccess) {
         if (isSuccess && regist != null) {
             viewModel.addRegist(regist) // 결제 성공 시 리스트에 추가
+        }
+    }
+
+    LaunchedEffect(isSuccess) {
+        if (isSuccess && regist != null) {
+            viewModel.notifyFriends(TokenManager.getAccessToken(context = context).toString(), marathonId = regist.userMarathonId!!)
         }
     }
 
