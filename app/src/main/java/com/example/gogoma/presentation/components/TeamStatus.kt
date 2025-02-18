@@ -10,9 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import com.example.gogoma.presentation.data.FriendInfo
 import kotlin.math.floor
@@ -30,10 +33,14 @@ fun TeamStatus( friendInfo: FriendInfo, scale: Float, myCurrentDistance: Int, co
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${friendInfo.rank}등",
-                fontSize = (8 * scale).sp,
+                text = "${friendInfo.rank}",
+                style = TextStyle(
+                    fontFamily = MaterialTheme.typography.caption1.fontFamily,
+                    fontSize = (10 * scale).sp,
+                    fontWeight = FontWeight.Bold,
+                    color = color,
+                ),
                 textAlign = TextAlign.Center,
-                color = color,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
@@ -50,16 +57,16 @@ fun TeamStatus( friendInfo: FriendInfo, scale: Float, myCurrentDistance: Int, co
             )
 
 
-//            Spacer(Modifier.width(5.dp))
-//
-//            Text(
-//                text = formatDistanceDiff(friendInfo.currentDistance - myCurrentDistance) + "km",
-//                fontSize = (8 * scale).sp,
-//                textAlign = TextAlign.Center,
-//                color = color,
-//                modifier = Modifier
-//                    .align(Alignment.CenterVertically)
-//            )
+            Spacer(Modifier.width(5.dp))
+
+            Text(
+                text = formatDistanceDiff(friendInfo.currentDistance - myCurrentDistance) + "km",
+                fontSize = (8 * scale).sp,
+                textAlign = TextAlign.Center,
+                color = color,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            )
         }
     }
 }

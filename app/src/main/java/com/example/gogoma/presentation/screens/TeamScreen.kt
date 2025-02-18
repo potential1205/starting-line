@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,10 @@ import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 @Composable
 fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
+
+    // ViewModel에서 상태를 가져오기
+    val friendInfoList = marathonDataViewModel.marathonState.collectAsState().value.friendInfoList
+
     val strokeWidth = 10
 
     // 위치 재정비 위해 LazyListState 초기화
@@ -126,9 +131,9 @@ fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
 
                         // 색상 결정 (isMe → 초록색, 중앙 아이템(단, isMe 아님) → 노란색, 기본 → 흰색)
                         val color = when {
-                            itemsWithPadding[index]?.isMe == true -> Color.Green
-                            isCenterItem -> Color.Yellow
-                            else -> Color.White
+                            itemsWithPadding[index]?.isMe == true -> Color(0xFF2680FF)
+                            isCenterItem -> Color(0xFFFFFFFF)
+                            else -> Color(0xFFB9B9B9)
                         }
 
                         if (itemsWithPadding[index] != null) {

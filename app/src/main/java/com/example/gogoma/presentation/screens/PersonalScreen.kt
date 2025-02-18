@@ -34,14 +34,6 @@ fun PersonalScreen (marathonDataViewModel: MarathonDataViewModel) {
     // ViewModel에서 elapsedTime 가져오기
     val elapsedTime = marathonDataViewModel.elapsedTime.collectAsState().value
 
-    // 상태 변화가 있을 때 UI 업데이트를 트리거
-    LaunchedEffect (personalState) {
-        // 상태 변화에 따른 작업 추가
-//        marathonDataViewModel.startDataListener
-
-        Log.d("PersonalScreen", "Screen updateData 실행")
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
