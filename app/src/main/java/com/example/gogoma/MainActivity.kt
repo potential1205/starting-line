@@ -37,6 +37,9 @@ class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels()
     private val TAG = "OAuthRedirectActivity"
 
+    // Android 13 이상에서 알림 권한 요청을 위한 launcher를 미리 등록
+    private var notificationPermissionLauncher: ActivityResultLauncher<String>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -45,34 +48,12 @@ class MainActivity : ComponentActivity() {
             GogomaApp(userViewModel)
         }
         createNotificationChannel()
-        //첫 실행 시 Intent 처리
+        // 첫 실행 시 Intent 처리
         handleIntent(intent)
 
-        lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
-
-        // Activity 시작 시 위치 권한 요청을 위한 launcher 등록
-        permissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-                if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
-                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
-                    // 권한이 허용되었으므로 필요한 작업 수행 (예: MarathonRunService 실행 전 미리 처리)
-                    // 필요에 따라 여기서 추가 작업을 할 수 있습니다.
-                } else {
-                    Log.e("MarathonRunService", "위치 권한이 거부되었습니다.")
-
-                }
-            }
-
-        // 앱 시작 시 즉시 위치 권한 요청
-        permissionLauncher.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
-        // Android 13 이상에서 알림 권한(POST_NOTIFICATIONS) 요청
+        // Android 13 이상에서 알림 권한 launcher 등록 (바로 실행하지 않고 필요할 때 호출)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val notificationPermissionLauncher = registerForActivityResult(
+            notificationPermissionLauncher = registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted ->
                 if (isGranted) {
@@ -82,29 +63,53 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this, "푸시 알림을 받으려면 알림 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
                 }
             }
-            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+
+        // 위치 권한 요청 launcher 등록
+        val locationPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+                val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+                val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+                if (fineLocationGranted && coarseLocationGranted) {
+                    Log.d(TAG, "위치 권한 허용됨")
+                    // 위치 권한 승인 후 Android 13 이상이면 알림 권한 요청
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        notificationPermissionLauncher?.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                } else {
+                    Log.e(TAG, "위치 권한이 거부되었습니다.")
+                }
+            }
+
+        // 앱 시작 시 즉시 위치 권한 요청
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        //이미 실행된 상태에서의 Intent 처리
+        // 이미 실행된 상태에서의 Intent 처리
         handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent?) {
         intent?.data?.let { uri ->
-            if(uri.scheme == "gogoma" && uri.host == "oauth") {
-                val code = uri.getQueryParameter("code") //인증 코드
-                Log.d(TAG, "auth code: ${code}")
-                if(code != null) {
+            if (uri.scheme == "gogoma" && uri.host == "oauth") {
+                val code = uri.getQueryParameter("code") // 인증 코드
+                Log.d(TAG, "auth code: $code")
+                if (code != null) {
                     requestAccessToken(code)
                 }
             }
         }
     }
 
-    private fun requestAccessToken(code: String){
+    private fun requestAccessToken(code: String) {
         val client = OkHttpClient()
 
         val requestBody = FormBody.Builder()
@@ -119,20 +124,16 @@ class MainActivity : ComponentActivity() {
             .post(requestBody)
             .build()
 
-        //비동기 실행 요청
+        // 비동기 실행 요청
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e(TAG, "Token request failed: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     val responseBody = response.body?.string()
-
-                    //응답 본문 출력
-                    Log.d(TAG, "response: ${response}")
-
-                    // 응답 본문에서 액세스 토큰 추출 (JSON 파싱)
+                    Log.d(TAG, "response: $response")
                     try {
                         val jsonResponse = JSONObject(responseBody)
                         val accessToken = jsonResponse.getString("access_token")
@@ -140,8 +141,7 @@ class MainActivity : ComponentActivity() {
                         Log.d(TAG, "Access Token: $accessToken")
                         Log.d(TAG, "Refresh Token: $refreshToken")
 
-                        // ViewModel로 토큰을 전달하여 후속 처리 진행
-                        if(accessToken != null && refreshToken != null) {
+                        if (accessToken != null && refreshToken != null) {
                             userViewModel.checkLoginOrSignUp(applicationContext, accessToken, refreshToken)
                         }
                     } catch (e: Exception) {
@@ -153,6 +153,7 @@ class MainActivity : ComponentActivity() {
             }
         })
     }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -170,8 +171,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GogomaApp(userViewModel: UserViewModel){
+fun GogomaApp(userViewModel: UserViewModel) {
     GogomaTheme {
         AppNavigation(userViewModel)
     }
 }
+
