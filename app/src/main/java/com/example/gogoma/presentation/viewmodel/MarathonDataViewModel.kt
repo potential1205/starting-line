@@ -19,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class MarathonDataViewModel : ViewModel() {
 
@@ -27,7 +26,7 @@ class MarathonDataViewModel : ViewModel() {
     var _marathonState = MutableStateFlow(
         MarathonData(
             time = System.currentTimeMillis(),
-            totalDistance = 20000, // 예제: 2km (cm 단위)
+            totalDistance = 20000,
             currentDistance = 0,
             currentDistanceRate = 0f,
             targetPace = 330, // 목표 페이스 (초)
@@ -67,6 +66,15 @@ class MarathonDataViewModel : ViewModel() {
                 updateElapsedTime()
             }
         }
+
+//        viewModelScope.launch {
+//            while (true) {
+//                delay(1000L)
+//                updateMarathonState(_marathonState.value)
+//
+//                Log.d("viewModelScope", "updateData 실행")
+//            }
+//        }
     }
 
 //    // 예: 상태 업데이트
@@ -106,7 +114,6 @@ class MarathonDataViewModel : ViewModel() {
         )
     }
 
-    var idx = 1
     fun startDataListener(context: Context) {
         appContext = context.applicationContext
         val dataClient = Wearable.getDataClient(appContext!!)
@@ -136,7 +143,7 @@ class MarathonDataViewModel : ViewModel() {
                             val friendInfoListType = object : TypeToken<List<FriendInfo>>() {}.type
                             val friendInfoList: List<FriendInfo> = gson.fromJson(jsonFriendInfoList, friendInfoListType)
 
-                            Log.d("marathon", "update 이벤트가 발생했습니다."+targetTime+", idx: "+idx++)
+                            Log.d("marathon", "update 이벤트가 발생했습니다.")
 
                             _marathonState.value = state?.let {
                                 _marathonState.value.copy(
@@ -174,7 +181,7 @@ class MarathonDataViewModel : ViewModel() {
 //                                )
 //                            }
 
-                            Log.d("marathon", _marathonState.value.totalDistance.toString())
+                            Log.d("marathon", _marathonState.value.toString())
                         }
                         "/ready" -> {
                             val dataMapItem = DataMapItem.fromDataItem(dataItem)

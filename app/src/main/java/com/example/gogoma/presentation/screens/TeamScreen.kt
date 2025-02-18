@@ -31,9 +31,10 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.TeamProgressBar
 import com.example.gogoma.presentation.components.TeamStatus
 import com.example.gogoma.presentation.data.FriendInfo
+import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 @Composable
-fun TeamScreen() {
+fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
     val strokeWidth = 10
 
     // 위치 재정비 위해 LazyListState 초기화
@@ -170,5 +171,5 @@ val friendInfoList = listOf(
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun TeamScreenPreview() {
-    TeamScreen()
+//    TeamScreen()
 }

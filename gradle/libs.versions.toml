@@ -1,5 +1,6 @@
 [versions]
 agp = "8.8.0"
+fragmentKtx = "1.8.6"
 kotlin = "2.0.0"
 lifecycleViewmodelCompose = "2.8.7"
 playServicesWearable = "19.0.0"
@@ -21,7 +22,9 @@ navigationCompose = "2.8.6"
 viewpager2 = "1.1.0"
 
 [libraries]
+fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelCompose" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 ui = { group = "androidx.compose.ui", name = "ui" }

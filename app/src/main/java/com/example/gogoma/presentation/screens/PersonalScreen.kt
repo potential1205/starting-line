@@ -1,5 +1,6 @@
 package com.example.gogoma.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,8 +22,8 @@ import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import kotlin.math.floor
 
 @Composable
-fun PersonalScreen () {
-    val marathonDataViewModel: MarathonDataViewModel = viewModel() // ViewModel 주입
+fun PersonalScreen (marathonDataViewModel: MarathonDataViewModel) {
+//    val marathonDataViewModel: MarathonDataViewModel = viewModel() // ViewModel 주입
 
     // ViewModel에서 상태를 가져오기
     val personalState = marathonDataViewModel.marathonState.collectAsState().value
@@ -39,7 +40,9 @@ fun PersonalScreen () {
     // 상태 변화가 있을 때 UI 업데이트를 트리거
     LaunchedEffect (personalState) {
         // 상태 변화에 따른 작업 추가
-        marathonDataViewModel.updateMarathonState(personalState)
+//        marathonDataViewModel.startDataListener
+
+        Log.d("PersonalScreen", "Screen updateData 실행")
     }
 
     Box(
@@ -87,6 +90,6 @@ fun formatDistance(distance: Int): String {
 @Composable
 fun PersonalScreenPreview() {
     GogomaWatchTheme {
-        PersonalScreen()
+//        PersonalScreen()
     }
 }

@@ -24,10 +24,10 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 @Composable
-fun StartScreen(navController: NavController) {
+fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDataViewModel) {
     val context = LocalContext.current
     val activity = context as? Activity
-    val marathonDataViewModel: MarathonDataViewModel = viewModel()
+//    val marathonDataViewModel: MarathonDataViewModel = viewModel()
 
     // ViewModel에서 상태를 가져오기
     val marathonState = marathonDataViewModel.marathonState.collectAsState().value
@@ -52,7 +52,7 @@ fun StartScreen(navController: NavController) {
         ) {
             if (marathonState.marathonTitle.isNotEmpty()) {
                 Text(
-                    marathonDataViewModel.marathonState.value.marathonTitle,
+                    text = marathonState.marathonTitle,
                     fontSize = 14.sp,
                     color = Color.White
                 )
@@ -130,5 +130,5 @@ fun CheckWearOSConnection() {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun StartScreenPreview() {
-    StartScreen(navController = rememberNavController())
+//    StartScreen(navController = rememberNavController())
 }

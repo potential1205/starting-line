@@ -7,6 +7,7 @@ package com.example.gogoma.presentation
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,8 +15,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.navigation.AppNavigation
+import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 class MainActivity : FragmentActivity() {
+    val marathonDataViewModel: MarathonDataViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
 
@@ -25,7 +29,7 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            AppNavigation(navController = navController)
+            AppNavigation(navController = navController, marathonDataViewModel)
         }
     }
 }
@@ -34,5 +38,5 @@ class MainActivity : FragmentActivity() {
 @Composable
 fun DefaultPreview() {
     val navController = rememberNavController()
-    AppNavigation(navController = navController)
+//    AppNavigation(navController = navController)
 }
