@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.data.dto.UserMarathonSearchDto
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
@@ -32,9 +34,9 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
         modifier = Modifier
             .clickable(onClick = onClick)
             .width(412.dp)
-            .height(103.dp)
+            .height(85.dp)
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = 19.dp, top = 13.dp, end = 19.dp, bottom = 13.dp)
+            .padding(start = 20.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
     ) {
         Column (
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
@@ -48,8 +50,16 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // 연한 회색 날짜 (예: 24.06.18)
+                fun formatDateTimeUsingLocalDateTime(input: String): String {
+                    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                    val outputFormatter = DateTimeFormatter.ofPattern("yy. M. d. HH:mm:ss")
+
+                    val dateTime = LocalDateTime.parse(input, inputFormatter)  // 문자열을 LocalDateTime으로 변환
+                    return dateTime.format(outputFormatter)  // 원하는 형식으로 변환
+                }
+
                 Text(
-                    text = regist.paymentDateTime,
+                    text = formatDateTimeUsingLocalDateTime(regist.paymentDateTime),
                     fontSize = 12.sp,
                     color = Color.Gray.copy(alpha = 0.5f)
                 )
@@ -69,66 +79,31 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column (modifier = Modifier
-                    .width(214.dp)
-                    .wrapContentHeight()
-                ) {
-                    // 마라톤 제목
-                    Text(
-                        text = regist.marathonTitle,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        ),
-                    )
+                // 마라톤 제목
+                Text(
+                    text = regist.marathonTitle,
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    ),
+                )
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    // 마라톤 날짜 및 거리 정보
-                    Row(modifier = Modifier
-                        .width(214.dp)
-                        .height(16.dp)) {
-                        Text(
-                            text = regist.raceStartDateTime,
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-
-                        Spacer(Modifier.width(10.dp))
-
-                        Text(
-                            text = regist.marathonType.toString(),
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    }
-
-                }
                 // 오른쪽 'D-50' 배지
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    regist.dday?.let {
-                        Text(
-                            text = it,
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                color = Color.White
-                            ),
-                            modifier = Modifier
-                                .background(
-                                    // 지난 마라톤이면 회색, 아니면 초록색
-                                    color = if (regist.dday.equals("D-?")) Color.Gray.copy(alpha = 0.5f) else Color(0xFF4CAF50),
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
-                        )
-                    }
-
+                regist.dday?.let {
+                    Text(
+                        text = it,
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        modifier = Modifier
+                            .background(
+                                // 지난 마라톤이면 회색, 아니면 BrandColor
+                                color = if (regist.dday.contains("D+")) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
                 }
             }
 
