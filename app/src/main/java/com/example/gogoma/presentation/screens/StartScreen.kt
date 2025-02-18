@@ -18,16 +18,16 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.MaterialTheme
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 @Composable
-fun StartScreen(navController: NavController) {
+fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDataViewModel) {
     val context = LocalContext.current
     val activity = context as? Activity
-    val marathonDataViewModel: MarathonDataViewModel = viewModel()
+
+    // ViewModel에서 상태를 가져오기
+    val marathonState = marathonDataViewModel.marathonState.collectAsState().value
 
     // 한 번만 Data Listener를 시작하도록 LaunchedEffect 사용
     LaunchedEffect(Unit) {
@@ -47,9 +47,9 @@ fun StartScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (marathonDataViewModel.marathonState.value.marathonTitle.isNotEmpty()) {
+            if (marathonState.marathonTitle.isNotEmpty()) {
                 Text(
-                    marathonDataViewModel.marathonState.value.marathonTitle,
+                    text = marathonState.marathonTitle,
                     fontSize = 14.sp,
                     color = Color.White
                 )
@@ -65,7 +65,7 @@ fun StartScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    "참여 ${marathonDataViewModel.marathonState.value.totalMemberCount}",
+                    "참여 ${marathonState.totalMemberCount}",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
@@ -127,5 +127,5 @@ fun CheckWearOSConnection() {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun StartScreenPreview() {
-    StartScreen(navController = rememberNavController())
+//    StartScreen(navController = rememberNavController())
 }

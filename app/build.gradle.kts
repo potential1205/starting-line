@@ -69,6 +69,8 @@ dependencies {
 
     // viewModel
     implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.fragment.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
 
     implementation("com.google.code.gson:gson:2.10.1")
 }
