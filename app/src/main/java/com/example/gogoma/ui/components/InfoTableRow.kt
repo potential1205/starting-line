@@ -35,7 +35,6 @@ fun InfoTableRow(label: String, value: String) {
             text = label,
             style = TextStyle(
                 fontSize = 13.sp,
-                fontWeight = FontWeight.Light,
                 color = MaterialTheme.colorScheme.onBackground,
             )
         )
@@ -44,7 +43,6 @@ fun InfoTableRow(label: String, value: String) {
             text = value,
             style = TextStyle(
                 fontSize = 13.sp,
-                fontWeight = FontWeight.Light,
                 color = MaterialTheme.colorScheme.onBackground,
             )
         )

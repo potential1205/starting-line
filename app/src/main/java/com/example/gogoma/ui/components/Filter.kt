@@ -35,12 +35,12 @@ fun Filter(
                 .horizontalScroll(scrollState)
                 .fillMaxWidth()
                 .height(62.2.dp)
-                .padding(start = 18.dp, top = 13.dp, end = 18.dp, bottom = 17.dp),
+                .padding(start = 19.dp, top = 4.dp, end = 19.dp, bottom = 17.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             FilterChip(
-                backgroundColor = MaterialTheme.colorScheme.tertiary,
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiary,
                 icon = R.drawable.icon_tune,
                 onCLick = {
@@ -49,50 +49,39 @@ fun Filter(
             )
             FilterChip(
                 text = selectedFilters.city ?: "지역",
+                isPoint = selectedFilters.city != null,
                 onCLick = {
                     onFilterClick("지역")
                 }
             )
             FilterChip(
                 text = selectedFilters.marathonStatus ?: "접수 상태",
+                isPoint = selectedFilters.marathonStatus != null,
                 onCLick = {
                     onFilterClick("접수 상태")
                 }
             )
             FilterChip(
                 text = selectedFilters.courseTypeList?.joinToString(", ") ?: "종목",
+                isPoint = selectedFilters.courseTypeList?.isNotEmpty() == true,
                 onCLick = {
                     onFilterClick("종목")
                 }
             )
             FilterChip(
                 text = selectedFilters.year ?: "년도",
+                isPoint = selectedFilters.year != null,
                 onCLick = {
                     onFilterClick("년도")
                 }
             )
             FilterChip(
                 text = selectedFilters.month ?: "월",
+                isPoint = selectedFilters.month != null,
                 onCLick = {
                     onFilterClick("월")
                 }
             )
         }
-
-        // 하단 border
-        Canvas(modifier = Modifier
-            .fillMaxWidth()
-            .align(Alignment.BottomCenter)
-        ) {
-            val strokeWidth = 1.dp.toPx()
-            val y = size.height - strokeWidth / 2
-            drawLine(
-                color = Color(0xFFE7E7E7),
-                start = Offset(0f, y),
-                end = Offset(size.width, y),
-                strokeWidth = strokeWidth
-            )
-        }
     }
-
 }

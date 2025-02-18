@@ -1,7 +1,6 @@
 package com.example.gogoma.ui.screens
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,7 +31,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +52,7 @@ import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonViewModel
 import com.example.gogoma.viewmodel.PaceViewModel
 import com.example.gogoma.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun PaceScreen(
@@ -99,6 +107,15 @@ fun PaceScreen(
             )
         }
     }
+
+    LaunchedEffect(marathon) {
+        if(marathon != null){
+            paceViewModel.getUpcomingMarathonFriendList(
+                TokenManager.getAccessToken(context = context).toString()
+            )
+        }
+
+    }
     LaunchedEffect(totalTextWidth + totalColumnWidth) {
         isColumn = (totalTextWidth + totalColumnWidth) > contentWidth
     }
@@ -120,14 +137,55 @@ fun PaceScreen(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "아직 준비된 대회가 없습니다",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 10.dp, top = 58.dp, end = 10.dp, bottom = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(182.dp, Alignment.CenterVertically),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(23.dp, Alignment.Top),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = "이런!",
+                            style = TextStyle(
+                                fontSize = 49.sp,
+                                fontFamily = FontFamily(Font(R.font.partialsanskr_regular)),
+                                fontWeight = FontWeight(400),
+                                color = Color(0xFF000000),
+                                textAlign = TextAlign.Center,
+                            )
+                        )
+                        Text(
+                            text = "아직 가까운 대회가 없습니다.",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Light,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center,
+                            )
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            navController.navigate("main")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2680FF)),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(horizontal = 55.dp, vertical = 14.dp)
+                    ) {
+                        Text(
+                            text = "다른 대회 둘러보기",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        )
+                    }
+                }
             }
 
         } else {
@@ -293,20 +351,20 @@ fun PaceScreen(
                         }
                     }
                 }
+                val scope = rememberCoroutineScope()
                 ButtonBasic(
                     text = "준비",
                     modifier = Modifier.fillMaxWidth(),
                     round = 0.dp,
                     onClick = {
-                        marathonViewModel.marathonReady()
-
-                        marathonStartInitDataResponse?.let {
-                            paceViewModel.saveMarathonDataToDB(
-                                it
-                            )
+                        scope.launch {
+                            marathonStartInitDataResponse?.let { response ->
+                                paceViewModel.saveMarathonDataToDB(response) {
+                                    marathonViewModel.marathonReady()
+                                }
+                                navController.navigate("watchConnect")
+                            }
                         }
-
-                        navController.navigate("watchConnect")
                     }
                 )
             }

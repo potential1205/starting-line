@@ -57,7 +57,6 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = "${friendResponse.rank}",
                 style = TextStyle(
                     fontSize = 26.sp,
-                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                 )

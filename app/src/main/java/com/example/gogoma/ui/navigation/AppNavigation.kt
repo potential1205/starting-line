@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.ui.components.bottomsheets.MainBottomSheetContent
 import com.example.gogoma.ui.components.bottomsheets.PaceSettingBottomSheetContent
+import com.example.gogoma.ui.components.bottomsheets.PrivacyPolicyBottomSheetContent
 import com.example.gogoma.ui.screens.FriendListScreen
 import com.example.gogoma.ui.screens.PaceScreen
 import com.example.gogoma.ui.screens.PaymentWebViewScreen
@@ -160,7 +161,7 @@ fun AppNavigation(userViewModel: UserViewModel){
         ) { backStackEntry ->
             val marathonId = backStackEntry.arguments?.getInt("id")
             marathonId?.let {
-                PaymentScreen(navController = navController, marathonId = it, viewModel = paymentViewModel)
+                PaymentScreen(navController = navController, marathonId = it, viewModel = paymentViewModel, bottomSheetViewModel = bottomSheetViewModel)
             }
         }
 
@@ -218,6 +219,7 @@ fun AppNavigation(userViewModel: UserViewModel){
             when (navController.currentDestination?.route) {
                 "main" -> MainBottomSheetContent(bottomSheetViewModel, marathonListViewModel)
                 "paceSetting" -> PaceSettingBottomSheetContent(bottomSheetViewModel, paceViewModel)
+                "payment/{id}" -> PrivacyPolicyBottomSheetContent(onDismiss = { bottomSheetViewModel.hideBottomSheet()} )
                 else -> Unit // 기본 content는 없게 설정
             }
         }

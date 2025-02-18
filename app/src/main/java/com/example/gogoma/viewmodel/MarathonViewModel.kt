@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gogoma.data.api.RetrofitInstance
 import com.example.gogoma.data.model.MarathonStartInitDataResponse
 import com.example.gogoma.data.repository.UserDistanceRepository
 import com.example.gogoma.data.util.MarathonRealTimeDataUtil
@@ -23,7 +22,10 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
 import androidx.core.content.ContextCompat.checkSelfPermission
+import com.example.gogoma.GlobalApplication
+import com.example.gogoma.data.dto.MarathonRealTimeData
 import com.google.android.gms.location.*
+import com.google.gson.Gson
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 
@@ -33,13 +35,9 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
 
     var isMarathonStart by mutableStateOf(false)
     var isMarathonReady by mutableStateOf(false)
-    var marathonReadyData: MarathonStartInitDataResponse? = null
 
     private val dataClient: DataClient = Wearable.getDataClient(application)
     private var marathonRealTimeDataUtil: MarathonRealTimeDataUtil = MarathonRealTimeDataUtil(getApplication())
-
-    private val MARATHON_ID = 30
-    private val ACCESS_TOKEN = "5d0yuZ-9ZuBMTO52HFvYfjNJ1_iaqxk2AAAAAQo9cuoAAAGVDuMr5pCBbdpZdq0Z"
 
     private var marathonStartTimer: Timer? = null
 
@@ -53,43 +51,37 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     }
 
     // -------------------------------------------------------------- //
-    // ------------------[Marathon Ready to Server]------------------ //
+    // -----------------------[Marathon Ready]----------------------- //
     // -------------------------------------------------------------- //
     @SuppressLint("VisibleForTests")
     fun marathonReady() {
         viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.watchApiService.getMarathonStartInitData(ACCESS_TOKEN, MARATHON_ID)
-                if (response.isSuccessful) {
-                    val readyData = response.body()
-                    if (readyData != null) {
-                        marathonReadyData = readyData
-                        isMarathonReady = true
-                        Log.d("marathon", "[Marathon Ready] 준비 데이터 로드 성공: $readyData")
-                        marathonRealTimeDataUtil.setReadyData(readyData)
-                        Log.d("marathon", "[Marathon Ready] 준비 데이터 세팅 성공: $readyData")
-                    } else {
-                        Log.e("marathon", "[Marathon Ready] 응답 본문이 null입니다.")
-                    }
-                } else {
-                    Log.e("marathon", "[Marathon Ready] 요청 실패: ${response.errorBody()?.string()}")
-                }
-            } catch (e: retrofit2.HttpException) {
-                Log.e("marathon", "[Marathon Ready] HTTP 예외: ${e.message}", e)
-            } catch (e: Exception) {
-                Log.e("marathon", "[Marathon Ready] 예상치 못한 오류", e)
+            val db = GlobalApplication.instance.database
+
+            var myInfo = db.myInfoDao().getMyInfo()
+            var marathon = db.marathonDao().getMarathon()
+            var friendList = db.friendDao().getAllFriends()
+
+            if (myInfo != null && marathon != null && friendList != null) {
+                marathonRealTimeDataUtil.setReadyData(myInfo, marathon, friendList)
+                isMarathonReady = true
+                sendMarathonReady()
             }
+
+            Log.d("marathon", "[Marathon Ready] myInfo: $myInfo, marathon: $marathon, friendList: $friendList")
         }
     }
-
 
     // -------------------------------------------------------------- //
     // -------------------[Marathon Ready to Watch]------------------ //
     // -------------------------------------------------------------- //
     @SuppressLint("VisibleForTests")
     fun sendMarathonReady() {
+        var marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
         val putDataMapRequest = PutDataMapRequest.create("/ready").apply {
             dataMap.putLong("timestamp", System.currentTimeMillis())
+            dataMap.putString("marathonTitle", marathonRealTimeData.marathonTitle)
+            dataMap.putInt("totalMemberCount", marathonRealTimeData.totalMemberCount)
         }
         val putDataRequest = putDataMapRequest.asPutDataRequest().setUrgent()
 
@@ -150,14 +142,23 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     // ------------------------------------------------------------------------------ //
     @SuppressLint("VisibleForTests")
     fun marathonSendData() {
-        val marathonRealTimeData = marathonRealTimeDataUtil?.getMarathonRealTimeData()
+        val marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
         Log.d("marathon", "[Marathon Ing] 데이터 전송 성공 : $marathonRealTimeData")
 
         val putDataMapRequest = PutDataMapRequest.create("/update").apply {
-            marathonRealTimeData?.let {
-                dataMap.putInt("myRank", it.myRank)
-            }
-            dataMap.putLong("timestamp", System.currentTimeMillis())
+            dataMap.putInt("totalMemberCount", marathonRealTimeData.totalMemberCount)
+            dataMap.putInt("totalDistance", marathonRealTimeData.totalDistance)
+            dataMap.putInt("currentDistance", marathonRealTimeData.currentDistance)
+            dataMap.putFloat("currentDistanceRate", marathonRealTimeData.currentDistanceRate)
+            dataMap.putInt("targetPace", marathonRealTimeData.targetPace)
+            dataMap.putInt("currentPace", marathonRealTimeData.currentPace)
+            dataMap.putInt("targetTime", marathonRealTimeData.targetTime)
+            dataMap.putInt("currentTime", marathonRealTimeData.currentTime)
+            dataMap.putInt("myRank", marathonRealTimeData.myRank)
+            dataMap.putString("state", marathonRealTimeData.state)
+
+            val jsonFriendInfoList = Gson().toJson(marathonRealTimeData.friendInfoList)
+            dataMap.putString("friendInfoList", jsonFriendInfoList)
         }
         val putDataRequest = putDataMapRequest.asPutDataRequest().setUrgent()
 

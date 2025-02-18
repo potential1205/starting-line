@@ -1,25 +1,59 @@
 package com.example.gogoma.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.gogoma.R
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.Filter
 import com.example.gogoma.ui.components.MarathonListItem
@@ -28,6 +62,9 @@ import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonListViewModel
 import com.example.gogoma.viewmodel.ScrollViewModel
 import com.example.gogoma.viewmodel.UserViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Composable
 fun MainScreen(
@@ -43,6 +80,18 @@ fun MainScreen(
     val isLoading = marathonListViewModel.isLoading
     val errorMessage = marathonListViewModel.errorMessage
     val listState = rememberLazyListState()
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
+    //리스트로의 이동 동작
+    val coroutineScope = rememberCoroutineScope()
+
+    // LazyColumn의 첫 번째 보이는 아이템 인덱스 추적
+    val firstVisibleItemIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+
+    // 필터 고정 여부
+    val isFilterFixed = firstVisibleItemIndex > 0
+
 
     // 스크롤 위치 복원
     LaunchedEffect(scrollViewModel.scrollPosition) {
@@ -67,12 +116,31 @@ fun MainScreen(
     }
 
     Scaffold (
-        topBar = { TopBar() },
+        topBar = {
+            Column {
+                TopBar()
+                if(isFilterFixed) {
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp),
+                    ){
+                        Filter(
+                            onFilterClick = onFilterClick,
+                            selectedFilters = marathonListViewModel.selectedFilters
+                        )
+                    }
+                }
+            }
+         },
         bottomBar = { BottomBar(navController = navController, userViewModel) }
     ){ paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(screenHeight * 2)
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ){
 
             // 오류 메시지가 있을 경우 표시
             errorMessage?.let { msg ->
@@ -93,8 +161,7 @@ fun MainScreen(
             if(isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp),
+                        .size(60.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
             } else {
@@ -103,23 +170,100 @@ fun MainScreen(
                     state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .fillMaxHeight()
                         .padding(horizontal = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // 필터 컴포넌트
+                    //표지 화면
                     item {
-                        Filter(
-                            onFilterClick = onFilterClick,
-                            selectedFilters = marathonListViewModel.selectedFilters
-                        )
+                        Column (
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .height(screenHeight - 65.dp)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterVertically),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ){
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_steps),
+                                    contentDescription = "step icon",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(125.dp)
+                                )
+                                Text(
+                                    text = buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontSize = 29.5.sp)) {
+                                            append("첫 번째 ")
+                                        }
+                                        withStyle(style = SpanStyle(fontSize = 29.5.sp, color = MaterialTheme.colorScheme.primary)) {
+                                            append("출발")
+                                        }
+                                        withStyle(style = SpanStyle(fontSize = 29.5.sp)) {
+                                            append(",")
+                                        }
+                                        withStyle(style = SpanStyle(fontSize = 17.5.sp)) {
+                                            append("\n마라톤을 뛰러 가 볼까요?")
+                                        }
+                                    },
+                                    style = TextStyle(
+                                        lineHeight = 33.sp,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                )
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .padding(top = 24.dp, bottom = 89.dp),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                IconButton (
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            listState.animateScrollToItem(1) //리스트로 이동
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_keyboard_arrow_down),
+                                        contentDescription = "down arrow",
+                                        tint = Color(0xFFB0B0B0),
+                                        modifier = Modifier.size(58.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
-                    // 받아온 리스트 데이터 렌더링
-                    items(marathonList) { marathon ->
-                        MarathonListItem(
-                            marathonPreviewDto = marathon,
-                            onClick = { onMarathonClick(marathon.id) }
-                        )
+
+                    // 필터 컴포넌트 (스크롤 될 때 고정)
+                    item {
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .heightIn(min = screenHeight)
+                        ){
+                            Column {
+                                if (!isFilterFixed) {
+                                    Filter(
+                                        onFilterClick = onFilterClick,
+                                        selectedFilters = marathonListViewModel.selectedFilters
+                                    )
+                                }
+                                marathonList.forEach { marathon ->
+                                    MarathonListItem(
+                                        marathonPreviewDto = marathon,
+                                        onClick = { onMarathonClick(marathon.id) }
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -127,3 +271,17 @@ fun MainScreen(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview(){
+    MainScreen(navController = rememberNavController(),
+        userViewModel = UserViewModel(),
+        marathonListViewModel = MarathonListViewModel(),
+        bottomSheetViewModel = BottomSheetViewModel(),
+        scrollViewModel =ScrollViewModel(),
+        onFilterClick = {},
+    onMarathonClick = {})
+}
+
+

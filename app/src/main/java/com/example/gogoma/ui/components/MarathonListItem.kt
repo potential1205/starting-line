@@ -94,155 +94,75 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
                     )
                 }
             )
-            .padding(top = 25.dp, bottom = 25.dp, start = 11.dp, end = 11.dp),
-        horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
-        verticalAlignment = Alignment.Top,
+            .padding(start = 20.dp, top = 20.dp, end = 16.dp, bottom = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        ImageOrPlaceholder(imageUrl = marathonPreviewDto.thumbnailImage)
+        //Left
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 11.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
             horizontalAlignment = Alignment.Start,
         ) {
-            //Top
-            Row(
+            Text(
+                text = marathonPreviewDto.title,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.W500,
+                    color = Color(0xFF000000),
+                )
+            )
+            val formattedRaceStartTime = FormattedDate(marathonPreviewDto.raceStartTime)
+            Text(
+                text = "대회일시 ${(formattedRaceStartTime)}",
+                style = TextStyle(
+                    fontSize = 11.8.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF999999),
+                )
+            )
+        }
+
+        //Right
+        Column(
+            verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            val marathonStatus = marathonPreviewDto.marathonStatus
+            val marathonStatusText = when (marathonStatus) {
+                "OPEN" -> "접수중"
+                "CLOSED" -> "접수 종료"
+                "FINISHED" -> "접수 마감"
+                else -> marathonStatus
+            }
+
+            val marathonStatusBackgroundColor = when (marathonStatus) {
+                "OPEN" -> MaterialTheme.colorScheme.secondary
+                "CLOSED" -> MaterialTheme.colorScheme.error
+                "FINISHED" -> Color.Gray
+                else -> MaterialTheme.colorScheme.secondary
+            }
+
+            Text(
+                text = marathonPreviewDto.dday,
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Light,
+                    color = Color(0xFF2680FF),
+                )
+            )
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                val marathonStatus = marathonPreviewDto.marathonStatus
-                val marathonStatusText = when (marathonStatus) {
-                    "OPEN" -> "접수중"
-                    "CLOSED" -> "접수 종료"
-                    "FINISHED" -> "접수 마감"
-                    else -> marathonStatus
-                }
-
-                val marathonStatusBackgroundColor = when (marathonStatus) {
-                    "OPEN" -> MaterialTheme.colorScheme.secondary
-                    "CLOSED" -> MaterialTheme.colorScheme.error
-                    "FINISHED" -> Color.Gray
-                    else -> MaterialTheme.colorScheme.secondary
-                }
-
-                TextBoxSmall(
+                    .background(color = Color(0xFF2680FF), shape = RoundedCornerShape(size = 4.dp))
+                    .padding(start = 10.dp, top = 4.dp, end = 10.dp, bottom = 4.dp)
+            ){
+                Text(
                     text = marathonStatusText,
-                    backgroundColor = marathonStatusBackgroundColor
-                )
-                TextBoxSmall(
-                    text = marathonPreviewDto.dday,
-                    backgroundColor = marathonStatusBackgroundColor
-                )
-            }
-
-            //Middle
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
-                horizontalAlignment = Alignment.Start,
-            ) {
-                Text(marathonPreviewDto.title, style = TextStyle(fontWeight = FontWeight.Bold))
-                Text(
-                    text = if (marathonPreviewDto.registrationStartDateTime == null && marathonPreviewDto.registrationEndDateTime == null) {
-                        "접수 선착순"
-                    } else {
-                        "접수 ${marathonPreviewDto.registrationStartDateTime ?: ""}~${marathonPreviewDto.registrationEndDateTime ?: ""}"
-                    },
                     style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color(0xFFB3B3B3),
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                if(isColumn){//반응형
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
-                        horizontalAlignment = Alignment.Start,
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.icon_location_on),
-                                contentDescription = "Logo",
-                                tint = Color(0xFF606060),
-                                modifier = Modifier.size(9.dp)
-                            )
-                            Text(
-                                text = marathonPreviewDto.location,
-                                style = TextStyle(
-                                    fontSize = 10.sp,
-                                    color = Color(0xFF606060)
-                                )
-                            )
-                        }
-                        Text(
-                            text = marathonPreviewDto.courseTypeList.joinToString(" ") { "#${it}" },
-                            style = TextStyle(
-                                fontSize = 10.sp,
-                                color = Color(0xFF606060)
-                            )
-                        )
-                    }
-                }else{
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Row(
-                            modifier = locationModifier,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.Start),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.icon_location_on),
-                                contentDescription = "Logo",
-                                tint = Color(0xFF606060),
-                                modifier = Modifier.size(9.dp)
-                            )
-                            Text(
-                                text = marathonPreviewDto.location,
-                                style = TextStyle(
-                                    fontSize = 10.sp,
-                                    color = Color(0xFF606060)
-                                )
-                            )
-                        }
-                        Text(
-                            text = marathonPreviewDto.courseTypeList.joinToString(" ") { "#${it}" },
-                            style = TextStyle(
-                                fontSize = 10.sp,
-                                color = Color(0xFF606060)
-                            ),
-                            modifier = hashModifier
-                        )
-                    }
-                }
-
-            }
-
-            //Bottom
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
-                horizontalAlignment = Alignment.Start,
-            ) {
-                val formattedRaceStartTime = FormattedDate(marathonPreviewDto.raceStartTime)
-                Text(
-                    text = "대회일시 ${(formattedRaceStartTime)}",
-                    style = TextStyle(
-                        fontSize = 13.8.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color(0xFFFFFFFF),
                     )
                 )
             }
@@ -268,8 +188,8 @@ fun MarathonListItemPreview(){
             thumbnailImage = "https://example.com/seoul_thumbnail.jpg",
             courseTypeList = listOf("풀코스", "하프코스"),
             marathonTypeList = listOf(
-                MarathonType(id = 1, marathonId = 1, courseType = "풀코스", price = "50000", etc = "마라톤 풀코스"),
-                MarathonType(id = 2, marathonId = 1, courseType = "하프코스", price = "30000", etc = "하프마라톤")
+                MarathonType(id = 1, marathonId = 1, courseType = 100000, price = "50000", etc = "마라톤 풀코스"),
+                MarathonType(id = 2, marathonId = 1, courseType = 100000, price = "30000", etc = "하프마라톤")
             ),
             dday = "30"
         ),

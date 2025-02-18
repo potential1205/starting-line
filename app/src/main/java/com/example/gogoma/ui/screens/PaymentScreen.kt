@@ -17,6 +17,7 @@ import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.ui.components.*
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.data.model.MarathonDetailResponse
+import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,7 +26,8 @@ import java.util.*
 fun PaymentScreen(
     navController: NavController,
     marathonId: Int?,
-    viewModel: PaymentViewModel
+    viewModel: PaymentViewModel,
+    bottomSheetViewModel: BottomSheetViewModel
 ) {
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
     var marathonDetail by remember { mutableStateOf<MarathonDetailResponse?>(null) }
@@ -59,13 +61,14 @@ fun PaymentScreen(
             rawDate
         }
 
-        val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
+        val distanceOnly = selectedOption?.split(" - ")?.firstOrNull()?.filter { it.isDigit() }?.toIntOrNull() ?: 0
 
         UserMarathonSearchDto (
             paymentDateTime = currentDate,
             marathonTitle = detail.marathon.title,
             raceStartDateTime = formattedDate,
-            marathonType = distanceOnly
+            marathonType = distanceOnly,
+            userMarathonId = detail.marathon.id
         )
     }
 
@@ -98,13 +101,14 @@ fun PaymentScreen(
                                     Log.e("PaymentScreen", "❌ 날짜 변환 실패: ${e.message}")
                                     rawDate
                                 }
-                                val distanceOnly = selectedOption?.split(" - ")?.firstOrNull() ?: ""
+                                val distanceOnly = selectedOption?.split(" - ")?.firstOrNull()?.filter { it.isDigit() }?.toIntOrNull() ?: 0
 
                                 UserMarathonSearchDto (
                                     paymentDateTime = currentDate,
                                     marathonTitle = detail.marathon.title,
                                     raceStartDateTime = formattedDate,
-                                    marathonType = distanceOnly
+                                    marathonType = distanceOnly,
+                                    userMarathonId = detail.marathon.id
                                 )
                             }
 
@@ -172,6 +176,7 @@ fun PaymentScreen(
                                 selectedOption = selected
                                 viewModel.updateSelectedDistance(selected)
                                 selectedPrice = courseOptions.find { it.first == selected }?.second ?: 0
+                                viewModel.updateSelectedPrice(selectedPrice)
                             }
                         )
                     }
@@ -185,7 +190,7 @@ fun PaymentScreen(
                     text = "개인정보 수집 및 이용 안내",
                     isChecked = isAgreementChecked,
                     onCheckedChange = { checked -> isAgreementChecked = checked },
-                    onViewClicked = { }
+                    onViewClicked = { bottomSheetViewModel.showBottomSheet("privacyPolicy") }
                 )
             }
 
