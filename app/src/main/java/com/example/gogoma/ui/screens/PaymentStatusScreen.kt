@@ -182,85 +182,81 @@ fun ContentLayout (isSuccess: Boolean, registInfo: UserMarathonSearchDto?) {
     }else{
         MaterialTheme.colorScheme.secondary
     }
+
     LazyColumn (
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 40.dp, top = 110.dp, end = 40.dp, bottom = 110.dp),
-        verticalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
-            Icon(
-                painter = painter,
-                contentDescription = "payment status icon",
-                tint = pointColor,
+            Column (
                 modifier = Modifier
-                    .size(110.dp)
-            )
-        }
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
+                    .fillMaxSize()
+                    .padding(start = 40.dp, top = 110.dp, end = 40.dp, bottom = 110.dp),
+                verticalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = if(isSuccess) "결제 완료" else "결제 실패",
-                    style = TextStyle(
-                        fontSize = 25.5.sp,
-                        lineHeight = 45.9.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = pointColor,
-                        textAlign = TextAlign.Center,
-                    )
-                )
-                Text(
-                    text = if(isSuccess) "무사히 첫 출발을\n해냈습니다" else "결제에 실패했습니다.",
-                    style = TextStyle(
-                        fontSize = 13.5.sp,
-                        lineHeight = 21.6.sp,
-                        fontWeight = FontWeight.Light,
-                        color = Color(0xFF1C1C1C),
-                        textAlign = TextAlign.Center,
-                    )
-                )
-            }
-        }
-        item {
-            if(registInfo != null){
-                RegistListItem(registInfo, onClick = {}, background = Color.Transparent)
-            }
-        }
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Button(
-                    onClick = {
-                        // 버튼 클릭 시 실행될 동작 추가
-                    },
+                Icon(
+                    painter = painter,
+                    contentDescription = "payment status icon",
+                    tint = pointColor,
                     modifier = Modifier
-                        .width(332.dp)
-                        .height(44.dp)
-                        .background(color = Color(0xFF2680FF), shape = RoundedCornerShape(size = 4.dp))
-                        .padding(start = 18.dp, top = 10.dp, end = 18.dp, bottom = 10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2680FF),
-                        contentColor = Color.White
-                    )
+                        .size(110.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Text(
+                        text = if(isSuccess) "결제 완료" else "결제 실패",
+                        style = TextStyle(
+                            fontSize = 25.5.sp,
+                            lineHeight = 45.9.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = pointColor,
+                            textAlign = TextAlign.Center,
+                        )
+                    )
+                    Text(
+                        text = if(isSuccess) "무사히 첫 출발을\n해냈습니다" else "결제에 실패했습니다.",
+                        style = TextStyle(
+                            fontSize = 13.5.sp,
+                            lineHeight = 21.6.sp,
+                            fontWeight = FontWeight.Light,
+                            color = Color(0xFF1C1C1C),
+                            textAlign = TextAlign.Center,
+                        )
+                    )
+                }
+                if(registInfo != null){
+                    RegistListItem(registInfo, onClick = {}, background = Color.Transparent)
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Button(
+                        onClick = {
+                            // 버튼 클릭 시 실행될 동작 추가
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color(0xFF2680FF), shape = RoundedCornerShape(size = 4.dp)),
+                        contentPadding = PaddingValues(start = 18.dp, top = 10.dp, end = 18.dp, bottom = 10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2680FF),
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_list),
                             contentDescription = "list icon",
                         )
+                        Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "신청 내역으로",
                             style = TextStyle(
@@ -270,8 +266,8 @@ fun ContentLayout (isSuccess: Boolean, registInfo: UserMarathonSearchDto?) {
                             )
                         )
                     }
-                }
 
+                }
             }
         }
     }
@@ -291,3 +287,8 @@ fun ContentLayoutPreview () {
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+fun PaymentStatusScreenPreview(){
+    PaymentStatusScreen(isSuccess = true, viewModel = RegistViewModel(), onConfirm = {})
+}
