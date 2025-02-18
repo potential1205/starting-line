@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
         List<FriendToken> friendTokens = userCustomRepository.findFcmTokensOfFriendsInMarathon(fcmRequest.getUserId(), fcmRequest.getMarathonId())
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
 
-        friendTokens.forEach(token -> firebaseNotificationClient.sendPushNotification(fcmRequest, String.valueOf(token)));
+        friendTokens.forEach(token -> firebaseNotificationClient.sendPushNotification(fcmRequest, token.getFcmToken()));
     }
 
     @Override
