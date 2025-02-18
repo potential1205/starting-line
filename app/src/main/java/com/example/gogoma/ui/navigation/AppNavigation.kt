@@ -60,11 +60,11 @@ fun AppNavigation(userViewModel: UserViewModel){
     val protectedRouted = listOf("registList", "paceSetting", "watchConnect", "friendList", "mypage")
 
     // 로그인 상태 감지
-    LaunchedEffect(userViewModel.loginStatus) {
-        if (userViewModel.loginStatus == "signup") {
-            navController.navigate("signup") // signup 상태일 때 회원가입 화면으로 이동
-        }
-    }
+//    LaunchedEffect(userViewModel.loginStatus) {
+//        if (userViewModel.loginStatus == "signup") {
+//            navController.navigate("signup") // signup 상태일 때 회원가입 화면으로 이동
+//        }
+//    }
 
     NavHost(
         navController = navController,

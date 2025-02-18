@@ -117,6 +117,9 @@ dependencies {
     // GPS 라이브러리
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
+    // FCM
+    implementation(libs.firebase.messaging)
+
     // 모바일 - 워치 통신 관련(data client)
     implementation("com.google.android.gms:play-services-wearable:18.0.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

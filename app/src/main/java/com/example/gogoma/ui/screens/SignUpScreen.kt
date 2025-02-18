@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import com.example.gogoma.viewmodel.UserViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.gogoma.data.model.CreateUserRequest
+import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
 fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
@@ -31,6 +33,7 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
     var roadAddress by remember { mutableStateOf("") }
     var detailAddress by remember { mutableStateOf("") }
     var clothingSize by remember { mutableStateOf("") }
+    var fcmToken by remember { mutableStateOf("") }
 
     // AddressApiActivity를 실행하여 주소 검색 결과를 받아오는 launcher 생성
     val addressLauncher = rememberLauncherForActivityResult(
@@ -43,6 +46,14 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
         }
     }
 
+    LaunchedEffect(Unit) {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    fcmToken = task.result ?: ""
+                }
+            }
+    }
 
     // UI 구성: 기본적으로 kakaoUserInfo의 데이터와 사용자가 입력한 추가 정보 보여주기
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -74,6 +85,7 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
             label = { Text("옷 사이즈") }
         )
         Button (onClick = {
+
             // CreateUserRequest 구성
             val request = CreateUserRequest(
                 kakaoId = tmpkakaoUserInfo?.id ?: 0,
@@ -86,7 +98,8 @@ fun SignUpScreen(navController: NavController, userViewModel: UserViewModel) {
                 phoneNumber = tmpkakaoUserInfo?.phoneNumber ?: "",
                 roadAddress = roadAddress,
                 detailAddress = detailAddress,
-                clothingSize = clothingSize
+                clothingSize = clothingSize,
+                fcmToken = fcmToken
             )
             // 회원가입 API 호출
             userViewModel.signUpUser(context = context, createUserRequest = request) { success ->

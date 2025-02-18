@@ -13,6 +13,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface UserApiService {
@@ -76,5 +77,10 @@ interface UserApiService {
         @Header("Authorization") accessToken: String
     ): Response<List<FriendResponse>>
 
-
+    // 대회 신청 시 친구들에게 알림 보내기
+    @POST("api/v1/users/alert/{marathonId}")
+    fun sendPushNotification(
+        @Header("Authorization") accessToken: String,
+        @Path("marathonId") marathonId: Int
+    ): Response<BooleanResponse>
 }
