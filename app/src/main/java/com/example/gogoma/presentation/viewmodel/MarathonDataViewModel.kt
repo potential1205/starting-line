@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.gogoma.presentation.data.FriendInfo
 import com.example.gogoma.presentation.data.MarathonData
 import com.google.android.gms.wearable.DataClient
@@ -97,7 +98,7 @@ class MarathonDataViewModel : ViewModel() {
         )
     }
 
-    fun startDataListener(context: Context) {
+    fun startDataListener(context: Context, navController: NavController) {
         appContext = context.applicationContext
         val dataClient = Wearable.getDataClient(appContext!!)
         val gson = Gson()
@@ -147,6 +148,10 @@ class MarathonDataViewModel : ViewModel() {
                                         state = it
                                     )
                                 )
+                            }
+
+                            if (currentDistance >= totalDistance) {
+                                navController.navigate("endScreen")
                             }
 
                             Log.d("marathon", _marathonState.value.toString())
