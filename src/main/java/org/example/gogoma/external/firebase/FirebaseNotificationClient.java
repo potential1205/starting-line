@@ -46,10 +46,12 @@ public class FirebaseNotificationClient {
 
     public void sendPushNotification(FcmRequest fcmRequest, String token) {
         String accessToken = getAccessToken();
-
         webClient.post()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .bodyValue(NotificationRequest.of(fcmRequest,token))
-                .retrieve();
+                .bodyValue(NotificationRequest.of(fcmRequest, token))
+                .retrieve()
+                .bodyToMono(String.class)
+                .subscribe();
     }
+
 }

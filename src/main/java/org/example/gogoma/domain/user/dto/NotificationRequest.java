@@ -14,7 +14,7 @@ public class NotificationRequest {
                 .message(Message.builder()
                         .token(fcmToken)
                         .notification(Notification.builder()
-                                .title("꼬마 알림")
+                                .title("친구 신청 알림")
                                 .body(bodyMessage)
                                 .build())
                         .build())
