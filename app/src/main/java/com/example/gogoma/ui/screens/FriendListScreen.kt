@@ -66,7 +66,7 @@ fun FriendListScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 20.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
+                        .padding(horizontal = 20.dp, vertical = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     itemsIndexed(friends.value) { index, friend ->
