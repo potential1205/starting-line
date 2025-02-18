@@ -3,16 +3,23 @@ package com.example.gogoma.ui.screens
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gogoma.R
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.BrandColor2
@@ -81,11 +88,7 @@ fun PaymentStatusScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (isSuccess) {
-                SuccessContent(onConfirm, regist)
-            } else {
-                FailureContent(onConfirm, onNavigateToMain)
-            }
+            ContentLayout(isSuccess, regist)
         }
     }
 }
@@ -165,3 +168,126 @@ fun FailureContent(
         }
     }
 }
+
+@Composable
+fun ContentLayout (isSuccess: Boolean, registInfo: UserMarathonSearchDto?) {
+
+    val painter = if(isSuccess){
+        painterResource(id = R.drawable.icon_flag_check)
+    }else{
+        painterResource(id = R.drawable.icon_cancel)
+    }
+    val pointColor = if(isSuccess){
+        MaterialTheme.colorScheme.primary
+    }else{
+        MaterialTheme.colorScheme.secondary
+    }
+    LazyColumn (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 40.dp, top = 110.dp, end = 40.dp, bottom = 110.dp),
+        verticalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        item {
+            Icon(
+                painter = painter,
+                contentDescription = "payment status icon",
+                tint = pointColor,
+                modifier = Modifier
+                    .size(110.dp)
+            )
+        }
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = if(isSuccess) "결제 완료" else "결제 실패",
+                    style = TextStyle(
+                        fontSize = 25.5.sp,
+                        lineHeight = 45.9.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = pointColor,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+                Text(
+                    text = if(isSuccess) "무사히 첫 출발을\n해냈습니다" else "결제에 실패했습니다.",
+                    style = TextStyle(
+                        fontSize = 13.5.sp,
+                        lineHeight = 21.6.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color(0xFF1C1C1C),
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
+        }
+        item {
+            if(registInfo != null){
+                RegistListItem(registInfo, onClick = {}, background = Color.Transparent)
+            }
+        }
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Button(
+                    onClick = {
+                        // 버튼 클릭 시 실행될 동작 추가
+                    },
+                    modifier = Modifier
+                        .width(332.dp)
+                        .height(44.dp)
+                        .background(color = Color(0xFF2680FF), shape = RoundedCornerShape(size = 4.dp))
+                        .padding(start = 18.dp, top = 10.dp, end = 18.dp, bottom = 10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2680FF),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_list),
+                            contentDescription = "list icon",
+                        )
+                        Text(
+                            text = "신청 내역으로",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight(800),
+                                color = Color(0xFFFEFEFE),
+                            )
+                        )
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ContentLayoutPreview () {
+    ContentLayout(true, UserMarathonSearchDto(
+        userMarathonId = 1,
+        marathonTitle = "서울 마라톤 2025",
+        marathonType = 1,
+        dday = "D-7",
+        raceStartDateTime = "2025-03-15T08:00:00",
+        paymentDateTime = "2025-01-10T14:30:00"
+    )
+    )
+}
+

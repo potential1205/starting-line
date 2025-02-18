@@ -27,13 +27,13 @@ import com.example.gogoma.R
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 
 @Composable
-fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
+fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit, background: Color = MaterialTheme.colorScheme.background) {
     Row (
         modifier = Modifier
             .clickable(onClick = onClick)
             .width(412.dp)
             .height(103.dp)
-            .background(MaterialTheme.colorScheme.background)
+            .background(background)
             .padding(start = 19.dp, top = 13.dp, end = 19.dp, bottom = 13.dp)
     ) {
         Column (
