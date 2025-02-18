@@ -1,5 +1,6 @@
 package com.example.gogoma.ui.screens
 
+import android.widget.Space
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,18 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,10 +31,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,10 +47,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
@@ -62,9 +60,10 @@ import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.MarathonListViewModel
 import com.example.gogoma.viewmodel.ScrollViewModel
 import com.example.gogoma.viewmodel.UserViewModel
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @Composable
 fun MainScreen(
@@ -92,16 +91,30 @@ fun MainScreen(
     // 필터 고정 여부
     val isFilterFixed = firstVisibleItemIndex > 0
 
+    val topInset = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
-    // 스크롤 위치 복원
-    LaunchedEffect(scrollViewModel.scrollPosition) {
-        listState.scrollToItem(scrollViewModel.scrollPosition.toInt())
+    LaunchedEffect(Unit) {
+        val targetIndex = scrollViewModel.scrollIndex
+        val targetOffset = scrollViewModel.scrollOffset
+
+        while (!(listState.firstVisibleItemIndex == targetIndex &&
+                    listState.firstVisibleItemScrollOffset == targetOffset)) {
+            listState.scrollToItem(targetIndex, targetOffset)
+            delay(50)  // 50ms 동안 스크롤이 되는 것을 기다림
+        }
     }
 
-    // LazyColumn에서 스크롤 상태가 변경될 때마다 ViewModel에 저장
-    LaunchedEffect(listState.firstVisibleItemIndex) {
-        scrollViewModel.scrollPosition = listState.firstVisibleItemIndex.toFloat()
+
+
+    LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
+        // visibleItemsInfo가 존재할 때만 갱신
+        if (listState.layoutInfo.visibleItemsInfo.isNotEmpty()) {
+            scrollViewModel.scrollIndex = listState.firstVisibleItemIndex
+            scrollViewModel.scrollOffset = listState.firstVisibleItemScrollOffset
+        }
     }
+
+
 
     // 뒤로 가기 동작 정의
     BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
@@ -120,15 +133,10 @@ fun MainScreen(
             Column {
                 TopBar(navController)
                 if(isFilterFixed) {
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp),
-                    ){
-                        Filter(
-                            onFilterClick = onFilterClick,
-                            selectedFilters = marathonListViewModel.selectedFilters
-                        )
-                    }
+                    Filter(
+                        onFilterClick = onFilterClick,
+                        selectedFilters = marathonListViewModel.selectedFilters
+                    )
                 }
             }
          },
@@ -137,8 +145,7 @@ fun MainScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(screenHeight * 2)
-                .padding(paddingValues),
+                .padding(top = paddingValues.calculateTopPadding(), bottom = paddingValues.calculateBottomPadding()),
             contentAlignment = Alignment.Center
         ){
 
@@ -170,8 +177,7 @@ fun MainScreen(
                     state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(horizontal = 10.dp),
+                        .fillMaxHeight(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -246,11 +252,13 @@ fun MainScreen(
                     // 필터 컴포넌트 (스크롤 될 때 고정)
                     item {
                         Box(modifier = Modifier
-                            .fillMaxSize()
-                            .heightIn(min = screenHeight)
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .padding(0.dp)
+                            .heightIn(min = screenHeight - paddingValues.calculateTopPadding() - topInset)
                         ){
                             Column {
-                                if (!isFilterFixed) {
+                                if(!isFilterFixed) {
                                     Filter(
                                         onFilterClick = onFilterClick,
                                         selectedFilters = marathonListViewModel.selectedFilters

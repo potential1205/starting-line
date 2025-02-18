@@ -6,5 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class ScrollViewModel : ViewModel() {
-    var scrollPosition by mutableStateOf(0f)
+    var scrollIndex by mutableStateOf(0)
+    var scrollOffset by mutableStateOf(0)
 }
