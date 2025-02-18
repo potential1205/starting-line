@@ -34,5 +34,6 @@ data class FriendInfo(
     val currentDistance: Int,
     val currentDistanceRate: Float,
     val isMe: Boolean,
-    val rank: Int
+    val rank: Int,
+    val gapDistance: Int
 ) : Parcelable

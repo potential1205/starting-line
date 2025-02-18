@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.TeamProgressBar
 import com.example.gogoma.presentation.components.TeamStatus
-import com.example.gogoma.presentation.data.FriendInfo
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 @Composable
@@ -144,7 +143,6 @@ fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
                                 Modifier
                                     .fillMaxWidth()
                                     .height(25.dp)
-//                                    .padding(top = 4.dp, bottom = 4.dp)
                             )
                         }
                     }
@@ -156,22 +154,6 @@ fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
         TeamProgressBar(friendInfoList,  centerItemRank)
     }
 }
-
-// 예시 데이터 리스트
-val friendInfoList = listOf(
-    FriendInfo(userId = 1, friendName = "김정민", currentDistance = 920000, currentDistanceRate = 0.92f, isMe = false, rank = 1),
-    FriendInfo(userId = 2, friendName = "서이수", currentDistance = 897760, currentDistanceRate = 0.897f, isMe = true, rank = 2),
-    FriendInfo(userId = 3, friendName = "신지호", currentDistance = 850000, currentDistanceRate = 0.85f, isMe = false, rank = 3),
-    FriendInfo(userId = 4, friendName = "박지현", currentDistance = 800000, currentDistanceRate = 0.8f, isMe = false, rank = 4),
-    FriendInfo(userId = 5, friendName = "이준수", currentDistance = 775500, currentDistanceRate = 0.775f, isMe = false, rank = 5),
-    FriendInfo(userId = 6, friendName = "강효민", currentDistance = 750000, currentDistanceRate = 0.75f, isMe = false, rank = 6),
-    FriendInfo(userId = 7, friendName = "서지수", currentDistance = 720000, currentDistanceRate = 0.72f, isMe = false, rank = 7),
-    FriendInfo(userId = 8, friendName = "남궁은성", currentDistance = 700000, currentDistanceRate = 0.7f, isMe = false, rank = 8),
-    FriendInfo(userId = 9, friendName = "김찬", currentDistance = 680000, currentDistanceRate = 0.68f, isMe = false, rank = 9),
-    FriendInfo(userId = 10, friendName = "김찬우", currentDistance = 650000, currentDistanceRate = 0.65f, isMe = false, rank = 10),
-    FriendInfo(userId = 11, friendName = "정다빈", currentDistance = 210000, currentDistanceRate = 0.21f, isMe = false, rank = 11)
-)
-
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable

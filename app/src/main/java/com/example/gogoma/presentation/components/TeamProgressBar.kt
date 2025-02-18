@@ -100,13 +100,13 @@ fun TeamProgressBar(
 @Composable
 fun TeamProgressBarPreview() {
     GogomaWatchTheme {
-        TeamProgressBar(
-            friendInfoList = listOf(
-                FriendInfo(userId = 1, friendName = "김철수", currentDistance = 5000, currentDistanceRate = 0.5f, isMe = false, rank = 1),
-                FriendInfo(userId = 2, friendName = "이영희", currentDistance = 4050, currentDistanceRate = 0.405f, isMe = true, rank = 2),
-                FriendInfo(userId = 3, friendName = "박민수", currentDistance = 4000, currentDistanceRate = 0.4f, isMe = false, rank = 3),
-                FriendInfo(userId = 4, friendName = "최지훈", currentDistance = 4000, currentDistanceRate = 0.4f, isMe = false, rank = 4)
-            ), rank = 3
-        )
+//        TeamProgressBar(
+//            friendInfoList = listOf(
+//                FriendInfo(userId = 1, friendName = "김철수", currentDistance = 5000, currentDistanceRate = 0.5f, isMe = false, rank = 1, +950),
+//                FriendInfo(userId = 2, friendName = "이영희", currentDistance = 4050, currentDistanceRate = 0.405f, isMe = true, rank = 2, +0),
+//                FriendInfo(userId = 3, friendName = "박민수", currentDistance = 4000, currentDistanceRate = 0.4f, isMe = false, rank = 3, -50),
+//                FriendInfo(userId = 4, friendName = "최지훈", currentDistance = 4000, currentDistanceRate = 0.4f, isMe = false, rank = 4, -50)
+//            ), rank = 3
+//        )
     }
 }
