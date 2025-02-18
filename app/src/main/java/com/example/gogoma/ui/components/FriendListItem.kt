@@ -41,7 +41,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
         modifier = Modifier
             .width(382.dp)
             .height(60.dp)
-            .padding(top = 2.dp, bottom = 2.dp),
+            .padding(vertical = 5.dp, horizontal = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -57,6 +57,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = "${friendResponse.rank}",
                 style = TextStyle(
                     fontSize = 26.sp,
+                    fontFamily = MaterialTheme.typography.displayLarge.fontFamily,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                 )
@@ -82,7 +83,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(45.dp)
+                    .size(55.dp)
                     .clip(CircleShape)
             )
             Text(
@@ -99,7 +100,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
             modifier = Modifier
                 .wrapContentWidth()
                 .height(27.dp)
-                .background(color = MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(size = 7.dp))
+                .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(size = 7.dp))
                 .padding(start = 10.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
