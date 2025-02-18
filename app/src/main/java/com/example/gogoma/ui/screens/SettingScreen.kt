@@ -14,18 +14,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.TopBarArrow
-import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun MypageScreen(navController: NavController, userViewModel: UserViewModel) {
+fun SettingScreen(navController: NavController, userViewModel: UserViewModel) {
     val context = LocalContext.current
     Scaffold (
         topBar = { TopBarArrow (
-            title = "마이 페이지",
+            title = "설정",
             onBackClick = { navController.popBackStack() }
         )
         },
