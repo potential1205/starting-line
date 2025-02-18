@@ -118,6 +118,9 @@ class MarathonDataViewModel : ViewModel() {
         appContext = context.applicationContext
         val dataClient = Wearable.getDataClient(appContext!!)
         val gson = Gson()
+
+        dataClientListener?.let { dataClient.removeListener(it) }
+
         dataClientListener = DataClient.OnDataChangedListener { dataEvents ->
             Log.d("MarathonDataViewModel", "📡 onDataChanged() 호출됨! 이벤트 수신")
             for (event in dataEvents) {
