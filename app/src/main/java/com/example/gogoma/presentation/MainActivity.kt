@@ -32,6 +32,8 @@ class MainActivity : FragmentActivity() {
 
         setTheme(android.R.style.Theme_DeviceDefault)
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         setContent {
             val navController = rememberNavController()
 
@@ -41,6 +43,15 @@ class MainActivity : FragmentActivity() {
 
             AppNavigation(navController = navController, marathonDataViewModel)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    override fun onPause() {
+        super.onPause()
     }
 }
 

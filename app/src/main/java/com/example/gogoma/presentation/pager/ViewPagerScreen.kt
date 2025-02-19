@@ -26,7 +26,7 @@ fun ViewPagerScreen(activity: FragmentActivity, marathonDataViewModel: MarathonD
     val nearbyCount = marathonDataViewModel.nearbyCount.collectAsState().value
     val context = LocalContext.current
 
-    // gapDistance가 10000 이하인지 체크하여 진동 및 페이지 이동
+    // gapDistance가 10000 이하인 인원 변동 체크하여 진동 및 페이지 이동
     LaunchedEffect (nearbyCount) {
         vibrate(context) // 진동 울리기
         viewPager?.currentItem = 2 // ViewPager의 세 번째 페이지(인덱스 2)로 이동
@@ -40,6 +40,7 @@ fun ViewPagerScreen(activity: FragmentActivity, marathonDataViewModel: MarathonD
     AndroidView(
         factory = { context ->
             ViewPager2(context).apply {
+                id = ViewPager2_ID // ✅ ID 추가 (TeamFragment에서 찾을 수 있도록)
                 adapter = MyPagerAdapter(activity)
                 orientation = ViewPager2.ORIENTATION_HORIZONTAL
                 viewPager = this // ViewPager2 인스턴스를 저장
@@ -56,3 +57,6 @@ fun vibrate(context: Context) {
         vibrator.vibrate(effect)
     }
 }
+
+// ✅ ID 상수 선언 (TeamFragment에서 사용하기 위해)
+const val ViewPager2_ID = 12345
