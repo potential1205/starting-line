@@ -9,10 +9,12 @@ import org.example.gogoma.domain.marathon.entity.Marathon;
 public class UpcomingMarathonInfoResponse {
 
     private Marathon marathon;
+    private boolean isEnd;
 
-    public static UpcomingMarathonInfoResponse of(Marathon marathon) {
+    public static UpcomingMarathonInfoResponse of(Marathon marathon, boolean isEnd) {
         return UpcomingMarathonInfoResponse.builder()
                 .marathon(marathon)
+                .isEnd(isEnd)
                 .build();
     }
 

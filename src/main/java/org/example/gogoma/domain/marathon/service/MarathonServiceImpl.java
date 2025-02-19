@@ -24,6 +24,8 @@ import org.example.gogoma.domain.marathon.repository.MarathonRepository;
 import org.example.gogoma.domain.marathon.repository.MarathonTypeRepository;
 import org.example.gogoma.domain.user.entity.User;
 import org.example.gogoma.domain.user.repository.UserRepository;
+import org.example.gogoma.domain.usermarathon.entity.UserMarathon;
+import org.example.gogoma.domain.usermarathon.repository.UserMarathonRepository;
 import org.example.gogoma.exception.ExceptionCode;
 import org.example.gogoma.exception.type.BusinessException;
 import org.example.gogoma.exception.type.DbException;
@@ -74,6 +76,7 @@ public class MarathonServiceImpl implements MarathonService {
             "경기도", "강원특별자치도", "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도",
             "제주특별자치도"
     ));
+    private final UserMarathonRepository userMarathonRepository;
 
     @Override
     @Transactional
@@ -411,7 +414,10 @@ public class MarathonServiceImpl implements MarathonService {
         Marathon marathon = marathonCustomRepository.findByUpcomingMarathon(user.getId(), upcomingDateTime)
                 .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
 
-        return UpcomingMarathonInfoResponse.of(marathon);
+        UserMarathon userMarathon = userMarathonRepository.findByUserIdAndMarathonId(user.getId(), marathon.getId())
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_MARATHON_NOT_FOUND));
+
+        return UpcomingMarathonInfoResponse.of(marathon, userMarathon.isEnd());
     }
 
     @Override
