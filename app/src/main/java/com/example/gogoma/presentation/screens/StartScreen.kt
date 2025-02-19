@@ -34,7 +34,7 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
 
     // 한 번만 Data Listener를 시작하도록 LaunchedEffect 사용
     LaunchedEffect(Unit) {
-        marathonDataViewModel.startDataListener(context)
+        marathonDataViewModel.startDataListener(context, navController)
     }
 
     KeepScreenOn(activity)

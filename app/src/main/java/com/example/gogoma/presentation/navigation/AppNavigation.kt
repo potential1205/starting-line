@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.gogoma.presentation.pager.ViewPagerScreen
+import com.example.gogoma.presentation.screens.EndScreen
 import com.example.gogoma.presentation.screens.StartScreen
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
@@ -25,5 +26,8 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
         composable("viewPagerScreen") {
             ViewPagerScreen(activity = LocalContext.current as FragmentActivity)
         }
+        composable("endScreen") {
+            val context = LocalContext.current
+            EndScreen(marathonDataViewModel, context) }
     }
 }
