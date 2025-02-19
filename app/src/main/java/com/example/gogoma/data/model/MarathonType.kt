@@ -15,8 +15,8 @@ data class MarathonType(
 fun MarathonType.getCourseTypeInKm(): String {
     val kmValue = courseType / 100000.0 // cm를 km로 변환
     return if (kmValue % 1 == 0.0) {
-        "${kmValue.toInt()} km"
+        "${kmValue.toInt()}km"
     } else {
-        "%.3f km".format(kmValue)
+        "%.3fkm".format(kmValue)
     }
 }

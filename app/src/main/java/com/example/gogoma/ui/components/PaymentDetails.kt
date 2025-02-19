@@ -23,10 +23,10 @@ fun PaymentDetails (paymentDetail: UserMarathonDetailDto) {
             val kmValue = courseType / 100000.0
             return if (kmValue % 1 == 0.0) {
                 // 소수점이 0일 때는 정수로 표시
-                "${kmValue.toInt()} km"
+                "${kmValue.toInt()}km"
             } else {
                 // 소수점이 있을 때는 소수점 2자리까지 표시
-                "%.3f km".format(kmValue)
+                "%.3fkm".format(kmValue)
             }
         }
 
@@ -41,7 +41,7 @@ fun PaymentDetails (paymentDetail: UserMarathonDetailDto) {
         // 결제 내역 정보
         InfoTableRow(label = "결제날짜", value = formatDateTimeUsingLocalDateTime(paymentDetail.paymentDateTime))
         InfoTableRow(label = "결제수단", value = paymentDetail.paymentType)
-        InfoTableRow(label = "결제금액", value = paymentDetail.paymentAmount)
+        InfoTableRow(label = "결제금액", value = "${paymentDetail.paymentAmount}원")
         InfoTableRow(label = "배송주소", value = paymentDetail.address)
         InfoTableRow(label = "신청종목", value = formattedDistance(paymentDetail.selectedCourseType))
 //            InfoTableRow(label = "기념품목", value = paymentDetail.gift ?: "정보없음")
