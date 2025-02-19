@@ -48,12 +48,12 @@ fun PaymentScreen(
     val kakaoPayReadyResponse by viewModel.kakaoPayReadyResponse.collectAsState()
 
     val regist = marathonDetail?.let { detail ->
-        val currentDate = SimpleDateFormat("yy.MM.dd", Locale.KOREA).format(Date())
+        val currentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).format(Date())
 
         val rawDate = detail.marathon.raceStartTime.substring(0, 10)
         val formattedDate = try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-            val outputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA)
+            val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA)
             val date = inputFormat.parse(rawDate)
             outputFormat.format(date)
         } catch (e: Exception) {
@@ -90,11 +90,11 @@ fun PaymentScreen(
                     onClick = {
                         if (isAgreementChecked && selectedOption != null) {
                             val regist = marathonDetail?.let { detail ->
-                                val currentDate = SimpleDateFormat("yy.MM.dd", Locale.KOREA).format(Date())
+                                val currentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).format(Date())
                                 val rawDate = detail.marathon.raceStartTime.substring(0, 10)
                                 val formattedDate = try {
                                     val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-                                    val outputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA)
+                                    val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA)
                                     val date = inputFormat.parse(rawDate)
                                     outputFormat.format(date)
                                 } catch (e: Exception) {
