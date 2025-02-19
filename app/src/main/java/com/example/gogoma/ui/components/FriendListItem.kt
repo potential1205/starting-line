@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,16 +16,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -37,36 +41,35 @@ import com.example.gogoma.theme.GogomaTheme
 fun FriendListItem(friendResponse: FriendResponse) {
     Row (
         modifier = Modifier
-            .width(382.dp)
-            .height(75.dp)
-            .padding(vertical = 5.dp, horizontal = 5.dp),
+            .fillMaxWidth()
+            .padding(top = 15.dp, bottom = 15.dp, start = 15.dp, end = 30.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row (
             modifier = Modifier
-                .wrapContentWidth()
-                .height(70.dp)
-                .padding(top = 2.dp, bottom = 2.dp),
+                .wrapContentWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // 등수
             Column (
                 modifier = Modifier
-                    .width(31.dp)
+                    .width(30.dp)
                     .padding(end = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "${friendResponse.rank}",
-                    style = TextStyle(
-                        fontSize = 23.sp,
-                        fontFamily = MaterialTheme.typography.displayLarge.fontFamily,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
+                CompositionLocalProvider (LocalDensity provides Density(LocalDensity.current.density, fontScale = 1f)) {
+                    Text(
+                        text = "${friendResponse.rank}",
+                        style = TextStyle(
+                            fontSize = 19.sp, // ✅ 시스템 설정에 영향을 받지 않음
+                            fontFamily = MaterialTheme.typography.displayLarge.fontFamily,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center
+                        )
                     )
-                )
+                }
             }
 
             // 이미지
@@ -90,7 +93,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(56.dp)
                     .clip(CircleShape)
             )
 
@@ -111,8 +114,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
         Row(
             modifier = Modifier
                 .wrapContentWidth()
-                .height(27.dp)
-                .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(size = 7.dp))
+                .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(size = 5.dp))
                 .padding(start = 10.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
@@ -121,7 +123,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 text = "${friendResponse.totalDistance} km",
                 style = TextStyle(
                     fontSize = 15.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             )
         }
