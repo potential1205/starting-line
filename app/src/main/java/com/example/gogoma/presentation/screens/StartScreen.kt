@@ -11,6 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -50,14 +53,16 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
             if (marathonState.marathonTitle.isNotEmpty()) {
                 Text(
                     text = marathonState.marathonTitle,
-                    fontSize = 14.sp,
-                    color = Color.White
+                    style = MaterialTheme.typography.body2,
+                    color = Color.Gray
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
                     onClick = {
                         sendStartSignalToPhone(context)
-                        navController.navigate("viewPagerScreen")
+                        navController.navigate("viewPagerScreen") {
+                            popUpTo("startScreen") { inclusive = true }
+                        }
                     },
                     modifier = Modifier.size(80.dp)
                 ) {
@@ -70,7 +75,21 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
                     color = Color.Gray
                 )
             } else {
-                Text("가까운 대회가 없습니다", fontSize = 14.sp, color = Color.White)
+                Text(
+                    text = "이런!",
+                    style = MaterialTheme.typography.title1,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 40.dp),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "아직 가까운 대회가 없습니다.",
+                    style = MaterialTheme.typography.body1,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 40.dp),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
