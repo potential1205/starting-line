@@ -168,7 +168,9 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
         marathonStartTimer?.cancel()
         marathonStartTimer = null
 
-        val putDataMapRequest = PutDataMapRequest.create("/end").apply {}
+        val putDataMapRequest = PutDataMapRequest.create("/end").apply {
+            dataMap.putLong("timestamp", System.currentTimeMillis())
+        }
         val putDataRequest = putDataMapRequest.asPutDataRequest().setUrgent()
 
         dataClient.putDataItem(putDataRequest)
