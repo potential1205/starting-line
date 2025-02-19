@@ -277,11 +277,11 @@ class PaymentViewModel : ViewModel() {
             }
 
             val raceDate = try {
-                val sdf = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA)
-                val raceDate = sdf.parse(dto.raceStartDateTime!!)
-                val today = Date()
-                val diff = (raceDate.time - today.time) / (1000 * 60 * 60 * 24)
-                diff.toInt()
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA) // ✅ ISO 8601 포맷 맞춤
+                val outputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA) // ✅ 원하는 출력 형식
+
+                val parsedDate = inputFormat.parse(dto.raceStartDateTime!!)
+                outputFormat.format(parsedDate) // ✅ 변환된 날짜 반환
             } catch (e: Exception) {
                 Log.e("PaymentViewModel", "❌ D-Day 계산 실패: ${e.message}", e)
                 return null
