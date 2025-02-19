@@ -26,7 +26,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
+fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit, background: Color = MaterialTheme.colorScheme.background) {
     Row (
         modifier = Modifier
             .clickable(onClick = onClick)
