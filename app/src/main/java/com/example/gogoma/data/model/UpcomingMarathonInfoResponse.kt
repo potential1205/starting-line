@@ -5,5 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class UpcomingMarathonInfoResponse(
-    var marathon: Marathon
+    var marathon: Marathon,
+    var isEnd : Boolean
 ) : Parcelable
