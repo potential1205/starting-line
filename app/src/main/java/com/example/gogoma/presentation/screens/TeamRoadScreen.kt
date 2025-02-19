@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.example.gogoma.presentation.data.FriendInfo
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import kotlinx.coroutines.delay
@@ -46,9 +47,7 @@ import kotlin.math.absoluteValue
 data class Location(val name: String, val x: Float, val y: Float, val distance: Int)
 
 @Composable
-fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
-
-    val navController = rememberNavController()
+fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel, viewPager: ViewPager2?) {
     // ViewModel에서 상태를 가져오기
     val friendInfoList = marathonDataViewModel.marathonState.collectAsState().value.friendInfoList
     
@@ -73,8 +72,7 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
     val myDistance = me.currentDistance
     val distanceRange = 10000
 
-    // 진동 함수 정의
-    fun vibrate() {
+    LaunchedEffect(Unit) {
         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
@@ -88,15 +86,9 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
             VibrationEffect.createOneShot(200, -1) // API 26 미만
         }
 
-        vibrator.vibrate(vibrationEffect)
-    }
-
-    LaunchedEffect(Unit) {
+        vibrator.vibrate(vibrationEffect)// 🔥 진동 실행
         delay(5000) // 5초 대기
-        vibrate()
-        navController.navigate("team_screen") {
-            popUpTo("team_screen") { inclusive = true } // 기존 화면 제거하여 뒤로 가기 방지
-        }
+        viewPager?.setCurrentItem(1, true)
     }
 
     val peopleWithLocation = remember {
