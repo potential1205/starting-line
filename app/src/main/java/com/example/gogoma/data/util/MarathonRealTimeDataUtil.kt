@@ -95,6 +95,10 @@ class MarathonRealTimeDataUtil(private val context: Context) {
         marathonRealTimeData.currentDistance += 1
         marathonRealTimeData.currentPace = marathonRealTimeData.currentTime * 100000 / marathonRealTimeData.currentDistance
 
+        if (marathonRealTimeData.currentDistance < 1000) {
+            marathonRealTimeData.currentPace = 0
+        }
+
         if (marathonRealTimeData.currentPace <= marathonRealTimeData.targetPace) {
             marathonRealTimeData.state = "G"
         } else if (marathonRealTimeData.currentPace + 60 <= marathonRealTimeData.targetPace) {
@@ -168,6 +172,10 @@ class MarathonRealTimeDataUtil(private val context: Context) {
 
                     updatedList.forEachIndexed { index, friendDto ->
                         friendDto.rank = index + 1
+
+                        if (friendDto.userId == marathonRealTimeData.userId) {
+                            marathonRealTimeData.myRank = friendDto.rank
+                        }
                     }
 
                     marathonRealTimeData.friendInfoList = updatedList

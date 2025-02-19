@@ -8,8 +8,13 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.GlobalApplication
+import com.example.gogoma.data.api.RetrofitInstance
+import com.example.gogoma.data.api.WatchApiService
+import com.example.gogoma.data.model.BooleanResponse
+import com.example.gogoma.data.model.MarathonEndInitDataRequest
 import com.example.gogoma.data.util.MarathonRealTimeDataUtil
 import com.example.gogoma.data.util.MarathonRunService
+import com.example.gogoma.utils.TokenManager
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
@@ -17,6 +22,9 @@ import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Timer
 import kotlin.concurrent.fixedRateTimer
 
@@ -104,16 +112,16 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
                         startMarathonSendData()
                         Log.d("marathon", "[Marathon Start] 워치로부터 마라톤 시작 신호 도착")
                     }
-                    "/end" -> {
-                        // 서비스 종료
-                        val intent = Intent(getApplication(), MarathonRunService::class.java)
-                        getApplication<Application>().stopService(intent)
-
-                        marathonRealTimeDataUtil.endUpdating()
-                        stopMarathonSendData()
-                        isMarathonRunning = false
-                        Log.d("marathon", "[Marathon End] 워치로부터 마라톤 종료 신호 도착")
-                    }
+//                    "/end" -> {
+//                        // 서비스 종료
+//                        val intent = Intent(getApplication(), MarathonRunService::class.java)
+//                        getApplication<Application>().stopService(intent)
+//
+//                        marathonRealTimeDataUtil.endUpdating()
+//                        stopMarathonSendData()
+//                        isMarathonRunning = false
+//                        Log.d("marathon", "[Marathon End] 워치로부터 마라톤 종료 신호 도착")
+//                    }
                 }
             }
         }
@@ -126,16 +134,73 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
             initialDelay = 0L,
             period = 1000L
         ) {
-            marathonRealTimeDataUtil.updateData()
-            marathonSendData()
+            var marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
+
+            if (marathonRealTimeData.currentDistance > marathonRealTimeData.totalDistance) {
+                val intent = Intent(getApplication(), MarathonRunService::class.java)
+                getApplication<Application>().stopService(intent)
+                marathonRealTimeDataUtil.endUpdating()
+                stopMarathonSendData()
+                isMarathonRunning = false
+            } else {
+                marathonRealTimeDataUtil.updateData()
+                marathonSendData()
+            }
         }
     }
 
+    @SuppressLint("VisibleForTests")
     private fun stopMarathonSendData() {
         marathonStartTimer?.cancel()
         marathonStartTimer = null
-        stopLocationUpdates()
-        Log.d("MarathonRunService", "[Marathon End] 데이터 전송 및 위치 추적 중단")
+
+        val putDataMapRequest = PutDataMapRequest.create("/end").apply {}
+        val putDataRequest = putDataMapRequest.asPutDataRequest().setUrgent()
+
+        dataClient.putDataItem(putDataRequest)
+            .addOnSuccessListener {
+                // 데이터 전송 성공 로그
+            }
+            .addOnFailureListener { e ->
+                // 데이터 전송 실패 로그
+            }
+
+        val marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
+        val marathonId = marathonRealTimeData.marathonId
+
+        val request = MarathonEndInitDataRequest(
+            currentPace = marathonRealTimeData.currentPace,
+            runningTime = marathonRealTimeData.currentTime,
+            totalMemberCount = marathonRealTimeData.totalMemberCount,
+            myRank = marathonRealTimeData.myRank
+        )
+
+        val aceessToken = TokenManager.getAccessToken(getApplication())
+
+        if (!aceessToken.isNullOrEmpty()) {
+            var apiService = RetrofitInstance.watchApiService
+            val call = apiService.updateMarathonEndData(aceessToken, marathonId, request)
+
+            call.enqueue(object : Callback<BooleanResponse> {
+                override fun onResponse(
+                    call: Call<BooleanResponse>,
+                    response: Response<BooleanResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("marathon", "마라톤 종료 신호를 서버로 전송했습니다.")
+                    } else {
+                        Log.d("marathon", "마라톤 종료 신호를 서버로 전송하지못했습니다.")
+                    }
+                }
+
+                override fun onFailure(call: Call<BooleanResponse>, t: Throwable) {
+                    Log.d("marathon", "마라톤 종료 신호 호출을 실패했습니다.")
+                }
+            })
+
+            Log.d("MarathonRunService", "[Marathon End] 데이터 전송 및 위치 추적 중단")
+        }
+
     }
 
     // -------------------------------------------------------------------------------- //
