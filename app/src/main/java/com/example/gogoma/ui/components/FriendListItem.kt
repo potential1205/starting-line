@@ -3,6 +3,7 @@ package com.example.gogoma.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,9 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,28 +38,38 @@ fun FriendListItem(friendResponse: FriendResponse) {
     Row (
         modifier = Modifier
             .width(382.dp)
-            .height(60.dp)
-            .padding(top = 2.dp, bottom = 2.dp),
+            .height(75.dp)
+            .padding(vertical = 5.dp, horizontal = 5.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row (
             modifier = Modifier
-                .width(130.dp)
-                .height(60.dp)
+                .wrapContentWidth()
+                .height(70.dp)
                 .padding(top = 2.dp, bottom = 2.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = "${friendResponse.rank}",
-                style = TextStyle(
-                    fontSize = 26.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
+            // 등수
+            Column (
+                modifier = Modifier
+                    .width(31.dp)
+                    .padding(end = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "${friendResponse.rank}",
+                    style = TextStyle(
+                        fontSize = 23.sp,
+                        fontFamily = MaterialTheme.typography.displayLarge.fontFamily,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
                 )
-            )
+            }
 
+            // 이미지
             val painter = if (friendResponse.profileImage.isNullOrEmpty()) {
                 painterResource(id = R.drawable.logo_image)
             } else {
@@ -82,16 +90,21 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(45.dp)
+                    .size(50.dp)
                     .clip(CircleShape)
             )
+
+            // 이름
             Text(
                 text = friendResponse.name,
                 style = TextStyle(
                     fontSize = 17.5.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
-                )
+                ),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(horizontal = 12.dp)
             )
         }
 
@@ -99,7 +112,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
             modifier = Modifier
                 .wrapContentWidth()
                 .height(27.dp)
-                .background(color = MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(size = 7.dp))
+                .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(size = 7.dp))
                 .padding(start = 10.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
