@@ -52,6 +52,8 @@ public class UserMarathon {
 
     private int myRank;
 
+    private boolean isEnd;
+
     public void updateTargetPace(int targetPace) {
         this.targetPace = targetPace;
     }
@@ -61,5 +63,6 @@ public class UserMarathon {
         this.runningTime = runningTime;
         this.totalMemberCount = totalMemberCount;
         this.myRank = myRank;
+        this.isEnd = true;
     }
 }
