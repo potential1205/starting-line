@@ -2,14 +2,14 @@ package com.example.gogoma.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,12 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gogoma.R
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -33,19 +30,16 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
     Row (
         modifier = Modifier
             .clickable(onClick = onClick)
-            .width(412.dp)
-            .height(85.dp)
-            .background(MaterialTheme.colorScheme.background)
-            .padding(start = 20.dp, top = 10.dp, end = 10.dp, bottom = 20.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 10.dp)
     ) {
         Column (
-            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
+            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
             horizontalAlignment = Alignment.Start,
         ) {
             Row(
                 modifier = Modifier
-                    .width(374.dp)
-                    .height(17.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -74,8 +68,8 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
 
             Row(
                 modifier = Modifier
-                    .width(374.dp)
-                    .height(47.dp),
+                    .fillMaxWidth(),
+//                    .padding(3.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -86,6 +80,10 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 1.dp),
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 // 오른쪽 'D-50' 배지
@@ -99,10 +97,10 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit) {
                         modifier = Modifier
                             .background(
                                 // 지난 마라톤이면 회색, 아니면 BrandColor
-                                color = if (regist.dday.contains("D+")) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary,
+                                color = if (regist.dday.contains("D+")) Color(0xFF9C9C9C) else MaterialTheme.colorScheme.primary,
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
                     )
                 }
             }
