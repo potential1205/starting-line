@@ -1,7 +1,12 @@
 package com.example.gogoma.presentation.screens
 
+import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -12,6 +17,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,9 +34,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.presentation.data.FriendInfo
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
+import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
 data class Location(val name: String, val x: Float, val y: Float, val distance: Int)
@@ -38,6 +48,7 @@ data class Location(val name: String, val x: Float, val y: Float, val distance: 
 @Composable
 fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
 
+    val navController = rememberNavController()
     // ViewModel에서 상태를 가져오기
     val friendInfoList = marathonDataViewModel.marathonState.collectAsState().value.friendInfoList
     
@@ -47,6 +58,7 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
         return
     }
 
+    val context = LocalContext.current
     val myColor = Color.Green
     val otherColor = Color.Red
 
@@ -60,6 +72,32 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
     // 다른 사람들의 초기 위치 설정 (100m 이내의 친구들만 남김, 제한된 범위에서 랜덤 배치)
     val myDistance = me.currentDistance
     val distanceRange = 10000
+
+    // 진동 함수 정의
+    fun vibrate() {
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        val vibrationEffect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE) // 200ms 진동
+        } else {
+            VibrationEffect.createOneShot(200, -1) // API 26 미만
+        }
+
+        vibrator.vibrate(vibrationEffect)
+    }
+
+    LaunchedEffect(Unit) {
+        delay(5000) // 5초 대기
+        vibrate()
+        navController.navigate("team_screen") {
+            popUpTo("team_screen") { inclusive = true } // 기존 화면 제거하여 뒤로 가기 방지
+        }
+    }
 
     val peopleWithLocation = remember {
         friendInfoList.filter { it.userId != me.userId && (it.currentDistance - myDistance).absoluteValue <= distanceRange }

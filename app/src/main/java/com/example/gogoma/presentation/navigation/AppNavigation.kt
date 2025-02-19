@@ -12,6 +12,8 @@ import androidx.navigation.compose.composable
 import com.example.gogoma.presentation.pager.ViewPagerScreen
 import com.example.gogoma.presentation.screens.EndScreen
 import com.example.gogoma.presentation.screens.StartScreen
+import com.example.gogoma.presentation.screens.TeamRoadScreen
+import com.example.gogoma.presentation.screens.TeamScreen
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 @SuppressLint("ContextCastToActivity")
@@ -29,5 +31,12 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
         composable("endScreen") {
             val context = LocalContext.current
             EndScreen(marathonDataViewModel, navController) }
+        composable("team_screen") {
+            TeamScreen(marathonDataViewModel)
+        }
+        composable("team_road_screen") {
+            TeamRoadScreen(marathonDataViewModel)
+        }
     }
+
 }
