@@ -5,17 +5,21 @@
 
 package com.example.gogoma.presentation
 
+import android.app.Activity
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.presentation.navigation.AppNavigation
+import com.example.gogoma.presentation.screens.KeepScreenOn
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 class MainActivity : FragmentActivity() {
@@ -32,7 +36,20 @@ class MainActivity : FragmentActivity() {
             val navController = rememberNavController()
 
             (application as? GlobalApplication)?.navController = navController
+
+            KeepScreenOn(activity = this)
+
             AppNavigation(navController = navController, marathonDataViewModel)
+        }
+    }
+}
+
+@Composable
+fun KeepScreenOn(activity: Activity) {
+    DisposableEffect(activity) {
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        onDispose {
+            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 }

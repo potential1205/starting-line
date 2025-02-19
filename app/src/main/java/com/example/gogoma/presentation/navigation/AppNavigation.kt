@@ -28,6 +28,6 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
         }
         composable("endScreen") {
             val context = LocalContext.current
-            EndScreen(marathonDataViewModel, context) }
+            EndScreen(marathonDataViewModel, navController) }
     }
 }

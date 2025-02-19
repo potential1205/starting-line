@@ -94,10 +94,10 @@
                                 val marathonData = gson.fromJson(marathonDataJson, MarathonRealTimeData::class.java)
                                 Log.d("GlobalWatchEventManager", "마라톤 업데이트 데이터 수신: $marathonData")
                             }
-                            "/end" -> {
-                                Log.d("WatchEventManager", "End 이벤트 수신, 종료 화면으로 이동")
-                                navController.navigate("endScreen")
-                            }
+//                            "/end" -> {
+//                                Log.d("WatchEventManager", "End 이벤트 수신, 종료 화면으로 이동")
+//                                navController.navigate("endScreen")
+//                            }
                         }
                     }
                 }

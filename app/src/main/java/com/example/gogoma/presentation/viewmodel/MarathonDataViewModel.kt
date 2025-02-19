@@ -14,6 +14,7 @@ import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.Wearable
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,14 +58,32 @@ class MarathonDataViewModel : ViewModel() {
     private var dataClientListener: DataClient.OnDataChangedListener? = null
     private var appContext: Context? = null
 
+    private var timerJob: Job? = null
+
     init {
         // 1초마다 시간 갱신
-        viewModelScope.launch {
+//        viewModelScope.launch {
+//            while (true) {
+//                delay(1000L)
+//                updateElapsedTime()
+//            }
+//        }
+        startTimer()
+    }
+
+    private fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
             while (true) {
                 delay(1000L)
                 updateElapsedTime()
             }
         }
+    }
+
+    private fun stopTimer() {
+        timerJob?.cancel()
+        Log.d("MarathonDataViewModel", "타이머 정지")
     }
 
     // 인덱스 변경 함수
@@ -168,6 +187,11 @@ class MarathonDataViewModel : ViewModel() {
                                 updateInitData(totalMemberCount, marathonTitle)
                             }
                         }
+                        "/end" -> {
+                            Log.d("MarathonDataViewModel", "End 이벤트 수신 → 타이머 정지 & 화면 이동")
+                            stopTimer()
+                            navController.navigate("endScreen")
+                        }
                     }
                 }
             }
@@ -178,6 +202,7 @@ class MarathonDataViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
+        stopTimer()
         appContext?.let { ctx ->
             dataClientListener?.let { listener ->
                 Wearable.getDataClient(ctx).removeListener(listener)
