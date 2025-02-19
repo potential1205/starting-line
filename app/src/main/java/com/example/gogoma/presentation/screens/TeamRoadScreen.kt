@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -85,7 +86,7 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel, viewPager: View
         } else {
             VibrationEffect.createOneShot(200, -1) // API 26 미만
         }
-
+        Log.d("Vibrate","바이브레이트!")
         vibrator.vibrate(vibrationEffect)// 🔥 진동 실행
         delay(5000) // 5초 대기
         viewPager?.setCurrentItem(1, true)
