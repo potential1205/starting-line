@@ -150,9 +150,10 @@ class MarathonDataViewModel : ViewModel() {
                                 )
                             }
 
-                            if (currentDistance >= totalDistance) {
-                                navController.navigate("endScreen")
-                            }
+                            // 이제 워치는 end 관련 신호 받으면 화면 전환 처리만
+//                            if (currentDistance >= totalDistance) {
+//                                navController.navigate("endScreen")
+//                            }
 
                             Log.d("marathon", _marathonState.value.toString())
                         }

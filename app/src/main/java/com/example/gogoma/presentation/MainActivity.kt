@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.gogoma.GlobalApplication
 import com.example.gogoma.presentation.navigation.AppNavigation
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
@@ -29,6 +30,8 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val navController = rememberNavController()
+
+            (application as? GlobalApplication)?.navController = navController
             AppNavigation(navController = navController, marathonDataViewModel)
         }
     }
