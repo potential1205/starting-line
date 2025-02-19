@@ -35,7 +35,7 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
             TeamScreen(navController, marathonDataViewModel)
         }
         composable("team_road_screen") {
-            TeamRoadScreen(marathonDataViewModel)
+            TeamRoadScreen(navController, marathonDataViewModel)
         }
     }
 
