@@ -26,6 +26,8 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
         composable("viewPagerScreen") {
             ViewPagerScreen(activity = LocalContext.current as FragmentActivity)
         }
-        composable("endScreen") { EndScreen() }
+        composable("endScreen") {
+            val context = LocalContext.current
+            EndScreen(marathonDataViewModel, context) }
     }
 }

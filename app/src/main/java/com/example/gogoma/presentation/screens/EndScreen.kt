@@ -39,7 +39,7 @@ fun EndScreen(marathonDataViewModel: MarathonDataViewModel, context: Context) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxHeight()
         ) {
             // 등수 및 참가자 수 표시 (상단으로 이동)
@@ -60,11 +60,6 @@ fun EndScreen(marathonDataViewModel: MarathonDataViewModel, context: Context) {
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = "이동 거리: ${formatDistance(marathonState.currentDistance)} km",
-                    style = MaterialTheme.typography.body2,
-                    textAlign = TextAlign.Center
-                )
-                Text(
                     text = "평균 페이스: ${formatPace(marathonState.currentPace)} /km",
                     style = MaterialTheme.typography.body2,
                     textAlign = TextAlign.Center
@@ -76,16 +71,14 @@ fun EndScreen(marathonDataViewModel: MarathonDataViewModel, context: Context) {
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // 종료 버튼 (하단으로 이동)
+            // 종료 버튼
             Box(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Button(
                     onClick = { sendEndSignalToPhone(context) },
-                    modifier = Modifier.size(60.dp)
+                    modifier = Modifier.size(50.dp)
                 ) {
                     Text("종료", style = MaterialTheme.typography.button, color = MaterialTheme.colors.onPrimary)
                 }
