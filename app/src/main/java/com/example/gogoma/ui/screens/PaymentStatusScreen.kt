@@ -215,7 +215,7 @@ fun ContentLayout (
                     userMarathonId = it.userMarathonId,
                     dday = it.dday
                 ),
-                onClick = {},
+                onClick = {navController.navigate("registDetail/${it.userMarathonId}")},
                 background = Color.Transparent
             )
         } ?: run {
