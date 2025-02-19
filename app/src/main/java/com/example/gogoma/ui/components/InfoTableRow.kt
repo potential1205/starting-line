@@ -2,6 +2,7 @@ package com.example.gogoma.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -25,8 +26,7 @@ import com.example.gogoma.theme.GogomaTheme
 fun InfoTableRow(label: String, value: String) {
     Row (
         modifier =  Modifier
-            .width(387.dp)
-            .wrapContentHeight() // 내부 콘텐츠 크기에 맞게 높이 조정
+            .fillMaxWidth()
             .padding(top = 2.dp, bottom = 2.dp),
         horizontalArrangement = Arrangement.spacedBy(50.dp, Alignment.Start),
         verticalAlignment = Alignment.Top,

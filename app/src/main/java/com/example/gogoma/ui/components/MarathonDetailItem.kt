@@ -1,5 +1,6 @@
 package com.example.gogoma.ui.components
 
+import android.icu.text.RelativeDateTimeFormatter.FormattedRelativeDateTime
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,8 @@ import com.example.gogoma.data.model.MarathonDetailResponse
 import com.example.gogoma.data.model.getCourseTypeInKm
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.viewmodel.MarathonDetailViewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
@@ -27,6 +30,15 @@ fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
     ) {
         //대회 정보
         val formattedRaceStartTime = FormattedDate(marathonDetail.marathon.raceStartTime)
+
+        fun formatDateTimeUsingLocalDateTime(input: String): String {
+            val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm:ss")
+
+            val dateTime = LocalDateTime.parse(input, inputFormatter)  // 문자열을 LocalDateTime으로 변환
+            return dateTime.format(outputFormatter)  // 원하는 형식으로 변환
+        }
+
         InfoTableRow(label = "대회일시", value = formattedRaceStartTime)
         InfoTableRow(label = "대회장소", value = marathonDetail.marathon.location)
         InfoTableRow(label = "대회종목", value = marathonDetail.marathonTypeList.joinToString("/") { it.getCourseTypeInKm() })
@@ -35,7 +47,7 @@ fun  MarathonDetailItem(marathonDetail: MarathonDetailResponse) {
             value = if (marathonDetail.marathon.registrationStartDateTime == null && marathonDetail.marathon.registrationEndDateTime == null) {
                 "접수 선착순"
             } else {
-                "접수 ${marathonDetail.marathon.registrationStartDateTime ?: ""}~${marathonDetail.marathon.registrationEndDateTime ?: ""}"
+                "${marathonDetail.marathon.registrationStartDateTime?.let { formatDateTimeUsingLocalDateTime(it) } ?: ""} ~ ${marathonDetail.marathon.registrationEndDateTime?.let { formatDateTimeUsingLocalDateTime(it) } ?: ""}"
             },
         )
         // marathonTypeList 그룹화 및 매니아 처리
