@@ -8,14 +8,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -50,10 +56,13 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.example.gogoma.R
 import com.example.gogoma.theme.BrandColor1
+import com.example.gogoma.theme.PartialSansKR
 import com.example.gogoma.ui.components.BottomBarButtonFull
 import com.example.gogoma.ui.components.FormattedDate
 import com.example.gogoma.ui.components.HashTag
 import com.example.gogoma.ui.components.InfoTableRow
+import com.example.gogoma.ui.components.MarathonDetailItem
+import com.example.gogoma.ui.components.PaymentDetails
 import com.example.gogoma.ui.components.TextBoxSmall
 import com.example.gogoma.ui.components.TopBarArrow
 import com.example.gogoma.viewmodel.MarathonDetailViewModel
@@ -63,8 +72,13 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
     val marathonDetailViewModel: MarathonDetailViewModel = viewModel()
     val marathonDetail by marathonDetailViewModel.marathonDetail.collectAsState()
 
+    val listState = rememberLazyListState()
+
     // 네비게이션 상태 저장 핸들
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabTitles = listOf("대회 정보", "대회 이미지")
 
     // 상세 정보 로드
     LaunchedEffect (marathonId) {
@@ -79,23 +93,43 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
         }
     }
 
-    // 로딩 중 처리
-    if (marathonDetail == null) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ){
-            Text("Loading...")
-        }
-    } else {
+    marathonDetail?.let { detail ->
         Scaffold (
-            topBar = { TopBarArrow (
-                    title = "대회",
-                    onBackClick = { navController.popBackStack() }
-                )
+            topBar = {
+                Column {
+                    TopBarArrow (
+                        title = if (listState.firstVisibleItemIndex >= 1) detail.marathon.title else "",
+                        isDisplay = if (listState.firstVisibleItemIndex >= 1) true else false,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                    if(listState.firstVisibleItemIndex >= 2) {
+                        TabRow(
+                            selectedTabIndex = selectedTabIndex,
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                        ) {
+                            tabTitles.forEachIndexed { index, title ->
+                                Tab(
+                                    selected = selectedTabIndex == index,
+                                    onClick = { selectedTabIndex = index },
+                                    text = {
+                                        Text(
+                                            text = title,
+                                            style = TextStyle(
+                                                fontSize = 13.sp, // 원하는 폰트 크기로 변경
+                                                fontWeight = FontWeight.Normal // 원하는 폰트 두께로 변경
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             },
             bottomBar = {
-                val isOpen = marathonDetail!!.marathon.marathonStatus == "OPEN"
+                val isOpen = detail.marathon.marathonStatus == "OPEN"
                 BottomBarButtonFull(
                     text = "신청하기",
                     backgroundColor = if (isOpen) BrandColor1 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
@@ -113,176 +147,141 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                 .fillMaxSize()
                 .padding(paddingValues)){
                 // 마라톤 상세 정보
-                LazyColumn {
-                    item {
-                        ImageOrPlaceholder(marathonDetail!!.marathon.thumbnailImage, true)
-                    }
+                LazyColumn(state = listState) {
                     item {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(color = MaterialTheme.colorScheme.background)
-                                .padding(start = 20.dp, top = 10.dp, end = 20.dp, bottom = 10.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top),
-                            horizontalAlignment = Alignment.Start,
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(start = 20.dp, top = 25.dp, end = 20.dp, bottom = 30.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
                         ) {
-                            //접수중
-                            Row (
-                                modifier = Modifier
-                                    .padding(top = 20.dp),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
-                                verticalAlignment = Alignment.Top,
-                            ) {
-                                val marathonStatus = marathonDetail!!.marathon.marathonStatus
-                                val marathonStatusText = when (marathonStatus) {
-                                    "OPEN" -> "접수중"
-                                    "CLOSED" -> "접수 종료"
-                                    "FINISHED" -> "접수 마감"
-                                    else -> marathonStatus
-                                }
-
-                                val marathonStatusBackgroundColor = when (marathonStatus) {
-                                    "OPEN" -> MaterialTheme.colorScheme.secondary
-                                    "CLOSED" -> MaterialTheme.colorScheme.error
-                                    "FINISHED" -> Color.Gray
-                                    else -> MaterialTheme.colorScheme.secondary
-                                }
-
-                                TextBoxSmall(
-                                    text = marathonStatusText,
-                                    backgroundColor = marathonStatusBackgroundColor
+                            Text(
+                                text = detail.dday,
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Normal,
                                 )
-                                TextBoxSmall(
-                                    text = "D-1",
-                                    backgroundColor = marathonStatusBackgroundColor
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .padding(top = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = marathonDetail!!.marathon.title,
-                                    style = TextStyle(
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                            }
-
-                            fun formattedDistance(courseType: Int): String {
-                                val kmValue = courseType / 100000.0
-                                return if (kmValue % 1 == 0.0) {
-                                    // 소수점이 0일 때는 정수로 표시
-                                    "${kmValue.toInt()} km"
-                                } else {
-                                    // 소수점이 있을 때는 소수점 2자리까지 표시
-                                    "%.3f km".format(kmValue)
-                                }
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .padding(bottom = 20.dp),
-                                horizontalArrangement = Arrangement.spacedBy(6.0371174812316895.dp, Alignment.Start),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                 marathonDetail!!.marathonTypeList.forEach { type ->
-                                    HashTag(formattedDistance(type.courseType))
-                                }
-                            }
-
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 12.dp),
-                                thickness = 1.dp,
-                                color = Color(0xFFDDDDDD)
                             )
-
-                            //대회 정보
-                            val formattedRaceStartTime = FormattedDate(marathonDetail!!.marathon.raceStartTime)
-                            InfoTableRow(label = "대회일시", value = formattedRaceStartTime)
-                            InfoTableRow(label = "대회장소", value = marathonDetail!!.marathon.location)
-                            InfoTableRow(label = "대회종목", value = marathonDetail!!.marathonTypeList.joinToString("/") { "${it.courseType}" })
-                            InfoTableRow(
-                                label = "접수기간",
-                                value = if (marathonDetail!!.marathon.registrationStartDateTime == null && marathonDetail!!.marathon.registrationEndDateTime == null) {
-                                    "접수 선착순"
-                                } else {
-                                    "접수 ${marathonDetail!!.marathon.registrationStartDateTime ?: ""}~${marathonDetail!!.marathon.registrationEndDateTime ?: ""}"
-                                },
-                            )
-                            // marathonTypeList 그룹화 및 매니아 처리
-                            val groupedCourseTypes = marathonDetail!!.marathonTypeList
-                                .groupBy { it.courseType } // courseType 기준으로 그룹화
-                                .mapValues { (_, types) ->
-                                    // 각 courseType에 대해 "매니아"가 있는지 확인
-                                    val regularPrice = types.firstOrNull { it.etc.isEmpty() }?.price ?: ""
-                                    val maniaPrices = types.filter { it.etc == "매니아" }.joinToString(" ") { it.price }
-
-                                    // "매니아" 가격과 일반 가격을 합쳐서 출력
-                                    if (maniaPrices.isNotEmpty()) {
-                                        "${regularPrice}원 (매니아 : ${maniaPrices}원)"
-                                    } else {
-                                        "${regularPrice}원"
-                                    }
-                                }
-                            InfoTableRow(label = "대회가격", value = groupedCourseTypes.entries.joinToString("\n") {
-                                "${it.key}: ${it.value}"
-                            })
-                            InfoTableRow(label = "대회주최", value = marathonDetail!!.marathon.hostList.joinToString(", ") { "${it}" })
-                            InfoTableRow(label = "대회주관", value = marathonDetail!!.marathon.organizerList.joinToString(", ") { "${it}" })
-                            InfoTableRow(label = "대회후원", value = marathonDetail!!.marathon.sponsorList.joinToString(", ") { "${it}" })
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, bottom = 12.dp),
-                                thickness = 1.dp,
-                                color = Color(0xFFDDDDDD)
+                            Text(
+                                text = detail.marathon.title,
+                                style = TextStyle(
+                                    fontSize = 19.sp,
+                                    fontFamily = PartialSansKR,
+                                    fontWeight = FontWeight.Normal,
+                                )
                             )
                         }
                     }
-
-                    //대회 이미지
                     item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = MaterialTheme.colorScheme.background)
-                                .padding(start = 20.dp, top = 10.dp, end = 20.dp, bottom = 30.dp),
-                            verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Top),
-                            horizontalAlignment = Alignment.Start,
-                        ) {
-                            if(!marathonDetail!!.marathon.infoImage.isNullOrEmpty()){
-                                ContentTitle("대회 설명")
-                                ImageOrPlaceholder(marathonDetail!!.marathon.infoImage)
+                        Spacer(modifier = Modifier.fillMaxWidth().height(16.dp).background(MaterialTheme.colorScheme.tertiary))
+                    }
+                    // 탭 레이아웃
+                    item {
+                        if(listState.firstVisibleItemIndex < 2) {
+                            TabRow(
+                                selectedTabIndex = selectedTabIndex,
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)
+                            ) {
+                                tabTitles.forEachIndexed { index, title ->
+                                    Tab(
+                                        selected = selectedTabIndex == index,
+                                        onClick = { selectedTabIndex = index },
+                                        text = {
+                                            Text(
+                                                text = title,
+                                                style = TextStyle(
+                                                    fontSize = 13.sp, // 원하는 폰트 크기로 변경
+                                                    fontWeight = FontWeight.Normal // 원하는 폰트 두께로 변경
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
                             }
-                            if(!marathonDetail!!.marathon.courseImage.isNullOrEmpty()){
-                                ContentTitle("대회 코스")
-                                ImageOrPlaceholder(marathonDetail!!.marathon.courseImage)
+                        }
+
+                        // 스크롤 가능한 컨텐츠
+                        Column (
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 20.dp, vertical = 20.dp)
+                        ) {
+                            when (selectedTabIndex) {
+                                // 마라톤 상세 정보
+                                0 -> MarathonDetailItem(detail)
+                                // 대회 이미지
+                                1 -> Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(color = MaterialTheme.colorScheme.background)
+                                        .padding(top = 10.dp, bottom = 30.dp),
+                                    verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Top),
+                                    horizontalAlignment = Alignment.Start,
+                                ) {
+                                    if(detail.marathon.infoImage.isNullOrEmpty() && detail.marathon.courseImage.isNullOrEmpty()){
+                                        Text(
+                                            text = "대회 이미지가 없습니다.",
+                                            textAlign = TextAlign.Center,
+                                            fontSize = 12.sp,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                    if(!detail.marathon.infoImage.isNullOrEmpty()){
+                                        ContentTitle("대회 설명")
+                                        ImageOrPlaceholder(detail.marathon.infoImage)
+                                    }
+                                    if(!detail.marathon.courseImage.isNullOrEmpty()){
+                                        ContentTitle("대회 코스")
+                                        ImageOrPlaceholder(detail.marathon.courseImage)
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    } ?: run {
+        // 로딩 중 처리
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ){
+            Text("Loading...")
+        }
     }
 }
 
 @Composable
-fun ContentTitle(text: String){
-    Text(
-        text = text,
-        style = TextStyle(
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        ),
-        modifier = Modifier
-            .padding(top = 5.dp),
-    )
+fun ContentTitle(text: String) {
+    val fontSizeInDp = with(LocalDensity.current) { 13.sp.toDp() }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(top = 5.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(5.dp)
+                .height(fontSizeInDp)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = text,
+            style = TextStyle(
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Normal
+            )
+        )
+    }
 }
+
 
 @Composable
 fun ImageOrPlaceholder(imageUrl: String?, isThumb: Boolean = false) {
@@ -322,18 +321,22 @@ fun ImageOrPlaceholder(imageUrl: String?, isThumb: Boolean = false) {
     //확대 보기 이미지
     if(showDialog && !isThumb) {
         Dialog(
-            onDismissRequest = {showDialog = false},
+            onDismissRequest = {
+                showDialog = false
+           },
             properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
                 usePlatformDefaultWidth = false
             )
         ) {
-            ImageViewerDialog(painter)
+            ImageViewerDialog(painter, onDismiss = { showDialog = false })
         }
     }
 }
 
 @Composable
-fun ImageViewerDialog(painter: Painter) {
+fun ImageViewerDialog(painter: Painter, onDismiss: () -> Unit) {
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
 
@@ -350,6 +353,9 @@ fun ImageViewerDialog(painter: Painter) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .clickable {
+                onDismiss()
+            }
     ) {
         Image(
             painter = painter,
