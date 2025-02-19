@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.presentation.data.FriendInfo
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import kotlinx.coroutines.delay
@@ -45,8 +46,9 @@ import kotlin.math.absoluteValue
 data class Location(val name: String, val x: Float, val y: Float, val distance: Int)
 
 @Composable
-fun TeamRoadScreen(navController: NavController, marathonDataViewModel: MarathonDataViewModel) {
+fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
 
+    val navController = rememberNavController()
     // ViewModel에서 상태를 가져오기
     val friendInfoList = marathonDataViewModel.marathonState.collectAsState().value.friendInfoList
     

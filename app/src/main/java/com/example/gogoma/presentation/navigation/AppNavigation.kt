@@ -32,10 +32,10 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
             val context = LocalContext.current
             EndScreen(marathonDataViewModel, navController) }
         composable("team_screen") {
-            TeamScreen(navController, marathonDataViewModel)
+            TeamScreen(marathonDataViewModel)
         }
         composable("team_road_screen") {
-            TeamRoadScreen(navController, marathonDataViewModel)
+            TeamRoadScreen(marathonDataViewModel)
         }
     }
 

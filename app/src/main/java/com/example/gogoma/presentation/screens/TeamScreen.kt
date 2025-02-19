@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.TeamProgressBar
 import com.example.gogoma.presentation.components.TeamStatus
@@ -36,7 +37,9 @@ import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import kotlin.math.absoluteValue
 
 @Composable
-fun TeamScreen(navController: NavController,marathonDataViewModel: MarathonDataViewModel) {
+fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
+
+    val navController = rememberNavController()
 
     // ViewModel에서 상태를 가져오기
     val friendInfoList = marathonDataViewModel.marathonState.collectAsState().value.friendInfoList
