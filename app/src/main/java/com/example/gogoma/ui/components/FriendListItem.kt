@@ -120,7 +120,7 @@ fun FriendListItem(friendResponse: FriendResponse) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "${friendResponse.totalDistance} km",
+                text = "${friendResponse.totalDistance}km",
                 style = TextStyle(
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
