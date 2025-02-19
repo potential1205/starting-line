@@ -32,14 +32,15 @@ fun AgreementItem(
         // 체크박스 아이콘
         IconButton(
             onClick = { onCheckedChange(!isChecked) },
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp).padding(0.dp)
         ) {
             Icon(
                 painter = painterResource(
-                    id = if (isChecked) R.drawable.checkbox_checked else R.drawable.checkbox_unchecked
+                    id = if (isChecked) R.drawable.icon_check_box else R.drawable.icon_check_box_outline_blank
                 ),
                 contentDescription = "Checkbox",
-                tint = Color.Unspecified
+                tint = if(isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.size(24.dp)
             )
         }
 

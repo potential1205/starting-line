@@ -1,7 +1,5 @@
 package com.example.gogoma.ui.screens
 
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +16,7 @@ import com.example.gogoma.ui.components.*
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.data.model.MarathonDetailResponse
 import com.example.gogoma.viewmodel.BottomSheetViewModel
+import com.example.gogoma.viewmodel.UserViewModel
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,7 +25,8 @@ import java.util.*
 fun PaymentScreen(
     navController: NavController,
     marathonId: Int?,
-    viewModel: PaymentViewModel,
+    paymentViewModel: PaymentViewModel,
+    userViewModel: UserViewModel,
     bottomSheetViewModel: BottomSheetViewModel
 ) {
     val savedStateHandle = navController.previousBackStackEntry?.savedStateHandle
@@ -39,13 +39,13 @@ fun PaymentScreen(
         println("✅ 결제 페이지에서 받은 마라톤 정보: $marathonDetail")
     }
 
-    val selectedPayment by viewModel.selectedPayment.collectAsState()
+    val selectedPayment by paymentViewModel.selectedPayment.collectAsState()
     var isAgreementChecked by remember { mutableStateOf(false) }
-    val selectedAddress by viewModel.selectedAddress.collectAsState()
+    val selectedAddress by paymentViewModel.selectedAddress.collectAsState()
 
     var selectedPrice by remember { mutableStateOf(0) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
-    val kakaoPayReadyResponse by viewModel.kakaoPayReadyResponse.collectAsState()
+    val kakaoPayReadyResponse by paymentViewModel.kakaoPayReadyResponse.collectAsState()
 
     val regist = marathonDetail?.let { detail ->
         val currentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).format(Date())
@@ -88,6 +88,8 @@ fun PaymentScreen(
                     backgroundColor = if (isAgreementChecked && selectedOption != null) BrandColor1 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     textColor = if (isAgreementChecked && selectedOption != null) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                     onClick = {
+                        paymentViewModel.updateSelectedPayment("카카오페이")
+
                         if (isAgreementChecked && selectedOption != null) {
                             val regist = marathonDetail?.let { detail ->
                                 val currentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA).format(Date())
@@ -117,7 +119,7 @@ fun PaymentScreen(
 
                             when (selectedPayment) {
                                 "카카오페이" -> {
-                                    viewModel.requestKakaoPayReady(
+                                    paymentViewModel.requestKakaoPayReady(
                                         KakaoPayReadyRequest(
                                             orderId = marathonId.toString(),
                                             itemName = marathonDetail?.marathon?.title ?: "마라톤 참가권",
@@ -144,9 +146,9 @@ fun PaymentScreen(
         ) {
             item {
                 AddressSizeSelection(
-                    selectedAddress = selectedAddress,
-                    viewModel = viewModel,
-                    onAddressClick = { navController.navigate("addressSelection") }
+                    navController = navController,
+                    userViewModel = userViewModel,
+                    paymentViewModel = paymentViewModel,
                 )
             }
 
@@ -169,14 +171,15 @@ fun PaymentScreen(
 
                     if (courseOptions.isNotEmpty()) {
                         SectionWithRadioButtons(
+                            ifFormatNeed = true,
                             title = "참가 종목",
                             options = courseOptions.map { it.first },
                             selectedOption = selectedOption ?: "",
                             onOptionSelected = { selected ->
                                 selectedOption = selected
-                                viewModel.updateSelectedDistance(selected)
+                                paymentViewModel.updateSelectedDistance(selected)
                                 selectedPrice = courseOptions.find { it.first == selected }?.second ?: 0
-                                viewModel.updateSelectedPrice(selectedPrice)
+                                paymentViewModel.updateSelectedPrice(selectedPrice)
                             }
                         )
                     }
@@ -191,18 +194,6 @@ fun PaymentScreen(
                     isChecked = isAgreementChecked,
                     onCheckedChange = { checked -> isAgreementChecked = checked },
                     onViewClicked = { bottomSheetViewModel.showBottomSheet("privacyPolicy") }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-
-            item {
-                SectionWithRadioButtons(
-                    title = "결제 수단",
-//                    options = listOf("카카오페이", "토스", "무통장 입금"),
-                    options = listOf("카카오페이"),
-                    selectedOption = selectedPayment,
-                    onOptionSelected = { paymentMethod -> viewModel.updateSelectedPayment(paymentMethod) }
                 )
             }
         }
