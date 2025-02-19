@@ -14,6 +14,7 @@ import com.example.gogoma.data.model.BooleanResponse
 import com.example.gogoma.data.model.MarathonEndInitDataRequest
 import com.example.gogoma.data.util.MarathonRealTimeDataUtil
 import com.example.gogoma.data.util.MarathonRunService
+import com.example.gogoma.data.util.UserDistanceRepository
 import com.example.gogoma.utils.TokenManager
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
@@ -36,6 +37,7 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     private val dataClient: DataClient = Wearable.getDataClient(application)
     private var marathonRealTimeDataUtil: MarathonRealTimeDataUtil = MarathonRealTimeDataUtil(getApplication())
     private var isMarathonRunning = true
+
 
     init {
         dataClient.addListener(this)
@@ -87,6 +89,15 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
             .addOnFailureListener { e ->
                 Log.e("marathon", "[Marathon Ready] 상태 전송 실패", e)
             }
+
+        UserDistanceRepository.createInitialUserData(
+            marathonRealTimeData.userId,
+            onSuccess = { Log.d("MarathonRunService", "초기 데이터 생성 성공") },
+            onFailure = { exception ->
+                Log.e("MarathonRunService", "초기 데이터 생성 실패: ${exception.message}")
+            }
+        )
+
     }
 
     // -------------------------------------------------------------------------------- //
@@ -136,7 +147,10 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
         ) {
             var marathonRealTimeData = marathonRealTimeDataUtil.getMarathonRealTimeData()
 
-            if (marathonRealTimeData.currentDistance > marathonRealTimeData.totalDistance) {
+            if (marathonRealTimeData.currentDistance >= marathonRealTimeData.totalDistance) {
+                marathonRealTimeDataUtil.updateData()
+                marathonSendData()
+
                 val intent = Intent(getApplication(), MarathonRunService::class.java)
                 getApplication<Application>().stopService(intent)
                 marathonRealTimeDataUtil.endUpdating()
@@ -200,6 +214,9 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
 
             Log.d("MarathonRunService", "[Marathon End] 데이터 전송 및 위치 추적 중단")
         }
+
+        //
+
 
     }
 
