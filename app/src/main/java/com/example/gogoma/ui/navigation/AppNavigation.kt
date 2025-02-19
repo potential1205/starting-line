@@ -176,17 +176,23 @@ fun AppNavigation(userViewModel: UserViewModel){
         ) { backStackEntry ->
             val registJsonEncoded = backStackEntry.arguments?.getString("registJson")
             val registJson = registJsonEncoded?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) }
-            PaymentStatusScreen(isSuccess = true, registJson = registJson, viewModel = registViewModel, onConfirm = { navController.navigate("main") })
+            PaymentStatusScreen(
+                navController = navController,
+                isSuccess = true,
+                registJson = registJson,
+                userViewModel = UserViewModel(),
+                registViewModel = registViewModel,
+            )
         }
 
         // 결제 실패 화면
         composable("paymentFailure") {
             PaymentStatusScreen(
+                navController = navController,
                 isSuccess = false,
                 registJson = null,  // 실패 시에는 registJson을 넘기지 않음
-                viewModel = registViewModel,
-                onConfirm = { navController.popBackStack() },
-                onNavigateToMain = { navController.navigate("main") }
+                userViewModel = UserViewModel(),
+                registViewModel = registViewModel,
             )
         }
 

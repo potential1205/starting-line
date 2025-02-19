@@ -21,7 +21,7 @@ import com.example.gogoma.theme.Pretendard
 
 @Composable
 fun TopBarArrow(
-    title: String,
+    title: String? = null,
     isDisplay: Boolean = false,
     onBackClick: () -> Unit,
     refreshAction: (()->Unit)? = null
@@ -57,13 +57,15 @@ fun TopBarArrow(
                 .horizontalScroll(rememberScrollState()),
             contentAlignment = if (isDisplay) Alignment.CenterStart else Alignment.Center
         ) {
-            Text(
-                text = title,
-                fontSize = 15.sp,
-                color = Color(0xFF222222),
-                fontFamily = if (isDisplay) PartialSansKR else Pretendard,
-                fontWeight = FontWeight.Bold,
-            )
+            title?.let {
+                Text(
+                    text = title,
+                    fontSize = 15.sp,
+                    color = Color(0xFF222222),
+                    fontFamily = if (isDisplay) PartialSansKR else Pretendard,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
 
         if (refreshAction != null) {
@@ -114,5 +116,13 @@ fun TopBarArrowPreview3() {
 fun TopBarArrowPreview4() {
     GogomaTheme {
         TopBarArrow(title = "서울 마라톤 2022 asdfsdfafawefawfasdf", isDisplay = true, onBackClick = {}, refreshAction = { })
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopBarArrowPreview5() {
+    GogomaTheme {
+        TopBarArrow(onBackClick = {})
     }
 }
