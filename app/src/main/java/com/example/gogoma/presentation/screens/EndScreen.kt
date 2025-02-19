@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.MaterialTheme
@@ -27,7 +28,7 @@ import com.google.android.gms.wearable.Wearable
 import kotlin.math.floor
 
 @Composable
-fun EndScreen(marathonDataViewModel: MarathonDataViewModel, context: Context) {
+fun EndScreen(marathonDataViewModel: MarathonDataViewModel, navController: NavController) {
 
     val marathonState = marathonDataViewModel.marathonState.collectAsState().value
 
@@ -77,38 +78,12 @@ fun EndScreen(marathonDataViewModel: MarathonDataViewModel, context: Context) {
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Button(
-                    onClick = { sendEndSignalToPhone(context) },
+                    onClick = { navController.navigate("startScreen") },
                     modifier = Modifier.size(50.dp)
                 ) {
                     Text("종료", style = MaterialTheme.typography.button, color = MaterialTheme.colors.onPrimary)
                 }
             }
         }
-    }
-}
-
-// 📌 워치에서 모바일로 End 신호 전송
-private fun sendEndSignalToPhone(context: Context) {
-    val putDataMapRequest = PutDataMapRequest.create("/end").apply {
-        dataMap.putLong("timestamp", System.currentTimeMillis())
-        dataMap.putString("priority", "urgent")
-    }
-
-    val putDataRequest = putDataMapRequest.asPutDataRequest().setUrgent()
-
-    Wearable.getDataClient(context).putDataItem(putDataRequest)
-        .addOnSuccessListener {
-            Log.d("EndScreen", "[워치 to 모바일] 마라톤 종료 요청 성공")
-        }
-        .addOnFailureListener { e ->
-            Log.e("EndScreen", "[워치 to 모바일] 마라톤 종료 요청 실패", e)
-        }
-}
-
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
-@Composable
-fun EndScreenPreview() {
-    GogomaWatchTheme {
-        EndScreen(marathonDataViewModel = MarathonDataViewModel(), context = android.content.ContextWrapper(null))
     }
 }

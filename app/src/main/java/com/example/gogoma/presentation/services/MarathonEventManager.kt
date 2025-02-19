@@ -3,6 +3,7 @@
     import android.content.Context
     import android.util.Log
     import androidx.compose.runtime.mutableStateOf
+    import androidx.navigation.NavController
     import com.example.gogoma.presentation.data.MarathonRealTimeData
     import com.google.android.gms.wearable.DataClient
     import com.google.android.gms.wearable.DataEvent
@@ -42,24 +43,6 @@
                 }
         }
 
-        // [워치 -> 모바일] End 신호 전송
-        fun sendEndSignal() {
-            val putDataMapRequest = PutDataMapRequest.create("/end").apply {
-                dataMap.putLong("timestamp", System.currentTimeMillis())
-                dataMap.putString("priority", "urgent")
-            }
-
-            val putDataRequest = putDataMapRequest.asPutDataRequest().setUrgent()
-
-            dataClient.putDataItem(putDataRequest)
-                .addOnSuccessListener { dataItem ->
-                    Log.d("WatchEventManager", "End 신호 전송 성공: $dataItem")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("WatchEventManager", "End 신호 전송 실패", e)
-                }
-        }
-
         // [모바일 -> 워치] 데이터 이벤트 감지
         fun handleDataChanged(dataEvents: DataEventBuffer) {
             for (event in dataEvents) {
@@ -91,7 +74,7 @@
 
         companion object {
             // 전역에서 호출할 수 있는 static 메서드
-            fun handleDataChanged(dataEvents: DataEventBuffer) {
+            fun handleDataChanged(dataEvents: DataEventBuffer, navController: NavController) {
                 val gson = Gson()
                 for (event in dataEvents) {
                     if (event.type == DataEvent.TYPE_CHANGED) {
@@ -110,6 +93,10 @@
                                 val marathonDataJson = dataMap.getString("marathonData")
                                 val marathonData = gson.fromJson(marathonDataJson, MarathonRealTimeData::class.java)
                                 Log.d("GlobalWatchEventManager", "마라톤 업데이트 데이터 수신: $marathonData")
+                            }
+                            "/end" -> {
+                                Log.d("WatchEventManager", "End 이벤트 수신, 종료 화면으로 이동")
+                                navController.navigate("endScreen")
                             }
                         }
                     }

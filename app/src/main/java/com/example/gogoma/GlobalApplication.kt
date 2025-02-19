@@ -2,12 +2,15 @@ package com.example.gogoma
 
 import android.app.Application
 import android.util.Log
+import androidx.navigation.NavController
 import com.example.gogoma.presentation.services.MarathonEventManager
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.Wearable
 
 class GlobalApplication : Application(), DataClient.OnDataChangedListener {
+
+    var navController: NavController? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -16,6 +19,6 @@ class GlobalApplication : Application(), DataClient.OnDataChangedListener {
     }
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
-        MarathonEventManager.handleDataChanged(dataEvents)
+        navController?.let { MarathonEventManager.handleDataChanged(dataEvents, it) }
     }
 }
