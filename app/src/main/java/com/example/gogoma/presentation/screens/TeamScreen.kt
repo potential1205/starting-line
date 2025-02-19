@@ -39,8 +39,6 @@ import kotlin.math.absoluteValue
 @Composable
 fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
 
-    val navController = rememberNavController()
-
     // ViewModel에서 상태를 가져오기
     val friendInfoList = marathonDataViewModel.marathonState.collectAsState().value.friendInfoList
 
@@ -67,13 +65,6 @@ fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
     val shouldNavigateToRoadScreen by remember {
         derivedStateOf {
             friendInfoList.any { it.gapDistance.absoluteValue <= 10000 }
-        }
-    }
-
-    // 일정 거리 내에 친구가 들어오면 화면 전환
-    LaunchedEffect(shouldNavigateToRoadScreen) {
-        if (shouldNavigateToRoadScreen) {
-            navController.navigate("team_road_screen")
         }
     }
 
