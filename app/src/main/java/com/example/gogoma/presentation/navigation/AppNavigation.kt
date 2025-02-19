@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.gogoma.presentation.pager.ViewPagerScreen
 import com.example.gogoma.presentation.pager.ViewPager2_ID
 import com.example.gogoma.presentation.screens.EndScreen
+import com.example.gogoma.presentation.screens.PersonalScreen
 import com.example.gogoma.presentation.screens.StartScreen
 import com.example.gogoma.presentation.screens.TeamRoadScreen
 import com.example.gogoma.presentation.screens.TeamScreen
@@ -29,12 +30,10 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
     ) {
         composable("startScreen") { StartScreen(navController, marathonDataViewModel) }
         composable("viewPagerScreen") {
-            ViewPagerScreen(activity = activity!!)
-        }
-        composable("endScreen") { EndScreen(marathonDataViewModel, navController) }
-        composable("team_screen") { TeamScreen(marathonDataViewModel) }
-        composable("team_road_screen") {
-            TeamRoadScreen(marathonDataViewModel, viewPager) // ✅ ViewPager2 전달
+            ViewPagerScreen(
+                activity = LocalContext.current as FragmentActivity,
+                marathonDataViewModel
+            )
         }
     }
 }

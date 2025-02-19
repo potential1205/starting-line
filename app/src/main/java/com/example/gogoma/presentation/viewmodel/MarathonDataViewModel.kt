@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 class MarathonDataViewModel : ViewModel() {
 
@@ -42,7 +43,11 @@ class MarathonDataViewModel : ViewModel() {
     )
     val marathonState: StateFlow<MarathonData> = _marathonState
 
-    // ✅ "이전 거리 내 인원 수"를 저장하는 변수 추가 (Fragment가 재생성되어도 유지됨)
+    // 거리 내 인원수수
+    private val _nearbyCount = MutableStateFlow(0)
+    val nearbyCount: StateFlow<Int> = _nearbyCount
+
+    // 거리 내 변수 추가 (Fragment가 재생성되어도 유지됨)
     private val _previousNearbyCount = MutableStateFlow(0)
     val previousNearbyCount: StateFlow<Int> = _previousNearbyCount
 
@@ -164,6 +169,8 @@ class MarathonDataViewModel : ViewModel() {
                             val jsonFriendInfoList = dataMap.getString("friendInfoList")
                             val friendInfoListType = object : TypeToken<List<FriendInfo>>() {}.type
                             val friendInfoList: List<FriendInfo> = gson.fromJson(jsonFriendInfoList, friendInfoListType)
+                            val newNearbyCount = friendInfoList.count { !it.isMe && it.gapDistance.absoluteValue <= 10000 }
+                            _nearbyCount.value = newNearbyCount
 
                             Log.d("marathon", "update 이벤트가 발생했습니다.")
 
