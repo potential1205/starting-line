@@ -48,8 +48,8 @@ class MarathonRealTimeDataUtil(private val context: Context) {
 
             // 거리 및 페이스 관련 값 설정
             totalDistance = myInfo.runningDistance
-            targetPace = (myInfo.targetPace / 100) * 60 + (myInfo.targetPace % 100)
-            targetTime = (myInfo.runningDistance / 100000) * targetPace
+            targetPace = (myInfo.targetPace *60) / 100 + (myInfo.targetPace % 100)
+            targetTime = (myInfo.runningDistance * targetPace) / 100000
 
             // 사용자 및 마라톤 정보 설정
             userId = myInfo.id
