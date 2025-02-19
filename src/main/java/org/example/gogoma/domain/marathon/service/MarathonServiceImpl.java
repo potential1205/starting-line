@@ -67,6 +67,14 @@ public class MarathonServiceImpl implements MarathonService {
     private final UserRepository userRepository;
     private static final Gson gson = new Gson();
 
+    private static List<String> cityList = new ArrayList<>(Arrays.asList(
+            "서울특별시",
+            "세종특별자치시",
+            "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시",
+            "경기도", "강원특별자치도", "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도",
+            "제주특별자치도"
+    ));
+
     @Override
     @Transactional
     public void createMarathon(CreateMarathonRequest createMarathonRequest,
@@ -348,18 +356,13 @@ public class MarathonServiceImpl implements MarathonService {
                 marathonSearchRequest.getCourseTypeList()
         );
 
-        List<String> cityList = new ArrayList<>(Arrays.asList(
-                "서울특별시",
-                "세종특별자치시",
-                "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시",
-                "경기도", "강원특별자치도", "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도",
-                "제주특별자치도"
-        ));
-
         Set<Integer> marathonTypeSet = new HashSet<>();
 
         List<MarathonPreviewDto> marathonPreviewDtoList = marathonList.stream()
                 .map(marathon -> {
+
+                    marathonStatusUpdate(marathon);
+
                     List<MarathonType> marathonTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId());
 
                     List<Integer> courseTypeList = marathonTypeRepository.findAllByMarathonId(marathon.getId())
@@ -415,6 +418,22 @@ public class MarathonServiceImpl implements MarathonService {
     public String getMarathonNameById(int id) {
         return marathonCustomRepository.findMarathonNameById(id)
                 .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_NOT_FOUND));
+    }
+
+    private void marathonStatusUpdate(Marathon marathon) {
+        LocalDateTime raceStartTime = marathon.getRaceStartTime();
+        if (raceStartTime == null) {
+            return;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate raceDate = raceStartTime.toLocalDate();
+
+        if (!today.isAfter(raceDate)) {
+            marathon.setMarathonStatus(MarathonStatus.OPEN);
+        } else {
+            marathon.setMarathonStatus(MarathonStatus.FINISHED);
+        }
     }
 
     private String calculateDDay(LocalDateTime raceStartTime) {
