@@ -61,13 +61,6 @@ fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
         }
     }
 
-    // 특정 거리(현재: 100m) 내에 친구가 있는지 확인
-    val shouldNavigateToRoadScreen by remember {
-        derivedStateOf {
-            friendInfoList.any { it.gapDistance.absoluteValue <= 10000 }
-        }
-    }
-
     Box() {
 
         // 등수

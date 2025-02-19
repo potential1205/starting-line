@@ -42,6 +42,15 @@ class MarathonDataViewModel : ViewModel() {
     )
     val marathonState: StateFlow<MarathonData> = _marathonState
 
+    // ✅ "이전 거리 내 인원 수"를 저장하는 변수 추가 (Fragment가 재생성되어도 유지됨)
+    private val _previousNearbyCount = MutableStateFlow(0)
+    val previousNearbyCount: StateFlow<Int> = _previousNearbyCount
+
+    // ✅ 이전 "거리 내 인원 수" 업데이트 함수
+    fun updateNearbyCount(count: Int) {
+        _previousNearbyCount.value = count
+    }
+
     // 현재 인덱스 상태 추가
     private val _currentIndex = MutableStateFlow(0)
     val currentIndex: StateFlow<Int> = _currentIndex

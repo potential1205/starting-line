@@ -30,15 +30,20 @@ class TeamFragment : Fragment() {
             }
         }
 
-        // ViewPager2 가져오기
+        // ✅ ViewPager2 가져오기
         viewPager = activity?.findViewById(ViewPager2_ID)
 
-        // ✅ 상태 감지 후 TeamRoadScreen(팀 화면 2)로 이동
+        // ✅ StateFlow 감지 후 TeamRoadScreen으로 이동
         lifecycleScope.launch {
             marathonDataViewModel.marathonState.collect { state ->
-                val shouldNavigateToTeamRoad = state.friendInfoList.any { it.gapDistance.absoluteValue <= 10000 }
-                if (shouldNavigateToTeamRoad) {
-                    viewPager?.setCurrentItem(2, true) // 팀 화면 2로 이동
+                val nearbyCount = state.friendInfoList.count { !it.isMe && it.gapDistance.absoluteValue <= 10000 } // ✅ 현재 "거리 내 인원 수"
+                val previousCount = marathonDataViewModel.previousNearbyCount.value // ✅ ViewModel에서 이전 값 가져오기
+
+                if (nearbyCount != previousCount) { // ✅ 인원 수 변화 감지
+                    marathonDataViewModel.updateNearbyCount(nearbyCount) // ✅ 값 업데이트
+                    if (nearbyCount > 0) {
+                        viewPager?.setCurrentItem(2, true) // 🔥 팀 화면 2로 이동
+                    }
                 }
             }
         }
@@ -51,3 +56,4 @@ class TeamFragment : Fragment() {
         viewPager = null
     }
 }
+
