@@ -40,6 +40,8 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
     KeepScreenOn(activity)
     CheckWearOSConnection()
 
+    val isReturningFromEnd by marathonDataViewModel.isReturningFromEnd.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +52,7 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (marathonState.marathonTitle.isNotEmpty()) {
+            if (!isReturningFromEnd && marathonState.marathonTitle.isNotEmpty()) {
                 Text(
                     text = marathonState.marathonTitle,
                     style = MaterialTheme.typography.body2,

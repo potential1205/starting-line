@@ -78,7 +78,12 @@ fun EndScreen(marathonDataViewModel: MarathonDataViewModel, navController: NavCo
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Button(
-                    onClick = { navController.navigate("startScreen") },
+                    onClick = {
+                        marathonDataViewModel.setReturningFromEndScreen(true)
+                        navController.navigate("startScreen") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
                     modifier = Modifier.size(50.dp)
                 ) {
                     Text("종료", style = MaterialTheme.typography.button, color = MaterialTheme.colors.onPrimary)

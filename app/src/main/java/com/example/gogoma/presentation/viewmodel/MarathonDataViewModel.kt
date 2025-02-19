@@ -63,6 +63,13 @@ class MarathonDataViewModel : ViewModel() {
     private val _currentColor = MutableStateFlow(Color.Gray)
     val currentColor: StateFlow<Color> = _currentColor
 
+    private val _isReturningFromEnd = MutableStateFlow(false)
+    val isReturningFromEnd: StateFlow<Boolean> = _isReturningFromEnd
+
+    fun setReturningFromEndScreen(value: Boolean) {
+        _isReturningFromEnd.value = value
+    }
+
     // Data Layer 이벤트 리스너 관련 변수
     private var dataClientListener: DataClient.OnDataChangedListener? = null
     private var appContext: Context? = null
