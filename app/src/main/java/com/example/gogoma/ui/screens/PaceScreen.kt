@@ -119,9 +119,9 @@ fun PaceScreen(
             )
             //중단 체크용 변수 초기화
             marathon?.let {
-                marathonViewModel.resetMarathonStopState(it.isEnd)
+                marathonViewModel.resetMarathonStopState(it.end)
             } ?: run {
-                marathonViewModel.resetMarathonStopState(true)
+                marathonViewModel.resetMarathonStopState(true) //무조건 종료
             }
         }
     }
