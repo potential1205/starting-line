@@ -19,6 +19,8 @@ import com.example.gogoma.data.dto.KakaoPayReadyRequest
 import com.example.gogoma.data.dto.KakaoPayReadyResponse
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.data.model.Address
+import com.example.gogoma.data.model.ApplyInfoRequest
+import com.example.gogoma.data.model.BooleanResponse
 import com.example.gogoma.data.model.CreateUserMarathonRequest
 import com.example.gogoma.data.model.PaymentType
 import com.google.gson.Gson
@@ -88,6 +90,33 @@ class PaymentViewModel : ViewModel() {
     private val _isPaymentSuccessful = MutableStateFlow(false)
     val isPaymentSuccessful: StateFlow<Boolean> = _isPaymentSuccessful
 
+    //마라톤 신청 초기값을 불러옴 (우선적으로 옷사이즈, 주소만)
+    fun fetchApplyInfo(accessToken: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.userApiService.getApplyInfoById(accessToken)
+                updateAddress(response.roadAddress, response.detailAddress)
+                updateSelectedSize(response.clothingSize)
+            } catch (e: HttpException) {
+                Log.e("PaymentViewModel", "HTTP error: ${e.message()}")
+            } catch (e: IOException) {
+                Log.e("PaymentViewModel", "Network error: ${e.message}")
+            }
+        }
+    }
+
+    // 주소 옷사이즈 업데이트 함수
+    fun updateApplyInfo(accessToken: String, applyInfoRequest: ApplyInfoRequest, onResult: (BooleanResponse?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.userApiService.updateUserApplyInfo(accessToken, applyInfoRequest)
+                onResult(response)
+            } catch (e: Exception) {
+                onResult(BooleanResponse(success = false))
+            }
+        }
+    }
+    
     // 배송지 선택 업데이트
     fun selectAddress(address: Address) {
         viewModelScope.launch {

@@ -1,5 +1,7 @@
 package com.example.gogoma.data.api
 
+import com.example.gogoma.data.model.ApplyInfoRequest
+import com.example.gogoma.data.model.ApplyResponse
 import com.example.gogoma.data.model.BooleanResponse
 import com.example.gogoma.data.model.CreateUserRequest
 import com.example.gogoma.data.model.FriendResponse
@@ -83,4 +85,17 @@ interface UserApiService {
         @Header("Authorization") accessToken: String,
         @Path("marathonId") marathonId: Int
     ): Response<BooleanResponse>
+
+    // 주소 옷사이즈 업데이트
+    @POST("api/v1/users/applyInfo")
+    suspend fun updateUserApplyInfo(
+        @Header("Authorization") accessToken: String,
+        @Body applyInfoRequest: ApplyInfoRequest
+    ): BooleanResponse
+
+    // 마라톤 신청시 필요한 정보
+    @GET("api/v1/users/apply")
+    suspend fun getApplyInfoById(
+        @Header("Authorization") accessToken: String
+    ): ApplyResponse
 }
