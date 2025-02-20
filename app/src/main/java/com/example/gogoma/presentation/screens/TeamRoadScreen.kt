@@ -2,6 +2,7 @@ package com.example.gogoma.presentation.screens
 
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -54,8 +55,8 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
         return
     }
 
-    val myColor = Color(0xFF2680FF)
-    val otherColor = Color(0xFFFF291A) // MaterialTheme.colors.secondary
+    val myColor = MaterialTheme.colors.primary
+    val otherColor = MaterialTheme.colors.secondary
 
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current.density
@@ -71,6 +72,7 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
         friendInfoList.filter { it.userId != me.userId && it.gapDistance.absoluteValue <= distanceRange }
             .map { person ->
                 // 거리 차이 계산: (내 거리 - 사람의 거리) / 100m로 화면 Y 위치를 비례적으로 계산
+                Log.d("gapDist",person.gapDistance.toString())
                 val normalizedY = (-person.gapDistance.toFloat() + distanceRange) / (2 * distanceRange)
                 val adjustedY = (screenHeight - 50f) * normalizedY
 

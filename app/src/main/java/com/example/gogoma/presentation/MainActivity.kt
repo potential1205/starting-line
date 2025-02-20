@@ -20,6 +20,7 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.presentation.navigation.AppNavigation
 import com.example.gogoma.presentation.screens.KeepScreenOn
+import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 class MainActivity : FragmentActivity() {
@@ -41,7 +42,9 @@ class MainActivity : FragmentActivity() {
 
             KeepScreenOn(activity = this)
 
-            AppNavigation(navController = navController, marathonDataViewModel)
+            GogomaWatchTheme {
+                AppNavigation(navController = navController, marathonDataViewModel)
+            }
         }
     }
 

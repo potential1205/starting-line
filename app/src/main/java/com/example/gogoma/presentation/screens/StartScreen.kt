@@ -6,9 +6,11 @@ import android.util.Log
 import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -21,7 +23,11 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.MaterialTheme
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.gogoma.presentation.data.FriendInfo
+import com.example.gogoma.presentation.data.MarathonData
+import com.example.gogoma.presentation.theme.GogomaWatchTheme
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 
 @Composable
@@ -44,11 +50,14 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background),
+            .fillMaxSize() // 원형 워치 화면 크기
+            .clip(CircleShape) // 원형 UI 적용
+            .background(MaterialTheme.colors.background)
+            .padding(20.dp), // 원형 내부에서 안전한 영역 확보
         contentAlignment = Alignment.Center
     ) {
         Column(
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -56,7 +65,15 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
                 Text(
                     text = marathonState.marathonTitle,
                     style = MaterialTheme.typography.body2,
-                    color = Color.Gray
+                    color = MaterialTheme.colors.onBackground,
+                    fontSize = 14.sp, // 글씨 크기 조정
+                    textAlign = TextAlign.Center,
+                    softWrap = true, // 자동 줄바꿈 활성화
+                    maxLines = 2, // 두 줄까지만 표시
+                    modifier = Modifier
+                        .wrapContentWidth() // 내용 크기만큼 너비 설정
+                        .wrapContentHeight() // 내용 크기만큼 높이 설정
+                        .paddingFromBaseline(top = 30.dp) // 텍스트가 상단에서 잘리지 않도록 여백 추가
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
@@ -69,33 +86,39 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
                     },
                     modifier = Modifier.size(80.dp)
                 ) {
-                    Text("시작", fontSize = 18.sp, color = Color.Black)
+                    Text(
+                        "시작",
+                        fontSize = 22.sp,
+                        color = MaterialTheme.colors.background,
+                        fontFamily = MaterialTheme.typography.caption1.fontFamily
+                    )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     "참여 ${marathonState.totalMemberCount}",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colors.onBackground
                 )
             } else {
                 Text(
                     text = "이런!",
-                    style = MaterialTheme.typography.title1,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 40.dp),
+                    style = MaterialTheme.typography.caption1,
+                    color = MaterialTheme.colors.onBackground,
+                    fontSize = 30.sp,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(15.dp))
                 Text(
                     text = "아직 가까운 대회가 없습니다.",
                     style = MaterialTheme.typography.body1,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 40.dp),
+                    color = MaterialTheme.colors.onBackground,
+                    fontSize = 12.sp,
                     textAlign = TextAlign.Center
                 )
             }
         }
     }
+
 }
 
 @Composable
@@ -149,5 +172,7 @@ fun CheckWearOSConnection() {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun StartScreenPreview() {
-//    StartScreen(navController = rememberNavController())
+    GogomaWatchTheme {
+        StartScreen(navController = rememberNavController(), MarathonDataViewModel())
+    }
 }
