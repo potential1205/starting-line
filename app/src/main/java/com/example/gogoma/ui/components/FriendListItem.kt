@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -38,38 +39,32 @@ import com.example.gogoma.data.model.FriendResponse
 import com.example.gogoma.theme.GogomaTheme
 
 @Composable
-fun FriendListItem(friendResponse: FriendResponse) {
+fun FriendListItem(friendResponse: FriendResponse, isMe: Boolean = false) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 15.dp, bottom = 15.dp, start = 15.dp, end = 30.dp),
+            .padding(start = 10.dp, end = 18.dp, top = 10.dp, bottom = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row (
             modifier = Modifier
-                .wrapContentWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .weight(1f),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // 등수
-            Column (
-                modifier = Modifier
-                    .width(30.dp)
-                    .padding(end = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CompositionLocalProvider (LocalDensity provides Density(LocalDensity.current.density, fontScale = 1f)) {
-                    Text(
-                        text = "${friendResponse.rank}",
-                        style = TextStyle(
-                            fontSize = 19.sp, // ✅ 시스템 설정에 영향을 받지 않음
-                            fontFamily = MaterialTheme.typography.displayLarge.fontFamily,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
-                    )
-                }
+            // 등수 (글자 크기 고정)
+            CompositionLocalProvider (LocalDensity provides Density(LocalDensity.current.density, fontScale = 1f)) {
+                Text(
+                    text = "${friendResponse.rank}",
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        color = if(isMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                        fontWeight = if(isMe) FontWeight.ExtraBold else FontWeight.Bold,
+                        textAlign = TextAlign.Right
+                    ),
+                    modifier = Modifier.width(20.dp)
+                )
             }
 
             // 이미지
@@ -93,40 +88,43 @@ fun FriendListItem(friendResponse: FriendResponse) {
                 contentDescription = "image description",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(56.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
             )
-
             // 이름
             Text(
                 text = friendResponse.name,
                 style = TextStyle(
-                    fontSize = 17.5.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 16.sp,
+                    color = if(isMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                    fontWeight = if(isMe) FontWeight.Medium else FontWeight.Normal,
                     textAlign = TextAlign.Center,
                 ),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(horizontal = 12.dp)
             )
         }
 
-        Row(
-            modifier = Modifier
-                .wrapContentWidth()
-                .background(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(size = 5.dp))
-                .padding(start = 10.dp, top = 5.dp, end = 10.dp, bottom = 5.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "${friendResponse.totalDistance}km",
-                style = TextStyle(
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
+        // 누적 거리
+        Text(
+            text = "${formattedDistance(friendResponse.totalDistance)}",
+            style = TextStyle(
+                fontSize = 13.sp,
+                color = if(isMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                fontWeight = if(isMe) FontWeight.Medium else FontWeight.Normal,
             )
-        }
+        )
+    }
+}
+
+fun formattedDistance(courseType: Int): String {
+    val kmValue = courseType / 100000.0
+    return if (kmValue % 1 == 0.0) {
+        // 소수점이 0일 때는 정수로 표시
+        "${kmValue.toInt()}km"
+    } else {
+        // 소수점이 있을 때는 소수점 2자리까지 표시
+        "%.3fkm".format(kmValue)
     }
 }
 
