@@ -38,7 +38,7 @@ fun FriendListScreen(
     friendsViewModel: FriendsViewModel
 ) {
     val friends = friendsViewModel.friends.collectAsState()
-
+    val myId = 0 //임시 숫자
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
@@ -66,10 +66,14 @@ fun FriendListScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 10.dp, vertical = 20.dp),
+                        .padding(horizontal = 5.dp, vertical = 5.dp),
                 ) {
                     itemsIndexed(friends.value) { index, friend ->
-                        FriendListItem(friend.copy(rank = index + 1))
+                        FriendListItem(
+                            friend.copy(rank = index + 1),
+                            isMe = (friend.friendId == myId)
+                        )
+
                     }
                 }
             }
