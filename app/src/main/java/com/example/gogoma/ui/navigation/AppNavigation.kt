@@ -29,6 +29,7 @@ import com.example.gogoma.GlobalApplication
 import com.example.gogoma.ui.components.bottomsheets.MainBottomSheetContent
 import com.example.gogoma.ui.components.bottomsheets.PaceSettingBottomSheetContent
 import com.example.gogoma.ui.components.bottomsheets.PrivacyPolicyBottomSheetContent
+import com.example.gogoma.ui.components.bottomsheets.SizeSelectionBottomSheetContent
 import com.example.gogoma.ui.screens.DetailAddressSelectionScreen
 import com.example.gogoma.ui.screens.FriendListScreen
 import com.example.gogoma.ui.screens.PaceScreen
@@ -229,7 +230,15 @@ fun AppNavigation(userViewModel: UserViewModel){
             when (navController.currentDestination?.route) {
                 "main" -> MainBottomSheetContent(bottomSheetViewModel, marathonListViewModel)
                 "paceSetting" -> PaceSettingBottomSheetContent(bottomSheetViewModel, paceViewModel)
-                "payment/{id}" -> PrivacyPolicyBottomSheetContent(onDismiss = { bottomSheetViewModel.hideBottomSheet()} )
+                "payment/{id}" -> {
+                    if(bottomSheetViewModel.pageName == "privacyPolicy"){
+                        PrivacyPolicyBottomSheetContent(onDismiss = { bottomSheetViewModel.hideBottomSheet()} )
+                    }else if(bottomSheetViewModel.pageName == "sizeSelection") {
+                        SizeSelectionBottomSheetContent(paymentViewModel, onDismiss = {bottomSheetViewModel.hideBottomSheet()})
+                    } else {
+                        Unit
+                    }
+                }
                 else -> Unit // 기본 content는 없게 설정
             }
         }

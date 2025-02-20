@@ -178,6 +178,7 @@ fun PaymentScreen(
                     navController = navController,
                     userViewModel = userViewModel,
                     paymentViewModel = paymentViewModel,
+                    bottomSheetViewModel = bottomSheetViewModel
                 )
             }
 

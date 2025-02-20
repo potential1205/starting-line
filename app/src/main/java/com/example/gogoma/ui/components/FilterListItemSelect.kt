@@ -50,7 +50,7 @@ fun FilterListItemSelect(
                     )
                 }
             )
-            .padding(start = 30.dp, top = 20.dp, end = 10.dp, bottom = 20.dp),
+            .padding(start = 15.dp, top = 18.dp, end = 9.dp, bottom = 18.dp),
         horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -58,7 +58,7 @@ fun FilterListItemSelect(
             modifier = Modifier
                 .weight(1f)
                 .padding(top = 5.dp, bottom = 5.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.Start,
         ) {
             Text(

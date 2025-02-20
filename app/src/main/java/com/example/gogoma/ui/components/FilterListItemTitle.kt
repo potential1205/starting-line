@@ -36,7 +36,7 @@ fun FilterListItemTitle(title: String) {
                     )
                 }
             )
-            .padding(start = 5.dp, top = 20.dp, end = 5.dp, bottom = 20.dp),
+            .padding(start = 5.dp, top = 18.dp, end = 5.dp, bottom = 18.dp),
         horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
     ) {
