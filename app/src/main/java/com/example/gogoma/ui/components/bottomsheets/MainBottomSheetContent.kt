@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.gogoma.R
+import com.example.gogoma.data.model.FilterItem
+import com.example.gogoma.data.model.FilterValue
 import com.example.gogoma.ui.components.FilterListItemContent
 import com.example.gogoma.ui.components.FilterListItemSelect
 import com.example.gogoma.ui.components.FilterListItemTitle
@@ -73,11 +75,18 @@ fun MainBottomSheetContent(bottomSheetViewModel: BottomSheetViewModel, marathonL
             if(bottomSheetViewModel.pageName == "기본"){
                 items(filterTitles) { title ->
                     val filterContent = when (title) {
-                        "지역" -> marathonListViewModel.pendingFilters.city ?: "모든 지역"
-                        "접수 상태" -> marathonListViewModel.pendingFilters.marathonStatus ?: "모든 접수 상태"
-                        "종목" -> marathonListViewModel.pendingFilters.courseTypeList?.joinToString(", ") ?: "모든 종목"
-                        "년도" -> marathonListViewModel.pendingFilters.year ?: "모든 년도"
-                        "월" -> marathonListViewModel.pendingFilters.month ?: "모든 월"
+                        "지역" -> marathonListViewModel.pendingFilters.city?.displayText ?: "모든 지역"
+                        "접수 상태" -> marathonListViewModel.pendingFilters.marathonStatus?.displayText ?: "모든 접수 상태"
+                        "종목" -> {
+                            val courseTypes = marathonListViewModel.pendingFilters.courseTypeList
+                            if (courseTypes != null && courseTypes.isNotEmpty()) {
+                                courseTypes.joinToString(", ") { it.displayText }
+                            } else {
+                                "모든 종목"
+                            }
+                        }
+                        "년도" -> marathonListViewModel.pendingFilters.year?.displayText ?: "모든 년도"
+                        "월" -> marathonListViewModel.pendingFilters.month?.displayText ?: "모든 월"
                         else -> "모든 ${title}"
                     }
 
@@ -119,16 +128,37 @@ fun MainBottomSheetContent(bottomSheetViewModel: BottomSheetViewModel, marathonL
                             }
                         })
                     }
-                    items(contentList) { content ->
-                        FilterListItemContent(content, onClick = {
+                    items(contentList) { (contentText, contentValue) ->
+                        FilterListItemContent(contentText, onClick = {
 
                             if(bottomSheetViewModel.isSubPageVisible){//기본 페이지에서 들어간 경우
                                 when (bottomSheetViewModel.pageName) {
-                                    "지역" -> marathonListViewModel.updatePendingFilter(city = content)
-                                    "접수 상태" -> marathonListViewModel.updatePendingFilter(marathonStatus = content)
-                                    "종목" -> marathonListViewModel.updatePendingFilter(courseTypeList = listOf(content))
-                                    "년도" -> marathonListViewModel.updatePendingFilter(year = content)
-                                    "월" -> marathonListViewModel.updatePendingFilter(month = content)
+                                    "지역" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updatePendingFilter(city = FilterItem(contentText, contentValue))
+                                        }
+                                    }
+                                    "접수 상태" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updatePendingFilter(marathonStatus = FilterItem(contentText, contentValue))
+                                        }
+                                    }
+                                    "종목" -> {
+                                        println(contentText)
+                                        if (contentValue is FilterValue.IntValue) {
+                                            marathonListViewModel.updatePendingFilter(courseTypeList = listOf(FilterItem(contentText, contentValue)))
+                                        }
+                                    }
+                                    "년도" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updatePendingFilter(year = FilterItem(contentText, contentValue))
+                                        }
+                                    }
+                                    "월" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updatePendingFilter(month = FilterItem(contentText, contentValue))
+                                        }
+                                    }
                                 }
 
                                 // 이전 모달창으로 돌아가기
@@ -136,11 +166,31 @@ fun MainBottomSheetContent(bottomSheetViewModel: BottomSheetViewModel, marathonL
                             }else{//하위 페이지에 바로 들어간 경우
                                 // 필터 값 업데이트
                                 when (bottomSheetViewModel.pageName) {
-                                    "지역" -> marathonListViewModel.updateFilters(city = content)
-                                    "접수 상태" -> marathonListViewModel.updateFilters(marathonStatus = content)
-                                    "종목" -> marathonListViewModel.updateFilters(courseTypeList = listOf(content))
-                                    "년도" -> marathonListViewModel.updateFilters(year = content)
-                                    "월" -> marathonListViewModel.updateFilters(month = content)
+                                    "지역" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updateFilters(city = FilterItem(contentText, contentValue))
+                                        }
+                                    }
+                                    "접수 상태" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updateFilters(marathonStatus = FilterItem(contentText, contentValue))
+                                        }
+                                    }
+                                    "종목" -> {
+                                        if (contentValue is FilterValue.IntValue) {
+                                            marathonListViewModel.updateFilters(courseTypeList = listOf(FilterItem(contentText, contentValue)))
+                                        }
+                                    }
+                                    "년도" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updateFilters(year = FilterItem(contentText, contentValue))
+                                        }
+                                    }
+                                    "월" -> {
+                                        if (contentValue is FilterValue.StringValue) {
+                                            marathonListViewModel.updateFilters(month = FilterItem(contentText, contentValue))
+                                        }
+                                    }
                                 }
 
                                 // 모달창 닫기

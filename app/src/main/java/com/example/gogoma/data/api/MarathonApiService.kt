@@ -17,7 +17,7 @@ interface MarathonApiService {
         @Query("city") city: String?,
         @Query("year") year: String?,
         @Query("month") month: String?,
-        @Query("courseTypeList") courseTypeList: List<String>?,
+        @Query("courseTypeList") courseTypeList: List<Int>?,
         @Query("keyword") keyword: String?
     ): Response<MarathonSearchResponse>
 
