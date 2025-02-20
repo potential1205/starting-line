@@ -43,18 +43,13 @@ class MarathonDataViewModel : ViewModel() {
     )
     val marathonState: StateFlow<MarathonData> = _marathonState
 
-    // 거리 내 인원수수
+    // 거리 내 인원수
     private val _nearbyCount = MutableStateFlow(0)
     val nearbyCount: StateFlow<Int> = _nearbyCount
 
-    // 거리 내 변수 추가 (Fragment가 재생성되어도 유지됨)
-    private val _previousNearbyCount = MutableStateFlow(0)
-    val previousNearbyCount: StateFlow<Int> = _previousNearbyCount
-
-    // ✅ 이전 "거리 내 인원 수" 업데이트 함수
-    fun updateNearbyCount(count: Int) {
-        _previousNearbyCount.value = count
-    }
+    // 레이더 범위
+    private val _distanceRange = MutableStateFlow(2000)
+    val distanceRange: StateFlow<Int> = _distanceRange
 
     // 현재 인덱스 상태 추가
     private val _currentIndex = MutableStateFlow(0)
@@ -169,7 +164,7 @@ class MarathonDataViewModel : ViewModel() {
                             val jsonFriendInfoList = dataMap.getString("friendInfoList")
                             val friendInfoListType = object : TypeToken<List<FriendInfo>>() {}.type
                             val friendInfoList: List<FriendInfo> = gson.fromJson(jsonFriendInfoList, friendInfoListType)
-                            val newNearbyCount = friendInfoList.count { !it.isMe && it.gapDistance.absoluteValue <= 10000 }
+                            val newNearbyCount = friendInfoList.count { !it.isMe && it.gapDistance.absoluteValue <= distanceRange.value }
                             _nearbyCount.value = newNearbyCount
 
                             Log.d("marathon", "update 이벤트가 발생했습니다.")
