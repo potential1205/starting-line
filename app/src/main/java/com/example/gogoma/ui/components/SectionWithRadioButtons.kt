@@ -2,6 +2,7 @@ package com.example.gogoma.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -51,6 +52,7 @@ fun SectionWithRadioButtons(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable { onOptionSelected(option) }
                 ) {
                     // 선택 여부에 따른 아이콘 변경
                     IconButton(

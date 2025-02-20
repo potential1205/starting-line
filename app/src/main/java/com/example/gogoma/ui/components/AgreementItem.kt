@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.theme.NeutralDark
 
 @Composable
 fun AgreementItem(
@@ -36,13 +37,15 @@ fun AgreementItem(
         ) {
             Icon(
                 painter = painterResource(
-                    id = if (isChecked) R.drawable.icon_check_box else R.drawable.icon_check_box_outline_blank
+                    id = if (isChecked) R.drawable.icon_check_circle_fill else R.drawable.icon_check_circle
                 ),
                 contentDescription = "Checkbox",
                 tint = if(isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(24.dp)
             )
         }
+
+        Spacer(modifier = Modifier.size(4.dp))
 
         // 텍스트
         Text(
@@ -52,15 +55,16 @@ fun AgreementItem(
             modifier = Modifier.weight(1f) // 남은 공간을 차지해서 정렬
         )
 
-        // [보기] 버튼
-        Text(
-            text = "[보기]",
-            fontSize = 16.sp,
-            color = BrandColor1,
-            modifier = Modifier
-                .clickable { onViewClicked() } // 클릭 가능
-                .padding(end = 8.dp)
-        )
+        IconButton(
+            onClick = { onViewClicked() }
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_arrow_forward_ios),
+                contentDescription = "Back Arrow",
+                tint = Color(0xFFCFCFCF),
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 }
 
