@@ -86,6 +86,11 @@ public class WatchServiceImpl implements WatchService {
         UserMarathon userMarathon = userMarathonRepository.findByUserIdAndMarathonId(user.getId(), marathonId)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_MARATHON_NOT_FOUND));
 
+        MarathonType marathonType = marathonTypeRepository.findById(userMarathon.getMarathonTypeId())
+                .orElseThrow(() -> new DbException(ExceptionCode.MARATHON_TYPE_NOT_FOUND));
+
+        user.setTotalDistance(user.getTotalDistance() + marathonType.getCourseType());
+
         userMarathon.updateMarathonEndData(
                 marathonEndInitDataRequest.getCurrentPace(),
                 marathonEndInitDataRequest.getRunningTime(),
