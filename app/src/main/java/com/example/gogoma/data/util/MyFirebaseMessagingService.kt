@@ -33,7 +33,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun showNotification(title: String?, message: String?) {
         val channelId = "my_channel"
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.logo_image) // 앱에 맞는 아이콘 리소스로 변경
+            .setSmallIcon(R.drawable.logo_square) // 앱에 맞는 아이콘 리소스로 변경
             .setContentTitle(title ?: "알림")
             .setContentText(message ?: "메시지 내용")
             .setPriority(NotificationCompat.PRIORITY_HIGH)

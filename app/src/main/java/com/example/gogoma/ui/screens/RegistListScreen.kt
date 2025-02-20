@@ -51,7 +51,7 @@ fun RegistListScreen(
 
     // 현재 선택된 탭 (0: 출발 전, 1: 도착 후)
     var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabTitles = listOf("출발 전" to beforeStartList.size, "도착 후" to afterFinishList.size)
+    val tabTitles = listOf("예정" to beforeStartList.size, "종료" to afterFinishList.size)
 
     LaunchedEffect(Unit) {
         val token = TokenManager.getAccessToken(context)

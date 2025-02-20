@@ -3,6 +3,7 @@ package com.example.gogoma.ui.screens
 import android.widget.Space
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,7 +99,8 @@ fun MainScreen(
         val targetOffset = scrollViewModel.scrollOffset
 
         while (!(listState.firstVisibleItemIndex == targetIndex &&
-                    listState.firstVisibleItemScrollOffset == targetOffset)) {
+                    listState.firstVisibleItemScrollOffset == targetOffset)
+        ) {
             listState.scrollToItem(targetIndex, targetOffset)
             delay(50)  // 50ms 동안 스크롤이 되는 것을 기다림
         }
@@ -115,7 +117,6 @@ fun MainScreen(
     }
 
 
-
     // 뒤로 가기 동작 정의
     BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
         // 모달창이 열려 있을 때 뒤로 가기 버튼 처리
@@ -128,26 +129,29 @@ fun MainScreen(
         }
     }
 
-    Scaffold (
+    Scaffold(
         topBar = {
             Column {
                 TopBar(navController)
-                if(isFilterFixed) {
+                if (isFilterFixed) {
                     Filter(
                         onFilterClick = onFilterClick,
                         selectedFilters = marathonListViewModel.selectedFilters
                     )
                 }
             }
-         },
+        },
         bottomBar = { BottomBar(navController = navController, userViewModel) }
-    ){ paddingValues ->
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = paddingValues.calculateTopPadding(), bottom = paddingValues.calculateBottomPadding()),
+                .padding(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateBottomPadding()
+                ),
             contentAlignment = Alignment.Center
-        ){
+        ) {
 
             // 오류 메시지가 있을 경우 표시
             errorMessage?.let { msg ->
@@ -165,7 +169,7 @@ fun MainScreen(
                 }
             }
 
-            if(isLoading) {
+            if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .size(60.dp),
@@ -181,84 +185,101 @@ fun MainScreen(
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    //표지 화면
+                    // 표지 화면
                     item {
-                        Column (
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .height(screenHeight - 65.dp)
                                 .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterVertically),
+                            verticalArrangement = Arrangement.spacedBy(
+                                0.dp,
+                                Alignment.CenterVertically
+                            ),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                        ){
+                        ) {
                             Column(
                                 modifier = Modifier
                                     .weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+                                verticalArrangement = Arrangement.spacedBy(
+                                    12.dp,
+                                    Alignment.CenterVertically
+                                ),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.icon_steps),
+                                    painter = painterResource(id = R.drawable.icon_laurel_wreath),
                                     contentDescription = "step icon",
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(125.dp)
                                 )
+
+                                // 제목 텍스트 (자간 6% 줄임)
                                 Text(
-                                    text = buildAnnotatedString {
-                                        withStyle(style = SpanStyle(fontSize = 29.5.sp)) {
-                                            append("첫 번째 ")
-                                        }
-                                        withStyle(style = SpanStyle(fontSize = 29.5.sp, color = MaterialTheme.colorScheme.primary)) {
-                                            append("출발")
-                                        }
-                                        withStyle(style = SpanStyle(fontSize = 29.5.sp)) {
-                                            append(",")
-                                        }
-                                        withStyle(style = SpanStyle(fontSize = 17.5.sp)) {
-                                            append("\n마라톤을 뛰러 가 볼까요?")
-                                        }
-                                    },
-                                    style = TextStyle(
-                                        lineHeight = 33.sp,
-                                        textAlign = TextAlign.Center,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
+                                    text = "한눈에 보는 마라톤 일정",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black,
+                                    letterSpacing = (-1.32).sp // 22.sp * -0.06
+                                )
+
+                                // 설명 텍스트 (자간 6% 줄임)
+                                Text(
+                                    text = "간편하게 신청하고, 친구들과 함께 달려보세요",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray,
+                                    letterSpacing = (-0.84).sp // 14.sp * -0.06
                                 )
                             }
-                            Row(
+
+
+                            // 아래 화살표 3개 배치
+                            Column(
                                 modifier = Modifier
-                                    .padding(top = 24.dp, bottom = 89.dp),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                IconButton (
-                                    onClick = {
+                                    .padding(top = 24.dp, bottom = 89.dp)
+                                    .clickable { // 세 개 중 하나라도 클릭되면 실행
                                         coroutineScope.launch {
-                                            listState.animateScrollToItem(1) //리스트로 이동
+                                            listState.animateScrollToItem(1) // 리스트로 이동
                                         }
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.icon_keyboard_arrow_down),
-                                        contentDescription = "down arrow",
-                                        tint = Color(0xFFB0B0B0),
-                                        modifier = Modifier.size(58.dp)
-                                    )
-                                }
+                                    },
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(10.dp) // 간격 조정
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_keyboard_arrow_down),
+                                    contentDescription = "down arrow light",
+                                    tint = Color(0xFF2979FF).copy(alpha = 0.2f), // 투명도 30%
+                                    modifier = Modifier.size(30.dp)
+                                )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_keyboard_arrow_down),
+                                    contentDescription = "down arrow medium",
+                                    tint = Color(0xFF2979FF).copy(alpha = 0.5f), // 투명도 60%
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_keyboard_arrow_down),
+                                    contentDescription = "down arrow bold",
+                                    tint = Color(0xFF2979FF).copy(alpha = 1.0f), // 투명도 100%
+                                    modifier = Modifier.size(50.dp)
+                                )
                             }
+
                         }
                     }
 
+
                     // 필터 컴포넌트 (스크롤 될 때 고정)
                     item {
-                        Box(modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(0.dp)
-                            .heightIn(min = screenHeight - paddingValues.calculateTopPadding() - topInset)
-                        ){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .padding(0.dp)
+                                .heightIn(min = screenHeight - paddingValues.calculateTopPadding() - topInset)
+                        ) {
                             Column {
-                                if(!isFilterFixed) {
+                                if (!isFilterFixed) {
                                     Filter(
                                         onFilterClick = onFilterClick,
                                         selectedFilters = marathonListViewModel.selectedFilters
@@ -279,7 +300,6 @@ fun MainScreen(
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview(){

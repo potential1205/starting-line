@@ -57,6 +57,7 @@ import coil.size.Size
 import com.example.gogoma.R
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.PartialSansKR
+import com.example.gogoma.theme.Pretendard
 import com.example.gogoma.ui.components.BottomBarButtonFull
 import com.example.gogoma.ui.components.FormattedDate
 import com.example.gogoma.ui.components.HashTag
@@ -166,9 +167,9 @@ fun MarathonDetailScreen(marathonId: Int, navController: NavController){
                             Text(
                                 text = detail.marathon.title,
                                 style = TextStyle(
-                                    fontSize = 19.sp,
-                                    fontFamily = PartialSansKR,
-                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 22.sp,
+                                    fontFamily = Pretendard,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             )
                         }
