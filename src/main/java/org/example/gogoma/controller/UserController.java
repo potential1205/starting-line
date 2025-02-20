@@ -193,9 +193,11 @@ public class UserController {
 
     @GetMapping("/friends")
     @Operation(summary = "친구 목록 누적 거리 순으로 조회", description = "accessToken을 사용하여 사용자의 친구 목록을 누적 거리 순으로 조회합니다.")
-    public ResponseEntity<List<FriendResponse>> getFriendListOrderByTotalDistance(@RequestHeader("Authorization") String accessToken) {
-        List<FriendResponse> friendResponses = userService.getFriendListOrderByTotalDistance(kakaoOauthClient.getUserInfo(accessToken).getEmail());
-        return ResponseEntity.ok(friendResponses);
+    public ResponseEntity<FriendListResponse> getFriendListOrderByTotalDistance(@RequestHeader("Authorization") String accessToken) {
+        String email = kakaoOauthClient.getUserInfo(accessToken).getEmail();
+        List<FriendResponse> friendResponses = userService.getFriendListOrderByTotalDistance(email);
+        int userId = userService.getIdByEmail(email);
+        return ResponseEntity.ok(FriendListResponse.of(userId, friendResponses));
     }
 
     @GetMapping("/upcoming/friends")
