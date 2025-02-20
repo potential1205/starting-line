@@ -149,7 +149,7 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
                 style = TextStyle(
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Light,
-                    color = Color(0xFF2680FF),
+                    color = marathonStatusBackgroundColor,
                 )
             )
             Box(

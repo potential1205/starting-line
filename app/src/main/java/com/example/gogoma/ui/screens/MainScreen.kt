@@ -147,8 +147,7 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    top = paddingValues.calculateTopPadding(),
-                    bottom = paddingValues.calculateBottomPadding()
+                    paddingValues
                 ),
             contentAlignment = Alignment.Center
         ) {

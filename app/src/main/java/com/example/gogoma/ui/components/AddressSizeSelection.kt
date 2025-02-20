@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
 import com.example.gogoma.data.model.Address
 import com.example.gogoma.theme.BrandColor1
+import com.example.gogoma.theme.NeutralLight
 import com.example.gogoma.ui.screens.AddressApiActivity
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
@@ -63,7 +64,7 @@ fun AddressSizeSelection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(width = 0.4.dp, color = Color(0xFFE4E4E4), shape = RoundedCornerShape(size = 16.dp))
+            .border(width = 0.4.dp, color = NeutralLight, shape = RoundedCornerShape(size = 16.dp))
             .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(size = 16.dp))
     ) {
         Row(
@@ -115,7 +116,7 @@ fun AddressSizeSelection(
             Icon(
                 painter = painterResource(id = R.drawable.icon_arrow_forward_ios),
                 contentDescription = "Back Arrow",
-                tint = Color(0xFFCFCFCF),
+                tint = NeutralLight,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -123,7 +124,7 @@ fun AddressSizeSelection(
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 1.dp,
-            color = Color(0xFFDDDDDD)
+            color = NeutralLight
         )
 
         Row(
@@ -153,7 +154,7 @@ fun AddressSizeSelection(
             Icon(
                 painter = painterResource(id = R.drawable.icon_arrow_forward_ios),
                 contentDescription = "Back Arrow",
-                tint = Color(0xFFCFCFCF),
+                tint = NeutralLight,
                 modifier = Modifier.size(20.dp)
             )
         }

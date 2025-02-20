@@ -91,7 +91,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit, backgroun
                     Text(
                         text = it,
                         style = TextStyle(
-                            fontSize = 15.sp,
+                            fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onPrimary
                         ),
                         modifier = Modifier
@@ -100,7 +100,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit, backgroun
                                 color = if (regist.dday.contains("D+")) Color(0xFF9C9C9C) else MaterialTheme.colorScheme.primary,
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .padding(horizontal = 10.dp, vertical = 5.dp)
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
                     )
                 }
             }
