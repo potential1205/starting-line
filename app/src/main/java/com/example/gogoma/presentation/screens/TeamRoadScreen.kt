@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -36,6 +37,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.wear.compose.material.MaterialTheme
 import com.example.gogoma.R
+import com.example.gogoma.presentation.data.FriendInfo
 import com.example.gogoma.presentation.viewmodel.MarathonDataViewModel
 import kotlin.math.absoluteValue
 
@@ -69,11 +71,11 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
         friendInfoList.filter { it.userId != me.userId && it.gapDistance.absoluteValue <= distanceRange }
             .map { person ->
                 // 거리 차이 계산: (내 거리 - 사람의 거리) / 100m로 화면 Y 위치를 비례적으로 계산
-                val normalizedY = (person.gapDistance.toFloat() + distanceRange) / (2 * distanceRange)
+                val normalizedY = (-person.gapDistance.toFloat() + distanceRange) / (2 * distanceRange)
                 val adjustedY = (screenHeight - 50f) * normalizedY
 
                 // Y축 반전
-                val invertedY = screenHeight - adjustedY
+                val invertedY = screenHeight - adjustedY - 25f
 
                 // 도로 폭 기준으로 가로 길이 계산해야 함
                 val randomX = Random.nextFloat() * roadTopWidth
@@ -201,5 +203,6 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun TeamRoadScreenPreview() {
-//    TeamRoadScreen()
+    //Preview가 안 보이는 이유는 me가 null이라 return 당하기 때문
+    TeamRoadScreen(MarathonDataViewModel())
 }
