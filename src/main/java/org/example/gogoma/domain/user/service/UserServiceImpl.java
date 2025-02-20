@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
     public void updateUserAddress(String email, AddressRequest addressRequest) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
-        userCustomRepository.updateAddressById(user.getId(),addressRequest.getRoad_address(),addressRequest.getDetail_address());
+        userCustomRepository.updateAddressById(user.getId(),addressRequest.getRoadAddress(),addressRequest.getDetailAddress());
     }
 
 
