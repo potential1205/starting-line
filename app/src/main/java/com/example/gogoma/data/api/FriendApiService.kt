@@ -1,7 +1,7 @@
 package com.example.gogoma.data.api
 
 import com.example.gogoma.data.model.BooleanResponse
-import com.example.gogoma.data.model.FriendResponse
+import com.example.gogoma.data.model.FriendListResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -13,7 +13,7 @@ interface FriendApiService {
     @GET("api/v1/users/friends")
     suspend fun getFriends(
         @Header("Authorization") accessToken: String?
-    ): List<FriendResponse>
+    ): Response<FriendListResponse>
 
     // accessToken 사용해 친구 목록 갱신
     @POST("/api/v1/users/update/friend")
