@@ -3,7 +3,7 @@ package org.example.gogoma.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
-import org.example.gogoma.controller.request.AddressRequest;
+import org.example.gogoma.controller.request.ApplyInfoRequest;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.marathon.service.MarathonService;
 import org.example.gogoma.domain.user.dto.*;
@@ -219,10 +219,10 @@ public class UserController {
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
-    @PostMapping("/address")
+    @PostMapping("/applyInfo")
     @Operation(summary = "주소 업데이트", description = "주소 저장")
-    public ResponseEntity<BooleanResponse> updateUserAddress(@RequestHeader("Authorization") String accessToken, @RequestBody AddressRequest addressRequest) {
-        userService.updateUserAddress(kakaoOauthClient.getUserInfo(accessToken).getEmail(), addressRequest);
+    public ResponseEntity<BooleanResponse> updateUserApplyInfo(@RequestHeader("Authorization") String accessToken, @RequestBody ApplyInfoRequest applyInfoRequest) {
+        userService.updateUserApplyInfo(kakaoOauthClient.getUserInfo(accessToken).getEmail(), applyInfoRequest);
         return ResponseEntity.ok(BooleanResponse.success());
     }
 

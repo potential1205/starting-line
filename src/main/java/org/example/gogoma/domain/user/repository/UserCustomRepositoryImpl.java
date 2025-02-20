@@ -155,11 +155,12 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     @Override
-    public void updateAddressById(int id, String roadAddress, String detailAddress) {
+    public void updateUserApplyInfoById(int id, String roadAddress, String detailAddress, String clothingSize) {
         queryFactory
                 .update(user)
                 .set(user.roadAddress, roadAddress)
                 .set(user.detailAddress, detailAddress)
+                .set(user.clothingSize, clothingSize)
                 .where(user.id.eq(id))
                 .execute();
     }
