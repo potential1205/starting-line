@@ -230,7 +230,7 @@ fun ContentLayout (
         ) {
             if(isSuccess){
                 Button(
-                    onClick = { navController.navigate("regist") },
+                    onClick = { navController.navigate("registList") },
                     modifier = Modifier
                         .weight(1f)
                         .background(

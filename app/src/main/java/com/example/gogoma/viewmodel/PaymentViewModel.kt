@@ -43,6 +43,10 @@ class PaymentViewModel : ViewModel() {
     private val _selectedAddress = MutableStateFlow(_addressList.value.firstOrNull { it.isDefault })
     val selectedAddress: StateFlow<Address?> = _selectedAddress
 
+    // 주소 임시 저장 변수
+    private val _tmpAddress = MutableStateFlow<String?>(null)
+    val tmpAddress: StateFlow<String?> = _tmpAddress
+
     // 현재 선택된 사이즈
     private val _selectedSize = MutableStateFlow("95")
     val selectedSize: StateFlow<String> = _selectedSize
@@ -88,6 +92,19 @@ class PaymentViewModel : ViewModel() {
     fun selectAddress(address: Address) {
         viewModelScope.launch {
             _selectedAddress.value = address
+        }
+    }
+
+    // 배송지 주소 업데이트 (상세 포함)
+    fun updateAddress(address: String, detailAddress: String) {
+        viewModelScope.launch {
+            _selectedAddress.value = _selectedAddress.value?.copy(address = address, detailAddress = detailAddress)
+        }
+    }
+    // 임시 배송지 주소 업데이트
+    fun updateTmpAddress(address: String?) {
+        viewModelScope.launch {
+            _tmpAddress.value = address
         }
     }
 
@@ -373,9 +390,10 @@ class PaymentViewModel : ViewModel() {
     companion object {
         fun loadSavedAddresses(): List<Address> {
             return listOf(
-                Address("1", "홍길동", "서울특별시 영등포구 선유로 00 현대아파트", "101동 202호", "010-0000-0000", isDefault = true),
-                Address("2", "김이름", "서울특별시 강남구 테헤란로 00", "302동 502호", "010-1234-5678"),
-                Address("3", "박철수", "부산광역시 해운대구 달맞이길 00", "100동 1001호", "010-9876-5432")
+                Address("1", "", "", "", "", isDefault = true),
+                Address("2", "홍길동", "서울특별시 영등포구 선유로 00 현대아파트", "101동 202호", "010-0000-0000"),
+                Address("3", "김이름", "서울특별시 강남구 테헤란로 00", "302동 502호", "010-1234-5678"),
+                Address("4", "박철수", "부산광역시 해운대구 달맞이길 00", "100동 1001호", "010-9876-5432")
             )
         }
     }

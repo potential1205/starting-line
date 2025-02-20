@@ -29,6 +29,7 @@ import com.example.gogoma.GlobalApplication
 import com.example.gogoma.ui.components.bottomsheets.MainBottomSheetContent
 import com.example.gogoma.ui.components.bottomsheets.PaceSettingBottomSheetContent
 import com.example.gogoma.ui.components.bottomsheets.PrivacyPolicyBottomSheetContent
+import com.example.gogoma.ui.screens.DetailAddressSelectionScreen
 import com.example.gogoma.ui.screens.FriendListScreen
 import com.example.gogoma.ui.screens.PaceScreen
 import com.example.gogoma.ui.screens.PaymentWebViewScreen
@@ -160,13 +161,17 @@ fun AppNavigation(userViewModel: UserViewModel){
         ) { backStackEntry ->
             val marathonId = backStackEntry.arguments?.getInt("id")
             marathonId?.let {
-                PaymentScreen(navController = navController, marathonId = it, viewModel = paymentViewModel, bottomSheetViewModel = bottomSheetViewModel)
+                PaymentScreen(navController = navController, marathonId = it, paymentViewModel = paymentViewModel, userViewModel = userViewModel, bottomSheetViewModel = bottomSheetViewModel)
             }
         }
 
         // 주소 선택 화면
         composable("addressSelection") {
             AddressSelectionScreen(navController = navController, viewModel = paymentViewModel)
+        }
+
+        composable("detailAddressSelection") {
+            DetailAddressSelectionScreen(navController = navController, paymentViewModel = paymentViewModel)
         }
 
         // 결제 성공 화면
