@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.theme.NeutralDark
 import com.example.gogoma.viewmodel.UserViewModel
 
 @Composable
@@ -43,7 +44,7 @@ fun BottomBar(navController : NavController, userViewModel: UserViewModel){
             .fillMaxWidth()
             .height(65.dp + bottomInset)
             .background(color = MaterialTheme.colorScheme.background)
-            .padding(top = 5.dp, start = 28.dp, end = 28.dp, bottom = 5.dp + bottomInset),
+            .padding(top = 5.dp, start = 30.dp, end = 30.dp, bottom = 5.dp + bottomInset),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -77,7 +78,7 @@ fun BottomBar(navController : NavController, userViewModel: UserViewModel){
                         painter = painterResource(id = icon),
                         contentDescription = "icon of ${route}",
                         tint = if (currRoute == route) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onBackground,
+                        else NeutralDark,
                         modifier = Modifier
                             .size(24.dp)
                     )

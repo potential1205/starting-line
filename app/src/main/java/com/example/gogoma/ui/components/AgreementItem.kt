@@ -18,6 +18,7 @@ import com.example.gogoma.R
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.GogomaTheme
 import com.example.gogoma.theme.NeutralDark
+import com.example.gogoma.theme.NeutralLight
 
 @Composable
 fun AgreementItem(
@@ -30,7 +31,7 @@ fun AgreementItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(width = 0.4.dp, color = Color(0xFFE4E4E4), shape = RoundedCornerShape(size = 16.dp))
+            .border(width = 0.4.dp, color = NeutralLight, shape = RoundedCornerShape(size = 16.dp))
             .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(size = 16.dp))
     ) {
         Row(

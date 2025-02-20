@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.theme.NeutralLight
 
 @Composable
 fun SectionWithRadioButtons(
@@ -28,7 +29,7 @@ fun SectionWithRadioButtons(
 ) {
     Column(
         modifier = Modifier
-            .border(width = 0.4.dp, color = Color(0xFFE4E4E4), shape = RoundedCornerShape(size = 16.dp))
+            .border(width = 0.4.dp, color = NeutralLight, shape = RoundedCornerShape(size = 16.dp))
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(size = 16.dp))
             .padding(start = 20.dp, top = 25.dp, end = 20.dp, bottom = 25.dp),

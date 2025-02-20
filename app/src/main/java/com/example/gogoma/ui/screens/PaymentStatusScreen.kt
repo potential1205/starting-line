@@ -97,7 +97,7 @@ fun BoxScope.BubbleWithArrow() { //Box Scope align을 쓰기 위해서 정의
     Box(
         modifier = Modifier
             .align(Alignment.BottomEnd)
-            .offset(x = -screenWidth * 0.034f, y = -4.dp)
+            .offset(x = -screenWidth * 0.041f, y = -4.dp)
     ) {
         Column(horizontalAlignment = Alignment.End) {
             // 말풍선 본체
