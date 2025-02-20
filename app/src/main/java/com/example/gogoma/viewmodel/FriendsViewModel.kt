@@ -1,5 +1,6 @@
 package com.example.gogoma.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.network.HttpException
@@ -23,8 +24,8 @@ class FriendsViewModel : ViewModel() {
     fun fetchFriends(accessToken: String?) {
         viewModelScope.launch {
             try {
-                val friends = RetrofitInstance.friendApiService.getFriends(accessToken)
-                _friends.value = friends.body()
+                val response = RetrofitInstance.friendApiService.getFriends(accessToken)
+                _friends.value = response.body()
             } catch (e: HttpException) {
                 _errorMessage.emit("HTTP 오류 발생: ${e.message}")
             } catch (e: IOException) {

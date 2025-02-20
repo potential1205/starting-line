@@ -1,6 +1,5 @@
 package com.example.gogoma.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -38,7 +37,6 @@ fun FriendListScreen(
     friendsViewModel: FriendsViewModel
 ) {
     val friends = friendsViewModel.friends.collectAsState()
-    val myId = 0 //임시 숫자
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
@@ -68,12 +66,14 @@ fun FriendListScreen(
                         .fillMaxSize()
                         .padding(horizontal = 5.dp, vertical = 5.dp),
                 ) {
-                    itemsIndexed(friends.value!!.friendResponseList) { index, friend ->
-                        FriendListItem(
-                            friend.copy(rank = index + 1),
-                            isMe = (friend.friendId == myId)
-                        )
+                    friends.value?.let {
+                        itemsIndexed(it.friendResponseList) { index, friend ->
+                            FriendListItem(
+                                friend.copy(rank = index + 1),
+                                isMe = (friends.value!!.userId == friend.friendId)
+                            )
 
+                        }
                     }
                 }
             }
