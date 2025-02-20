@@ -138,10 +138,10 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
             }
 
             val marathonStatusBackgroundColor = when (marathonStatus) {
-                "OPEN" -> MaterialTheme.colorScheme.secondary
-                "CLOSED" -> MaterialTheme.colorScheme.error
+                "OPEN" -> MaterialTheme.colorScheme.primary
+                "CLOSED" -> Color.Gray
                 "FINISHED" -> Color.Gray
-                else -> MaterialTheme.colorScheme.secondary
+                else -> Color.Gray
             }
 
             Text(
@@ -154,7 +154,7 @@ fun MarathonListItem (marathonPreviewDto: MarathonPreviewDto, onClick: () -> Uni
             )
             Box(
                 modifier = Modifier
-                    .background(color = Color(0xFF2680FF), shape = RoundedCornerShape(size = 4.dp))
+                    .background(color = marathonStatusBackgroundColor, shape = RoundedCornerShape(size = 4.dp))
                     .padding(start = 10.dp, top = 4.dp, end = 10.dp, bottom = 4.dp)
             ){
                 Text(

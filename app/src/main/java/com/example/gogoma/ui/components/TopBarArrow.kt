@@ -62,7 +62,7 @@ fun TopBarArrow(
                     text = title,
                     fontSize = 15.sp,
                     color = Color(0xFF222222),
-                    fontFamily = if (isDisplay) PartialSansKR else Pretendard,
+                    fontFamily = Pretendard,
                     fontWeight = FontWeight.Bold,
                 )
             }
