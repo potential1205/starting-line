@@ -235,8 +235,8 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun resetMarathonStopState() {
-        _isEnd.value = false
+    fun resetMarathonStopState(isEnd: Boolean) {
+        _isEnd.value = isEnd
         completedTasks = 0
     }
 
