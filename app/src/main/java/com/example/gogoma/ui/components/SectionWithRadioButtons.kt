@@ -73,7 +73,7 @@ fun SectionWithRadioButtons(
                     Text(
                         text = if(ifFormatNeed) formattedOption else option,
                         fontSize = 13.sp,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }

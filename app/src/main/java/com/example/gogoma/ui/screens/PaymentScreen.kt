@@ -2,14 +2,24 @@ package com.example.gogoma.ui.screens
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.gogoma.R
 import com.example.gogoma.data.dto.KakaoPayReadyRequest
 import com.example.gogoma.data.dto.UserMarathonSearchDto
 import com.example.gogoma.theme.BrandColor1
@@ -89,18 +99,16 @@ fun PaymentScreen(
     Scaffold(
         topBar = { TopBarArrow(title = "결제하기", onBackClick = { navController.popBackStack() }) },
         bottomBar = {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .padding(16.dp)
             ) {
-                PaymentAmount(amount = selectedPrice)
-                Spacer(modifier = Modifier.height(8.dp))
                 BottomBarButton(
-                    text = "결제하기",
-                    backgroundColor = if (isAgreementChecked && selectedOption != null) BrandColor1 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                    textColor = if (isAgreementChecked && selectedOption != null) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    isKakaoPay = true,
+                    text = "%,d원 결제하기".format(selectedPrice),
+                    backgroundColor = if (isAgreementChecked && selectedOption != null) Color(0xFFFFEB00) else Color(0xFFE8E8E8),
+                    textColor = if (isAgreementChecked && selectedOption != null) Color(0xFF000000) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                     onClick = {
                         paymentViewModel.updateSelectedPayment("카카오페이")
 
@@ -155,7 +163,7 @@ fun PaymentScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 2.dp),
             contentPadding = PaddingValues(bottom = 80.dp)
         ) {
             item {
@@ -203,8 +211,15 @@ fun PaymentScreen(
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
             item {
+                PaymentAmount(amount = selectedPrice)
+            }
+
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+            item {
                 AgreementItem(
-                    text = "개인정보 수집 및 이용 안내",
+                    isRequired = true,
+                    text = "개인정보 수집 및 이용 안내 동의",
                     isChecked = isAgreementChecked,
                     onCheckedChange = { checked -> isAgreementChecked = checked },
                     onViewClicked = { bottomSheetViewModel.showBottomSheet("privacyPolicy") }

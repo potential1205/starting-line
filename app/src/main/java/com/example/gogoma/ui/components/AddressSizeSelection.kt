@@ -97,7 +97,7 @@ fun AddressSizeSelection(
                 )
                 //주소
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
+                    verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
                 ) {
                     Text(
                         text = addressText,

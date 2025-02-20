@@ -1,7 +1,10 @@
 package com.example.gogoma.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,52 +21,70 @@ import com.example.gogoma.theme.NeutralDark
 
 @Composable
 fun AgreementItem(
+    isRequired: Boolean = false,
     text: String,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onViewClicked: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onCheckedChange(!isChecked) } // 클릭 시 상태 변경
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .border(width = 0.4.dp, color = Color(0xFFE4E4E4), shape = RoundedCornerShape(size = 16.dp))
+            .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(size = 16.dp))
     ) {
-        // 체크박스 아이콘
-        IconButton(
-            onClick = { onCheckedChange(!isChecked) },
-            modifier = Modifier.size(24.dp).padding(0.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onCheckedChange(!isChecked) } // 클릭 시 상태 변경
+                .padding(horizontal = 20.dp, vertical = 25.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(
-                    id = if (isChecked) R.drawable.icon_check_circle_fill else R.drawable.icon_check_circle
-                ),
-                contentDescription = "Checkbox",
-                tint = if(isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(24.dp)
+            // 체크박스 아이콘
+            IconButton(
+                onClick = { onCheckedChange(!isChecked) },
+                modifier = Modifier.size(24.dp).padding(0.dp)
+            ) {
+                Icon(
+                    painter = painterResource(
+                        id = if (isChecked) R.drawable.icon_check_circle_fill else R.drawable.icon_check_circle
+                    ),
+                    contentDescription = "Checkbox",
+                    tint = if (isChecked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.size(4.dp))
+
+            if(isRequired) {
+                Text(
+                    text = "(필수)",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+            }
+            // 텍스트
+            Text(
+                text = text,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.weight(1f) // 남은 공간을 차지해서 정렬
             )
-        }
 
-        Spacer(modifier = Modifier.size(4.dp))
-
-        // 텍스트
-        Text(
-            text = text,
-            fontSize = 16.sp,
-            color = Color.Black,
-            modifier = Modifier.weight(1f) // 남은 공간을 차지해서 정렬
-        )
-
-        IconButton(
-            onClick = { onViewClicked() }
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.icon_arrow_forward_ios),
-                contentDescription = "Back Arrow",
-                tint = Color(0xFFCFCFCF),
-                modifier = Modifier.size(20.dp)
-            )
+            IconButton(
+                onClick = { onViewClicked() },
+                modifier = Modifier.size(20.dp).padding(0.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_arrow_forward_ios),
+                    contentDescription = "Back Arrow",
+                    tint = Color(0xFFCFCFCF),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
