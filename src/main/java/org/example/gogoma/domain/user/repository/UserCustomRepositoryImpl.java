@@ -154,4 +154,14 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .fetchOne());
     }
 
+    @Override
+    public void updateAddressById(int id, String roadAddress, String detailAddress) {
+        queryFactory
+                .update(user)
+                .set(user.roadAddress, roadAddress)
+                .set(user.detailAddress, detailAddress)
+                .where(user.id.eq(id))
+                .execute();
+    }
+
 }

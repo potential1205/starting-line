@@ -2,6 +2,7 @@ package org.example.gogoma.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.gogoma.controller.request.AddressRequest;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.marathon.entity.Marathon;
 import org.example.gogoma.domain.user.dto.*;
@@ -134,6 +135,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteFriend(String email) {
         friendCustomRepository.deleteFriendByUserId(getIdByEmail(email));
+    }
+
+    @Override
+    @Transactional
+    public void updateUserAddress(String email, AddressRequest addressRequest) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new DbException(ExceptionCode.USER_NOT_FOUND));
+        userCustomRepository.updateAddressById(user.getId(),addressRequest.getRoad_address(),addressRequest.getDetail_address());
     }
 
 

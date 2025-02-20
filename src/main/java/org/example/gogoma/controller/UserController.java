@@ -3,6 +3,7 @@ package org.example.gogoma.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.gogoma.common.dto.BooleanResponse;
+import org.example.gogoma.controller.request.AddressRequest;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.marathon.service.MarathonService;
 import org.example.gogoma.domain.user.dto.*;
@@ -32,13 +33,14 @@ public class UserController {
 
     @GetMapping("/kakao/redirect")
     public ResponseEntity<Void> redirectToApp(
-            @RequestParam(required = false) String code){
+            @RequestParam(required = false) String code) {
         HttpHeaders headers = kakaoOauthClient.generateRedirectUri(code);
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
     /**
      * 카카오 인가코드 받아오기
+     *
      * @return callback link
      */
     @GetMapping("/kakao/login")
@@ -49,6 +51,7 @@ public class UserController {
 
     /**
      * 카카오 콜백함수
+     *
      * @param code ( 인가코드 )
      * @return access_Token, refresh_Token, status ( login, signup )
      */
@@ -61,8 +64,9 @@ public class UserController {
 
     /**
      * 회원가입 판단 여부
-     * @header AccessToken
+     *
      * @return access_Token, refresh_Token, status ( login, signup )
+     * @header AccessToken
      */
     @GetMapping("/auth/check")
     @Operation(summary = "토큰을 통해 회원가입 판단 여부 확인", description = "토큰을 통해 회원가입 여부를 판단하고 상태를 반환합니다.")
@@ -73,8 +77,9 @@ public class UserController {
 
     /**
      * refreshToken으로 AccessToken 갱신
-     * @header Authorization ( refresh_token )
+     *
      * @return access_Token
+     * @header Authorization ( refresh_token )
      */
     @PostMapping("/kakao/refresh")
     @Operation(summary = "AccessToken 재발급", description = "RefreshToken을 사용하여 AccessToken을 재발급받습니다.")
@@ -85,8 +90,9 @@ public class UserController {
 
     /**
      * ID로 User 조회
-     * @header Authorization ( access_token )
+     *
      * @return Kakao User 정보
+     * @header Authorization ( access_token )
      */
     @GetMapping("/kakao/userinfo")
     @Operation(summary = "AccessToken으로 사용자 정보 조회", description = "AccessToken을 사용하여 사용자의 상세 정보를 조회합니다.")
@@ -97,8 +103,9 @@ public class UserController {
 
     /**
      * 친구 목록 불러오기
-     * @header Authorization ( access_token )
+     *
      * @return 친구 목록
+     * @header Authorization ( access_token )
      */
     @GetMapping("/kakao/friendInfo")
     @Operation(summary = "카카오 친구 목록 조회", description = "AccessToken을 통해 카카오 친구 목록을 조회합니다.")
@@ -110,14 +117,15 @@ public class UserController {
     @PostMapping("/update/friend")
     @Operation(summary = "카카오 친구 목록 조회", description = "AccessToken을 통해 카카오 친구 목록을 조회합니다.")
     public ResponseEntity<BooleanResponse> updateFriendList(@RequestHeader("Authorization") String accessToken) {
-        userService.updateFriend(userService.getIdByEmail(kakaoOauthClient.getUserInfo(accessToken).getEmail()),kakaoOauthClient.getFriendList(accessToken));
+        userService.updateFriend(userService.getIdByEmail(kakaoOauthClient.getUserInfo(accessToken).getEmail()), kakaoOauthClient.getFriendList(accessToken));
         return ResponseEntity.ok(BooleanResponse.success());
     }
-    
+
     /**
      * 꼬마 서비스 로그인
-     * @header Authorization ( access_token )
+     *
      * @return 로그인 성공 여부
+     * @header Authorization ( access_token )
      */
     @PostMapping("/login")
     @Operation(summary = "서비스 로그인", description = "AccessToken을 통해 DB 사용자 정보와 친구 목록을 갱신하고 서비스를 로그인합니다.")
@@ -131,8 +139,9 @@ public class UserController {
 
     /**
      * 꼬마 서비스 회원가입
-     * @header SignUpRequest
+     *
      * @return 회원가입 성공 여부
+     * @header SignUpRequest
      */
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "SignUpRequest를 받아 DB에 사용자 정보를 저장합니다.")
@@ -143,6 +152,7 @@ public class UserController {
 
     /**
      * ID로 User 삭제
+     *
      * @param accessToken
      * @return User 삭제 성공 여부
      */
@@ -157,8 +167,9 @@ public class UserController {
 
     /**
      * 마라톤 신청 시 필요한 정보
-     * @Path accessToken
+     *
      * @return applyResponse
+     * @Path accessToken
      */
     @GetMapping("/apply")
     @Operation(summary = "마라톤 신청 시 필요한 정보", description = "accessToken을 통해 신청 시 필요한 정보를 받아옵니다.")
@@ -169,6 +180,7 @@ public class UserController {
 
     /**
      * ID로 User 조회
+     *
      * @param accessToken
      * @return User 정보
      */
@@ -195,9 +207,9 @@ public class UserController {
 
     @PostMapping("/alert/{marathonId}")
     @Operation(summary = "신청 시 친구에게 알림", description = "신청 시 내가 신청한 대회에 친구들에게 내가 신청했다는 알림 푸시")
-    public ResponseEntity<BooleanResponse> sendPushNotification(@RequestHeader("Authorization") String accessToken,@PathVariable int marathonId) {
+    public ResponseEntity<BooleanResponse> sendPushNotification(@RequestHeader("Authorization") String accessToken, @PathVariable int marathonId) {
         UserAlertInfo userAlertInfo = userService.getUserAlertInfoByEmail(kakaoOauthClient.getUserInfo(accessToken).getEmail());
-        userService.sendNotificationToFriends(FcmRequest.of(userAlertInfo,marathonId,marathonService.getMarathonNameById(marathonId)));
+        userService.sendNotificationToFriends(FcmRequest.of(userAlertInfo, marathonId, marathonService.getMarathonNameById(marathonId)));
         return ResponseEntity.ok(BooleanResponse.success());
     }
 
@@ -206,4 +218,12 @@ public class UserController {
         kakaoOauthClient.unlinkKakao(accessToken);
         return ResponseEntity.ok(BooleanResponse.success());
     }
+
+    @PostMapping("/address")
+    @Operation(summary = "주소 업데이트", description = "주소 저장")
+    public ResponseEntity<BooleanResponse> updateUserAddress(@RequestHeader("Authorization") String accessToken, @RequestBody AddressRequest addressRequest) {
+        userService.updateUserAddress(kakaoOauthClient.getUserInfo(accessToken).getEmail(), addressRequest);
+        return ResponseEntity.ok(BooleanResponse.success());
+    }
+
 }
