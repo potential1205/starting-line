@@ -56,7 +56,7 @@ fun TeamProgressBar(
                         val y = centerY + (radius - 5.dp.toPx()) * sin(radian)
 
                         drawCircle(
-                            color = if (friend.isMe) Color(0xFF2680FF) else Color(0xFFFF291A), // '나'는 초록색, 친구들은 빨간색
+                            color = if (friend.isMe) Color(0xFF2680FF) else Color(0xFFFF291A), // '나'는 파란색, 친구들은 빨간색
                             radius = dotRadius,
                             center = Offset(x.toFloat(), y.toFloat())
                         )
@@ -77,7 +77,7 @@ fun TeamProgressBar(
                         )
                     }
 
-                    // '랭크 대상'인 경우 노란색 점을 다시 위에 그림
+                    // '랭크 대상'인 경우 흰색 점을 다시 위에 그림
                     friendInfoList.find { it.rank == rank && !it.isMe }?.let { friend ->
                         val angle = 360 * friend.currentDistanceRate.coerceIn(0f, 1f) - 90
                         val radian = Math.toRadians(angle.toDouble())
