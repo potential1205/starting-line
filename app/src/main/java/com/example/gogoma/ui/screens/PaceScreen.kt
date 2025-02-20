@@ -107,6 +107,7 @@ fun PaceScreen(
     LaunchedEffect(Unit) {
         paceViewModel.getUpcomingMarathonInfo(
             TokenManager.getAccessToken(context = context).toString())
+        marathonViewModel.resetMarathonStopState() //중단 체크용 변수 초기화
     }
 
     LaunchedEffect(marathon) {

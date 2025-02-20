@@ -22,6 +22,8 @@ import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,6 +40,11 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
     private var marathonRealTimeDataUtil: MarathonRealTimeDataUtil = MarathonRealTimeDataUtil(getApplication())
     private var isMarathonRunning = true
 
+    // 종료 변수
+    private val _isEnd = MutableStateFlow(false) // 내부에서만 변경 가능, 현재 달리기 상태를 저장
+    val isEnd = _isEnd.asStateFlow() // 외부에서는 읽기만 가능
+    private var completedTasks = 0
+    private val totalTasks = 2 // 예: 데이터 전송 2가지
 
     init {
         dataClient.addListener(this)
@@ -163,6 +170,7 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+
     @SuppressLint("VisibleForTests")
     private fun stopMarathonSendData() {
         marathonStartTimer?.cancel()
@@ -176,6 +184,7 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
         dataClient.putDataItem(putDataRequest)
             .addOnSuccessListener {
                 // 데이터 전송 성공 로그
+                onTaskCompleted()
             }
             .addOnFailureListener { e ->
                 // 데이터 전송 실패 로그
@@ -204,6 +213,7 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
                 ) {
                     if (response.isSuccessful) {
                         Log.d("marathon", "마라톤 종료 신호를 서버로 전송했습니다.")
+                        onTaskCompleted()
                     } else {
                         Log.d("marathon", "마라톤 종료 신호를 서버로 전송하지못했습니다.")
                     }
@@ -213,13 +223,21 @@ class MarathonViewModel(application: Application) : AndroidViewModel(application
                     Log.d("marathon", "마라톤 종료 신호 호출을 실패했습니다.")
                 }
             })
-
             Log.d("MarathonRunService", "[Marathon End] 데이터 전송 및 위치 추적 중단")
         }
+    }
 
-        //
+    private fun onTaskCompleted() {
+        completedTasks++
+        if (completedTasks >= totalTasks) {
+            _isEnd.value = true // 모든 작업 완료 시 상태 업데이트
+            Log.d("MarathonViewModel", "모든 작업 완료, 마라톤 종료 상태 업데이트")
+        }
+    }
 
-
+    fun resetMarathonStopState() {
+        _isEnd.value = false
+        completedTasks = 0
     }
 
     // -------------------------------------------------------------------------------- //

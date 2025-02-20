@@ -1,5 +1,6 @@
 package com.example.gogoma.ui.screens
 
+import android.app.Application
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,12 +37,21 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
 import com.example.gogoma.ui.components.BottomBar
+import com.example.gogoma.viewmodel.MarathonViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 
 @Composable
-fun WatchConnectScreen (navController: NavController, userViewModel: UserViewModel) {
+fun WatchConnectScreen (navController: NavController, userViewModel: UserViewModel, marathonViewModel: MarathonViewModel) {
     val translucentColor = MaterialTheme.colorScheme.primary.copy(alpha = .2f)
     val screenHeight = LocalConfiguration.current.screenHeightDp
+
+    val isEnd by marathonViewModel.isEnd.collectAsState()
+    
+    LaunchedEffect(isEnd) { //종료를 감지
+        if(isEnd) {
+            navController.navigate("paceSetting")
+        }
+    }
 
     Scaffold (
         bottomBar = { BottomBar(navController = navController, userViewModel) }
@@ -126,5 +139,5 @@ fun WatchConnectScreen (navController: NavController, userViewModel: UserViewMod
 @Preview(showBackground = true)
 @Composable
 fun WatchConnectScreenPreview(){
-    WatchConnectScreen(rememberNavController(), UserViewModel())
+    WatchConnectScreen(rememberNavController(), UserViewModel(), MarathonViewModel(Application()))
 }
