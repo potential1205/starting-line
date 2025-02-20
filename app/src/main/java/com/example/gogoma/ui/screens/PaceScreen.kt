@@ -121,7 +121,7 @@ fun PaceScreen(
             marathon?.let {
                 marathonViewModel.resetMarathonStopState(it.isEnd)
             } ?: run {
-                marathonViewModel.resetMarathonStopState(false)
+                marathonViewModel.resetMarathonStopState(true)
             }
         }
     }
