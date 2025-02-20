@@ -92,7 +92,7 @@ fun AppNavigation(userViewModel: UserViewModel){
                             }
                         )
                         "paceSetting" -> PaceScreen (navController = navController, userViewModel, bottomSheetViewModel, marathonViewModel, paceViewModel)
-                        "watchConnect" -> WatchConnectScreen(navController, userViewModel)
+                        "watchConnect" -> WatchConnectScreen(navController, userViewModel, marathonViewModel)
                         "friendList" -> FriendListScreen(navController, userViewModel, friendsViewModel)
                         "setting" -> SettingScreen(navController, userViewModel)
 
