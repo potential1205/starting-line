@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gogoma.presentation.components.TeamProgressBar
 import com.example.gogoma.presentation.components.TeamStatus
@@ -131,9 +132,9 @@ fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
                             label = "itemScale"
                         )
 
-                        // 색상 결정 (isMe → 초록색, 중앙 아이템(단, isMe 아님) → 노란색, 기본 → 흰색)
+                        // 색상 결정 (isMe → BrandColor, 중앙 아이템(단, isMe 아님) → 흰색, 기본 → 회색)
                         val color = when {
-                            itemsWithPadding[index]?.isMe == true -> Color(0xFF2680FF)
+                            itemsWithPadding[index]?.isMe == true -> MaterialTheme.colors.primary
                             isCenterItem -> Color(0xFFFFFFFF)
                             else -> Color(0xFFB9B9B9)
                         }
