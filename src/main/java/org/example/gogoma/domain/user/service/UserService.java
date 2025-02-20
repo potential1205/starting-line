@@ -1,5 +1,6 @@
 package org.example.gogoma.domain.user.service;
 
+import org.example.gogoma.controller.request.AddressRequest;
 import org.example.gogoma.controller.response.ApplyResponse;
 import org.example.gogoma.domain.user.dto.CreateUserRequest;
 import org.example.gogoma.controller.response.UserResponse;
@@ -37,4 +38,6 @@ public interface UserService {
     UserAlertInfo getUserAlertInfoByEmail(String email);
 
     void deleteFriend(String email);
+
+    void updateUserAddress(String email, AddressRequest addressRequest);
 }
