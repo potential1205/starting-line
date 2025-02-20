@@ -25,6 +25,6 @@ public interface UserCustomRepository {
 
     Optional<UserAlertInfo> findIdAndNameByEmail(String email);
 
-    void updateAddressById(int id, String roadAddress, String detailAddress);
+    void updateUserApplyInfoById(int id, String roadAddress, String detailAddress, String clothingSize);
 
 }
