@@ -48,35 +48,39 @@ fun Filter(
                 },
             )
             FilterChip(
-                text = selectedFilters.city ?: "지역",
+                text = selectedFilters.city?.displayText ?: "지역",
                 isPoint = selectedFilters.city != null,
                 onCLick = {
                     onFilterClick("지역")
                 }
             )
             FilterChip(
-                text = selectedFilters.marathonStatus ?: "접수 상태",
+                text = selectedFilters.marathonStatus?.displayText ?: "접수 상태",
                 isPoint = selectedFilters.marathonStatus != null,
                 onCLick = {
                     onFilterClick("접수 상태")
                 }
             )
             FilterChip(
-                text = selectedFilters.courseTypeList?.joinToString(", ") ?: "종목",
+                text = if (!selectedFilters.courseTypeList.isNullOrEmpty()) {
+                    selectedFilters.courseTypeList!!.joinToString(", ") { it.displayText }
+                } else {
+                    "종목"
+                },
                 isPoint = selectedFilters.courseTypeList?.isNotEmpty() == true,
                 onCLick = {
                     onFilterClick("종목")
                 }
             )
             FilterChip(
-                text = selectedFilters.year ?: "년도",
+                text = selectedFilters.year?.displayText ?: "년도",
                 isPoint = selectedFilters.year != null,
                 onCLick = {
                     onFilterClick("년도")
                 }
             )
             FilterChip(
-                text = selectedFilters.month ?: "월",
+                text = selectedFilters.month?.displayText ?: "월",
                 isPoint = selectedFilters.month != null,
                 onCLick = {
                     onFilterClick("월")

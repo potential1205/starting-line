@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gogoma.data.api.RetrofitInstance
+import com.example.gogoma.data.model.FilterItem
+import com.example.gogoma.data.model.FilterValue
 import com.example.gogoma.data.model.MarathonPreviewDto
 import com.example.gogoma.data.model.MarathonSearchResponse
 import com.example.gogoma.data.model.SelectedFilters
@@ -19,6 +21,8 @@ class MarathonListViewModel : ViewModel() {
     var marathonSearchResponseList by mutableStateOf<List<MarathonPreviewDto>>(emptyList())
         private set
     var cityList by mutableStateOf<List<String>>(emptyList())
+        private set
+    var marathonTypeList by mutableStateOf<List<Int>>(emptyList())
         private set
 
     var isLoading by mutableStateOf(false)
@@ -36,14 +40,28 @@ class MarathonListViewModel : ViewModel() {
         "월"
     )
 
-    val filterContents: Map<String, List<String>>
+    val filterContents: Map<String, List<FilterItem>>
         get() = mapOf(
-            "지역" to cityList,  // 동적으로 cityList를 반영
-            "접수 상태" to listOf("OPEN", "CLOSED", "FINISHED"),
-            "종목" to listOf("마라톤", "하프마라톤", "10km", "5km"),
-            "년도" to (2025 downTo 2000).map { "${it}년" },
-            "월" to (1..12).map { "${it}월" }
+            "지역" to cityList.map { FilterItem(it, FilterValue.StringValue(it)) },  // 동적으로 cityList를 반영
+            "접수 상태" to listOf(
+                FilterItem("접수중", FilterValue.StringValue("OPEN")),
+                FilterItem("접수 마감", FilterValue.StringValue("FINISHED"))
+            ),
+            "종목" to marathonTypeList.map { FilterItem(formattedDistance(it), FilterValue.IntValue(it)) }, // 동적으로 marathonTypeList를 반영
+            "년도" to (2025 downTo 2000).map { FilterItem("${it}년", FilterValue.StringValue("${it}")) },
+            "월" to (1..12).map { FilterItem("${it}월", FilterValue.StringValue("${it}")) }
         )
+
+    fun formattedDistance(courseType: Int): String {
+        val kmValue = courseType / 100000.0
+        return if (kmValue % 1 == 0.0) {
+            // 소수점이 0일 때는 정수로 표시
+            "${kmValue.toInt()}km"
+        } else {
+            // 소수점이 있을 때는 소수점 2자리까지 표시
+            "%.3fkm".format(kmValue)
+        }
+    }
 
     init {
         loadMarathons()
@@ -54,17 +72,25 @@ class MarathonListViewModel : ViewModel() {
         errorMessage = null
         viewModelScope.launch {
             try {
+                val marathonStatusValue = selectedFilters.marathonStatus?.value?.let { (it as FilterValue.StringValue).value }
+                val cityValue = selectedFilters.city?.value?.let { (it as FilterValue.StringValue).value }
+                val yearValue = selectedFilters.year?.value?.let { (it as FilterValue.StringValue).value }
+                val monthValue = selectedFilters.month?.value?.let { (it as FilterValue.StringValue).value }
+                val courseTypeValues = selectedFilters.courseTypeList?.map { (it.value as? FilterValue.IntValue)?.value }
+                    ?.filterNotNull()
+
                 val response = RetrofitInstance.marathonApiService.getMarathons(
-                    selectedFilters.marathonStatus,
-                    selectedFilters.city,
-                    selectedFilters.year,
-                    selectedFilters.month,
-                    selectedFilters.courseTypeList,
+                    marathonStatusValue,
+                    cityValue,
+                    yearValue,
+                    monthValue,
+                    courseTypeValues,
                     selectedFilters.keyword
                 )
                 if (response.isSuccessful) {
                     marathonSearchResponseList = response.body()?.marathonPreviewDtoList ?: emptyList()
                     cityList = response.body()?.cityList ?: emptyList()
+                    marathonTypeList = response.body()?.marathonTypeList ?: emptyList()
                 } else {
                     errorMessage = "Failed to load data: ${response.code()}"
                 }
@@ -78,11 +104,11 @@ class MarathonListViewModel : ViewModel() {
 
     // 필터값을 갱신하고, 다시 API 호출하는 함수
     fun updateFilters(
-        marathonStatus: String? = selectedFilters.marathonStatus,
-        city: String? = selectedFilters.city,
-        year: String? = selectedFilters.year,
-        month: String? = selectedFilters.month,
-        courseTypeList: List<String>? = selectedFilters.courseTypeList,
+        marathonStatus: FilterItem? = selectedFilters.marathonStatus,
+        city: FilterItem? = selectedFilters.city,
+        year: FilterItem? = selectedFilters.year,
+        month: FilterItem? = selectedFilters.month,
+        courseTypeList: List<FilterItem>? = selectedFilters.courseTypeList,
         keyword: String? = selectedFilters.keyword
     ) {
         selectedFilters = SelectedFilters(
@@ -98,11 +124,11 @@ class MarathonListViewModel : ViewModel() {
     }
 
     fun updatePendingFilter(
-        city: String? = null,
-        marathonStatus: String? = null,
-        year: String? = null,
-        month: String? = null,
-        courseTypeList: List<String>? = null
+        city: FilterItem? = null,
+        marathonStatus: FilterItem? = null,
+        year: FilterItem? = null,
+        month: FilterItem? = null,
+        courseTypeList: List<FilterItem>? = null
     ) {
         pendingFilters = SelectedFilters(
             marathonStatus = marathonStatus,
