@@ -1,6 +1,7 @@
 package com.example.gogoma.ui.components.bottomsheets
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -53,7 +54,10 @@ fun PaceSettingBottomSheetContent(bottomSheetViewModel: BottomSheetViewModel, pa
             1330 to "13:30 느긋한 – 산책하듯 편안한 페이스"
         )
 
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier
+                .navigationBarsPadding()
+        ) {
             item {
                 FilterListItemTitle("/km")
             }

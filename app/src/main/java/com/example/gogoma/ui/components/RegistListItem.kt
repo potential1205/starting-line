@@ -31,7 +31,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit, backgroun
         modifier = Modifier
             .clickable(onClick = onClick)
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .padding(start = 20.dp, end = 16.dp, top = 10.dp, bottom = 10.dp)
     ) {
         Column (
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
@@ -61,7 +61,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit, backgroun
                 // '상세보기 >' 버튼
                 Text(
                     text = "상세보기 >",
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     color = Color.Gray.copy(alpha = 0.7f),
                 )
             }
@@ -98,7 +98,7 @@ fun RegistListItem(regist: UserMarathonSearchDto, onClick: () -> Unit, backgroun
                             .background(
                                 // 지난 마라톤이면 회색, 아니면 BrandColor
                                 color = if (regist.dday.contains("D+")) Color(0xFF9C9C9C) else MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(8.dp)
+                                shape = RoundedCornerShape(4.dp)
                             )
                             .padding(horizontal = 10.dp, vertical = 4.dp)
                     )

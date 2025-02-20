@@ -59,7 +59,7 @@ fun PaymentStatusScreen(
 
     LaunchedEffect(isSuccess) {
         if (isSuccess && regist != null) {
-            registViewModel.addRegist(regist) // 결제 성공 시 리스트에 추가
+//            registViewModel.addRegist(regist) // 결제 성공 시 리스트에 추가 //추가로 처리하지 않아도 Screen 단계에서 load됨
             registViewModel.notifyFriends(TokenManager.getAccessToken(context = context).toString(), marathonId = regist.userMarathonId!!)
         }
     }
@@ -199,7 +199,7 @@ fun ContentLayout (
                 Icon(
                     painter = painterResource(id = R.drawable.icon_cheer),
                     contentDescription = "payment status icon",
-                    tint = pointColor,
+                    tint = MaterialTheme.colorScheme.onBackground ,
                     modifier = Modifier
                         .size(22.dp)
                 )
@@ -215,24 +215,26 @@ fun ContentLayout (
                     userMarathonId = it.userMarathonId,
                     dday = it.dday
                 ),
-                onClick = {navController.navigate("registDetail/${it.userMarathonId}")},
+                onClick = { },
+//                onClick = {navController.navigate("registDetail/${it.userMarathonId}")},
                 background = Color.Transparent
             )
+            Log.d("SuccessContent", registInfo.toString())
         } ?: run {
             Log.e("SuccessContent", "❌ registInfo가 null입니다.")
         }
-        Row (
+        Column (
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if(isSuccess){
                 Button(
                     onClick = { navController.navigate("registList") },
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(size = 4.dp)
@@ -263,7 +265,7 @@ fun ContentLayout (
                         navController.navigate("main")
                     },
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .background(
                             color = Color(0xFF909090),
                             shape = RoundedCornerShape(size = 4.dp)
@@ -287,11 +289,11 @@ fun ContentLayout (
                         )
                     )
                 }
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Button(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(size = 4.dp)

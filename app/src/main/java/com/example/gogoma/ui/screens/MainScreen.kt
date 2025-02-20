@@ -148,6 +148,9 @@ fun MainScreen(
                 .fillMaxWidth()
                 .padding(
                     paddingValues
+                )
+                .padding(
+                    horizontal = 8.dp
                 ),
             contentAlignment = Alignment.Center
         ) {
