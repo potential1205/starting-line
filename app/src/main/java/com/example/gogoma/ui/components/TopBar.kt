@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.theme.NeutralDark
 
 @Composable
 fun TopBar(navController: NavController){
@@ -42,7 +43,7 @@ fun TopBar(navController: NavController){
             Icon(
                 painter = painterResource(id = R.drawable.icon_settings),
                 contentDescription = "icon of notifications",
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = NeutralDark,
                 modifier = Modifier.size(26.dp).padding(2.dp)
             )
         }

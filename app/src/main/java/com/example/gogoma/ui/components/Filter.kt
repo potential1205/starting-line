@@ -35,8 +35,8 @@ fun Filter(
                 .horizontalScroll(scrollState)
                 .fillMaxWidth()
                 .height(62.2.dp)
-                .padding(start = 19.dp, top = 4.dp, end = 19.dp, bottom = 17.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start),
+                .padding(start = 24.dp, top = 4.dp, end = 24.dp, bottom = 17.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             FilterChip(

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.theme.GogomaTheme
+import com.example.gogoma.theme.NeutralDark
 import com.example.gogoma.theme.PartialSansKR
 import com.example.gogoma.theme.Pretendard
 
@@ -76,7 +77,7 @@ fun TopBarArrow(
                 Icon(
                     painter = painterResource(R.drawable.icon_refresh),
                     contentDescription = "Refresh",
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = NeutralDark,
                     modifier = Modifier.size(22.dp)
                 )
             }

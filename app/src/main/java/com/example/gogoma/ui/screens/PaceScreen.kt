@@ -54,6 +54,8 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.gogoma.GlobalApplication
 import com.example.gogoma.R
+import com.example.gogoma.theme.NeutralDark
+import com.example.gogoma.theme.NeutralLight
 import com.example.gogoma.ui.components.BottomBar
 import com.example.gogoma.ui.components.ButtonBasic
 import com.example.gogoma.ui.components.TopBarArrow
@@ -158,7 +160,7 @@ fun PaceScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 10.dp, top = 58.dp, end = 10.dp, bottom = 10.dp),
+                        .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(182.dp, Alignment.CenterVertically),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -217,15 +219,15 @@ fun PaceScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(start = 32.dp, top = 76.dp, end = 32.dp, bottom = 76.dp),
+                        .padding(start = 32.dp, top = 30.dp, end = 32.dp, bottom = 76.dp),
                     verticalArrangement = Arrangement.spacedBy(40.dp, Alignment.Top),
                     horizontalAlignment = Alignment.Start,
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(color = Color(0xFFF8F8F8))
-                            .padding(start = 30.dp, top = 46.dp, end = 30.dp, bottom = 42.dp),
+                            .background(MaterialTheme.colorScheme.tertiary)
+                            .padding(start = 30.dp, top = 54.dp, end = 30.dp, bottom = 42.dp),
                     ) {
                         if (isColumn) { // 반응형 레이아웃: 세로 배치
                             Column(
@@ -241,6 +243,7 @@ fun PaceScreen(
                                         color = Color(0xFF000000)
                                     )
                                 )
+                                Spacer(modifier = Modifier.size(4.dp))
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
                                     horizontalAlignment = Alignment.Start,
@@ -259,9 +262,9 @@ fun PaceScreen(
                                             "${(marathonStartInitDataResponse?.targetPace ?: 0) / 100}:${((marathonStartInitDataResponse?.targetPace ?: 0) % 100).let { if(it < 10) "0$it" else it }}"
                                         },
                                         style = TextStyle(
-                                            fontSize = 35.sp,
+                                            fontSize = if (marathonStartInitDataResponse?.targetPace == 0) 12.sp else 35.sp,
                                             fontWeight = FontWeight(400),
-                                            color = Color(0xFF000000)
+                                            color = if (marathonStartInitDataResponse?.targetPace == 0)  NeutralDark else Color(0xFF000000)
                                         )
                                     )
 
@@ -270,24 +273,25 @@ fun PaceScreen(
                                         onClick = { bottomSheetViewModel.showBottomSheet() },
                                         modifier = Modifier
                                             .background(Color.Transparent)
-                                            .border(1.dp, Color(0xFFD0D0D0), shape = RoundedCornerShape(0.dp)),
+                                            .border(1.dp, Color(0xFFD0D0D0), shape = RoundedCornerShape(0.dp))
+                                            .wrapContentSize(),
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = Color.Transparent,
                                             contentColor = Color(0xFFD0D0D0)
                                         ),
                                         shape = RoundedCornerShape(0.dp),
                                         elevation = ButtonDefaults.elevatedButtonElevation(0.dp),
-                                        contentPadding = PaddingValues(12.dp) // 내부 패딩을 4.dp로 설정
+                                        contentPadding = PaddingValues(horizontal = 16.dp) // 내부 패딩을 4.dp로 설정
                                     ) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.icon_settings),
-                                            contentDescription = null,
-                                            tint = Color(0xFFD0D0D0)
+                                            contentDescription = "setting icon",
+                                            tint = Color(0xFF8A8A8A)
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             "페이스 설정",
-                                            color = Color(0xFFD0D0D0)
+                                            color = Color(0xFF8A8A8A)
                                         )
                                     }
 

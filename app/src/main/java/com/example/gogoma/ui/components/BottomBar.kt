@@ -90,7 +90,7 @@ fun BottomBar(navController : NavController, userViewModel: UserViewModel){
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Normal,
                     color = if (currRoute == route) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onBackground
+                    else NeutralDark
                 )
             }
 
