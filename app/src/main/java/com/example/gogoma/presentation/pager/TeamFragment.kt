@@ -36,13 +36,19 @@ class TeamFragment : Fragment() {
         // ✅ StateFlow 감지 후 TeamRoadScreen으로 이동
         lifecycleScope.launch {
             marathonDataViewModel.marathonState.collect { state ->
-                val nearbyCount = state.friendInfoList.count { !it.isMe && it.gapDistance.absoluteValue <= 10000 } // ✅ 현재 "거리 내 인원 수"
-                val previousCount = marathonDataViewModel.previousNearbyCount.value // ✅ ViewModel에서 이전 값 가져오기
+                if(state.currentDistance <= 10000 || state.currentDistance >= state.totalDistance - 10000){
 
-                if (nearbyCount != previousCount) { // ✅ 인원 수 변화 감지
-                    marathonDataViewModel.updateNearbyCount(nearbyCount) // ✅ 값 업데이트
-                    if (nearbyCount > 0) {
-                        viewPager?.setCurrentItem(2, true) // 🔥 팀 화면 2로 이동
+                }else {
+                    val nearbyCount =
+                        state.friendInfoList.count { !it.isMe && it.gapDistance.absoluteValue <= 10000 } // ✅ 현재 "거리 내 인원 수"
+                    val previousCount =
+                        marathonDataViewModel.previousNearbyCount.value // ✅ ViewModel에서 이전 값 가져오기
+
+                    if (nearbyCount != previousCount) { // ✅ 인원 수 변화 감지
+                        marathonDataViewModel.updateNearbyCount(nearbyCount) // ✅ 값 업데이트
+                        if (nearbyCount > 0) {
+                            viewPager?.setCurrentItem(2, true) // 🔥 팀 화면 2로 이동
+                        }
                     }
                 }
             }
