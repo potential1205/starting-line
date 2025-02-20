@@ -398,7 +398,7 @@ public class MarathonServiceImpl implements MarathonService {
                 .sorted(Comparator.comparing(MarathonPreviewDto::getRaceStartTime))
                 .toList();
 
-        return MarathonSearchResponse.of(marathonPreviewDtoList, cityList, marathonTypeSet.stream().toList());
+        return MarathonSearchResponse.of(marathonPreviewDtoList, cityList, marathonTypeSet.stream().sorted().toList());
     }
 
     @Override
