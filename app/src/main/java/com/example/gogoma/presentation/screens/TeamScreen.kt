@@ -154,7 +154,7 @@ fun TeamScreen(marathonDataViewModel: MarathonDataViewModel) {
         }
 
         // ProgressBar
-        TeamProgressBar(friendInfoList,  centerItemRank)
+        TeamProgressBar(friendInfoList, centerItemRank)
     }
 }
 

@@ -89,10 +89,10 @@ class MarathonDataViewModel : ViewModel() {
 //                updateElapsedTime()
 //            }
 //        }
-        startTimer()
+//        startTimer()
     }
 
-    private fun startTimer() {
+    fun startTimer() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (true) {
