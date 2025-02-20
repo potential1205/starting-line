@@ -62,6 +62,7 @@ fun StartScreen(navController: NavController, marathonDataViewModel: MarathonDat
                 Button(
                     onClick = {
                         sendStartSignalToPhone(context)
+                        marathonDataViewModel.startTimer()
                         navController.navigate("viewPagerScreen") {
                             popUpTo("startScreen") { inclusive = true }
                         }
