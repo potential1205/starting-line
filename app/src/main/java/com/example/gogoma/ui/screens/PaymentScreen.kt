@@ -22,10 +22,12 @@ import androidx.navigation.NavController
 import com.example.gogoma.R
 import com.example.gogoma.data.dto.KakaoPayReadyRequest
 import com.example.gogoma.data.dto.UserMarathonSearchDto
+import com.example.gogoma.data.model.ApplyInfoRequest
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.ui.components.*
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.data.model.MarathonDetailResponse
+import com.example.gogoma.utils.TokenManager
 import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 import com.google.gson.Gson
@@ -58,6 +60,10 @@ fun PaymentScreen(
     val gson = remember { Gson() }
     val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        TokenManager.getAccessToken(context)?.let { paymentViewModel.fetchApplyInfo(it) }
+    }
+
     LaunchedEffect(marathonId) {
         marathonDetail = savedStateHandle?.get<MarathonDetailResponse>("marathonDetail_$marathonId")
         println("✅ 결제 페이지에서 받은 마라톤 정보: $marathonDetail")
@@ -66,6 +72,7 @@ fun PaymentScreen(
     val selectedPayment by paymentViewModel.selectedPayment.collectAsState()
     var isAgreementChecked by remember { mutableStateOf(false) }
     val selectedAddress by paymentViewModel.selectedAddress.collectAsState()
+    val selectedSize by paymentViewModel.selectedSize.collectAsState()
 
     var selectedPrice by remember { mutableStateOf(0) }
     var selectedOption by remember { mutableStateOf<String?>(null) }
