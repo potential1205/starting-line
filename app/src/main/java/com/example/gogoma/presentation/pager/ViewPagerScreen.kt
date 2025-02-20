@@ -26,11 +26,11 @@ fun ViewPagerScreen(activity: FragmentActivity, marathonDataViewModel: MarathonD
     val nearbyCount = marathonDataViewModel.nearbyCount.collectAsState().value
     val context = LocalContext.current
 
-    // gapDistance가 10000 이하인 인원 변동 체크하여 진동 및 페이지 이동
-    LaunchedEffect (nearbyCount) {
-        vibrate(context) // 진동 울리기
-        viewPager?.currentItem = 2 // ViewPager의 세 번째 페이지(인덱스 2)로 이동
-    }
+//    // gapDistance가 10000 이하인 인원 변동 체크하여 진동 및 페이지 이동
+//    LaunchedEffect (nearbyCount) {
+//        vibrate(context) // 진동 울리기
+//        viewPager?.currentItem = 2 // ViewPager의 세 번째 페이지(인덱스 2)로 이동
+//    }
 
     // 뒤로 가기 버튼이 눌려도 아무 동작도 하지 않음
     BackHandler {
