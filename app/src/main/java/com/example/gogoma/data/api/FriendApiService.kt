@@ -2,7 +2,6 @@ package com.example.gogoma.data.api
 
 import com.example.gogoma.data.model.BooleanResponse
 import com.example.gogoma.data.model.FriendListResponse
-import com.example.gogoma.data.model.FriendResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
