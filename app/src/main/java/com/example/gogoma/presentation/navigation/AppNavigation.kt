@@ -35,5 +35,6 @@ fun AppNavigation(navController: NavHostController, marathonDataViewModel: Marat
                 marathonDataViewModel
             )
         }
+        composable("endScreen") { EndScreen(marathonDataViewModel, navController) }
     }
 }

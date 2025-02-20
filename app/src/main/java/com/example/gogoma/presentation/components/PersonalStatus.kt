@@ -48,7 +48,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
 //                    fontFamily = MaterialTheme.typography.caption1.fontFamily,
                     fontSize = 38.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colors.onBackground,
+                    color = currentColor,
                     )
             )
             unit?.let{
@@ -58,7 +58,7 @@ fun PersonalStatus(title: String, current: String, goal: String, currentColor: C
 //                        fontFamily = MaterialTheme.typography.caption1.fontFamily,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colors.onBackground,
+                        color =currentColor,
                     )
                 )
             }
