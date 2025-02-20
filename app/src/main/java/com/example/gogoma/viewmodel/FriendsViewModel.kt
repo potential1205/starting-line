@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.network.HttpException
 import com.example.gogoma.data.api.RetrofitInstance
+import com.example.gogoma.data.model.FriendListResponse
 import com.example.gogoma.data.model.FriendResponse
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +14,8 @@ import kotlinx.coroutines.launch
 import okio.IOException
 
 class FriendsViewModel : ViewModel() {
-    private val _friends = MutableStateFlow<List<FriendResponse>>(emptyList())
-    val friends: StateFlow<List<FriendResponse>> = _friends
+    private val _friends = MutableStateFlow<FriendListResponse?>(null)
+    val friends: StateFlow<FriendListResponse?> = _friends
 
     private val _errorMessage = MutableSharedFlow<String?>()
     val errorMessage: SharedFlow<String?> = _errorMessage
@@ -23,7 +24,7 @@ class FriendsViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val friends = RetrofitInstance.friendApiService.getFriends(accessToken)
-                _friends.value = friends
+                _friends.value = friends.body()
             } catch (e: HttpException) {
                 _errorMessage.emit("HTTP 오류 발생: ${e.message}")
             } catch (e: IOException) {

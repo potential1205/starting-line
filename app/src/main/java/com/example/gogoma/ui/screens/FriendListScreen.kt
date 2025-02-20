@@ -68,7 +68,7 @@ fun FriendListScreen(
                         .fillMaxSize()
                         .padding(horizontal = 5.dp, vertical = 5.dp),
                 ) {
-                    itemsIndexed(friends.value) { index, friend ->
+                    itemsIndexed(friends.value!!.friendResponseList) { index, friend ->
                         FriendListItem(
                             friend.copy(rank = index + 1),
                             isMe = (friend.friendId == myId)
