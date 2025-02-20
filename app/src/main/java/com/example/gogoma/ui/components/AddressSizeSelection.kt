@@ -33,6 +33,7 @@ import com.example.gogoma.data.model.Address
 import com.example.gogoma.theme.BrandColor1
 import com.example.gogoma.theme.NeutralLight
 import com.example.gogoma.ui.screens.AddressApiActivity
+import com.example.gogoma.viewmodel.BottomSheetViewModel
 import com.example.gogoma.viewmodel.PaymentViewModel
 import com.example.gogoma.viewmodel.UserViewModel
 
@@ -40,7 +41,8 @@ import com.example.gogoma.viewmodel.UserViewModel
 fun AddressSizeSelection(
     navController: NavController,
     userViewModel: UserViewModel,
-    paymentViewModel: PaymentViewModel, // ViewModel을 매개변수로 받음
+    paymentViewModel: PaymentViewModel,
+    bottomSheetViewModel: BottomSheetViewModel
 ) {
     val context = LocalContext.current
 
@@ -129,7 +131,7 @@ fun AddressSizeSelection(
 
         Row(
             modifier = Modifier
-                .clickable { showSizeSelectionDialog = true }
+                .clickable { bottomSheetViewModel.showBottomSheet("sizeSelection") }
                 .padding(horizontal = 20.dp, vertical = 25.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -159,14 +161,6 @@ fun AddressSizeSelection(
             )
         }
     }
-
-    // 사이즈 선택 모달
-    if (showSizeSelectionDialog) {
-        SizeSelectionDialog(
-            viewModel = paymentViewModel,
-            onDismiss = { showSizeSelectionDialog = false }
-        )
-    }
 }
 
 @Preview(showBackground = true)
@@ -185,5 +179,6 @@ fun AddressSizeSelectionPreview() {
         navController = rememberNavController(),
         userViewModel = UserViewModel(),
         paymentViewModel = PaymentViewModel(),
+        bottomSheetViewModel = BottomSheetViewModel()
     )
 }

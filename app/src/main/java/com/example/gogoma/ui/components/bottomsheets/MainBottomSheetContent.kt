@@ -1,20 +1,30 @@
 package com.example.gogoma.ui.components.bottomsheets
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.gogoma.R
 import com.example.gogoma.data.model.FilterItem
 import com.example.gogoma.data.model.FilterValue
@@ -44,24 +54,41 @@ fun MainBottomSheetContent(bottomSheetViewModel: BottomSheetViewModel, marathonL
             }else{
                 Text(
                     text = "닫기",
-                    modifier = Modifier.clickable {
-                        bottomSheetViewModel.hideBottomSheet()
-                    }
+                    fontSize = 14.5.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clickable {
+                            bottomSheetViewModel.hideBottomSheet()
+                        }
+                        .padding(top = 1.dp)
                 )
             }
         },
         bottomButton = {
             if(bottomSheetViewModel.pageName=="기본"){
-                Button(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(55.dp),
-                    onClick = {
-                        marathonListViewModel.applyFilters()
-                        bottomSheetViewModel.hideBottomSheet()
-                    }
+                        .navigationBarsPadding()
                 ) {
-                    Text("대회 보기")
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = Color(0xFFE5E5E5)
+                    )
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 7.5.dp)
+                            .height(55.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        onClick = {
+                            marathonListViewModel.applyFilters()
+                            bottomSheetViewModel.hideBottomSheet()
+                        }
+                    ) {
+                        Text("대회 보기")
+                    }
                 }
             }
         }

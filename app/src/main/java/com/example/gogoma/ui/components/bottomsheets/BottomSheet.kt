@@ -57,7 +57,7 @@ fun BottomSheet(
                             color = MaterialTheme.colorScheme.surface,
                             shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
                         )
-                        .padding(16.dp)
+                        .padding(top = 16.dp)
                         .clickable (
                             onClick = {},  // 클릭 이벤트를 빈 함수로 설정하여 아무 일도 일어나지 않도록 함
                             indication = null, // 클릭 효과 제거
