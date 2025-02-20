@@ -184,29 +184,29 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel, viewPager: View
 
             drawCircle(
                 color = otherColor,
-                radius = 30f,
+                radius = 10f,
                 center = center
             )
 
-            //글자
-            val firstChar = location.name.firstOrNull().toString() ?: ""
-            // 텍스트 크기 계산
-            val paint = Paint().apply {
-                color = android.graphics.Color.WHITE
-                textSize = 30f
-                typeface = Typeface.DEFAULT_BOLD
-                textAlign = Paint.Align.CENTER
-            }
-            val textWidth = paint.measureText(firstChar)
-            val textHeight = paint.textSize
-
-
-            drawContext.canvas.nativeCanvas.drawText(
-                firstChar,
-                center.x,
-                center.y + 13f,
-                paint
-            )
+//            //글자
+//            val firstChar = location.name.firstOrNull().toString() ?: ""
+//            // 텍스트 크기 계산
+//            val paint = Paint().apply {
+//                color = android.graphics.Color.WHITE
+//                textSize = 30f
+//                typeface = Typeface.DEFAULT_BOLD
+//                textAlign = Paint.Align.CENTER
+//            }
+//            val textWidth = paint.measureText(firstChar)
+//            val textHeight = paint.textSize
+//
+//
+//            drawContext.canvas.nativeCanvas.drawText(
+//                firstChar,
+//                center.x,
+//                center.y + 13f,
+//                paint
+//            )
         }
 
         //나의 위치 점
