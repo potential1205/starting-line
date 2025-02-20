@@ -92,6 +92,8 @@ fun PaceScreen(
         totalColumnWidth = coordinates.size.width
     }
 
+    val isEnd by marathonViewModel.isEnd.collectAsState()
+
     // 뒤로 가기 동작 정의
     BackHandler(enabled = bottomSheetViewModel.isBottomSheetVisible) {
         // 모달창이 열려 있을 때 뒤로 가기 버튼 처리
@@ -107,7 +109,6 @@ fun PaceScreen(
     LaunchedEffect(Unit) {
         paceViewModel.getUpcomingMarathonInfo(
             TokenManager.getAccessToken(context = context).toString())
-        marathonViewModel.resetMarathonStopState(marathon.isEnd) //중단 체크용 변수 초기화
     }
 
     LaunchedEffect(marathon) {
@@ -116,6 +117,12 @@ fun PaceScreen(
                 TokenManager.getAccessToken(context = context).toString(),
                 marathon!!.marathon.id
             )
+            //중단 체크용 변수 초기화
+            marathon?.let {
+                marathonViewModel.resetMarathonStopState(it.isEnd)
+            } ?: run {
+                marathonViewModel.resetMarathonStopState(false)
+            }
         }
     }
 
@@ -140,8 +147,8 @@ fun PaceScreen(
         },
         bottomBar = { BottomBar(navController = navController, userViewModel) }
     ) { paddingValues ->
-        // marathon이 null인 경우
-        if (marathon == null) {
+        // marathon이 null이거나 불러온 marathon이 이미 끝난 대회일 경우
+        if (marathon == null || isEnd) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
