@@ -68,21 +68,20 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
     // 레이더에 표시될 범위
     val distanceRange = marathonDataViewModel.distanceRange.collectAsState().value
 
-    val peopleWithLocation = remember {
+    val peopleWithLocation = remember(friendInfoList) {
         friendInfoList.filter { it.userId != me.userId && it.gapDistance.absoluteValue <= distanceRange }
             .map { person ->
                 // 거리 차이 계산: (내 거리 - 사람의 거리) / 100m로 화면 Y 위치를 비례적으로 계산
-                Log.d("gapDist",person.gapDistance.toString())
                 val normalizedY = (-person.gapDistance.toFloat() + distanceRange) / (2 * distanceRange)
-                val adjustedY = (screenHeight - 50f) * normalizedY
+                val adjustedY = (screenHeight - 50f) * normalizedY + 25f
 
                 // Y축 반전
-                val invertedY = screenHeight - adjustedY - 25f
+//                val invertedY = screenHeight - adjustedY - 25f
 
                 // 도로 폭 기준으로 가로 길이 계산해야 함
                 val randomX = Random.nextFloat() * roadTopWidth
 
-                Location(person.friendName, randomX, invertedY, person.currentDistance)
+                Location(person.friendName, randomX, adjustedY, person.currentDistance)
             }
     }
 
