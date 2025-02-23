@@ -48,7 +48,13 @@ class MarathonRealTimeDataUtil(private val context: Context) {
 
             // 거리 및 페이스 관련 값 설정
             totalDistance = myInfo.runningDistance
-            targetPace = (myInfo.targetPace *60) / 100 + (myInfo.targetPace % 100)
+
+            // targetPace 계산
+            val minutes = myInfo.targetPace / 100
+            val seconds = myInfo.targetPace % 100
+            targetPace = minutes * 60 + seconds
+
+            // targetTime 계산
             targetTime = (myInfo.runningDistance * targetPace) / 100000
 
             // 사용자 및 마라톤 정보 설정
@@ -89,7 +95,7 @@ class MarathonRealTimeDataUtil(private val context: Context) {
     fun getMarathonRealTimeData(): MarathonRealTimeData {
         return marathonRealTimeData
     }
-
+ 
     fun updateData() {
         marathonRealTimeData.currentTime += 1
         marathonRealTimeData.currentDistance += 1
@@ -101,7 +107,7 @@ class MarathonRealTimeDataUtil(private val context: Context) {
 
         if (marathonRealTimeData.currentPace <= marathonRealTimeData.targetPace) {
             marathonRealTimeData.state = "G"
-        } else if (marathonRealTimeData.currentPace + 60 <= marathonRealTimeData.targetPace) {
+        } else if (marathonRealTimeData.currentPace <= marathonRealTimeData.targetPace + 10) {
             marathonRealTimeData.state = "Y"
         } else {
             marathonRealTimeData.state = "R"
