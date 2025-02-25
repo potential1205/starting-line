@@ -48,7 +48,7 @@ class MarathonDataViewModel : ViewModel() {
     val nearbyCount: StateFlow<Int> = _nearbyCount
 
     // 레이더 범위
-    private val _distanceRange = MutableStateFlow(1000)
+    private val _distanceRange = MutableStateFlow(5000)
     val distanceRange: StateFlow<Int> = _distanceRange
 
     // 현재 인덱스 상태 추가

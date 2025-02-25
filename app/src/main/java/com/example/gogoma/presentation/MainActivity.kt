@@ -40,7 +40,9 @@ class MainActivity : FragmentActivity() {
 
             (application as? GlobalApplication)?.navController = navController
 
-            KeepScreenOn(activity = this)
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+//            KeepScreenOn(activity = this)
 
             GogomaWatchTheme {
                 AppNavigation(navController = navController, marathonDataViewModel)
