@@ -79,9 +79,10 @@ fun TeamRoadScreen(marathonDataViewModel: MarathonDataViewModel) {
 //                val invertedY = screenHeight - adjustedY - 25f
 
                 // 도로 폭 기준으로 가로 길이 계산해야 함
-                val randomX = Random.nextFloat() * roadTopWidth
+//                val randomX = Random.nextFloat() * roadTopWidth
+                val fixedX = screenWidth * 3 / 4
 
-                Location(person.friendName, randomX, adjustedY, person.currentDistance)
+                Location(person.friendName, fixedX, adjustedY, person.currentDistance)
             }
     }
 
