@@ -98,6 +98,15 @@ class MarathonRealTimeDataUtil(private val context: Context) {
  
     fun updateData() {
         marathonRealTimeData.currentTime += 1
+
+        UserDistanceRepository.updateUserCurrentTime(
+            marathonRealTimeData.userId,
+            marathonRealTimeData.currentTime,
+            onSuccess = { Log.d("MarathonRunService", "Firebase 시간 업데이트 성공") },
+            onFailure = { exception ->
+                Log.e("MarathonRunService", "Firebase 업데이트 실패: ${exception.message}")
+            })
+
         marathonRealTimeData.currentDistance += 1
         marathonRealTimeData.currentPace = marathonRealTimeData.currentTime * 100000 / marathonRealTimeData.currentDistance
 
